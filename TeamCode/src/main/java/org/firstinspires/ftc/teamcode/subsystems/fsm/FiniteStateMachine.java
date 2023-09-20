@@ -4,8 +4,6 @@ import androidx.annotation.NonNull;
 
 import java.util.HashMap;
 
-import android.util.Log;
-
 /**
  * Represents a finite state machine.
  */
@@ -22,6 +20,7 @@ public class FiniteStateMachine {
 
     /**
      * Constructs a new finite state machine, from a builder. This is the only way!!!
+     * @param builder The builder object that contains the state machine specification.
      */
     public FiniteStateMachine(@NonNull FiniteStateMachineBuilder builder) {
         assert(builder.getStates().size() != 0);
@@ -35,6 +34,7 @@ public class FiniteStateMachine {
         current = new MetaState(builder.getStates().get(0), StateState.UNRAN);
     }
 
+    /** Called on every frame of the robot, it ticks and manages the state machine. */
     public void loop() {
         states.forEach((k, v) -> {
             if (v.getStateState() == StateState.UNRAN) {
@@ -53,7 +53,6 @@ public class FiniteStateMachine {
         // TODO: Handle multiple true valves instead of blindly accepting the first.
         for (Edge edge : current.getState().getEdges()) {
             if (edge.getCallback().valve(current.getState())) {
-                Log.i("fsm", current.getState().getName() + " -> " + edge.getTo());
                 current = states.get(edge.getTo());
                 break;
             }

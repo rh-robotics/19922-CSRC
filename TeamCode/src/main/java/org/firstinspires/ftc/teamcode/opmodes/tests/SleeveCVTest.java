@@ -9,8 +9,9 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
+/** A test testing the sleeve computer vision code. */
 @Autonomous(name = "Signal Sleeve Test")
-public class VisionTest extends LinearOpMode {
+public class SleeveCVTest extends LinearOpMode {
 
     SleeveDetection sleeveDetection = new SleeveDetection(145, 168, 30, 50);
     OpenCvCamera camera;

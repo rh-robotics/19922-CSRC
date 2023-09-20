@@ -16,6 +16,9 @@ public class HardwareSchema {
      * Create an entry in the schema.
      * @param key The key that can be accessed from the Hardware class.
      * @param entry The value that is expected to be in the hardware map.
+     * @param t The class of the device to introduce.
+     * @param initializer The callback used to initialize the device.
+     * @param <T> The class of device to introduce.
      */
     public <T> void introduce(String key, String entry, java.lang.Class<? extends HardwareDevice> t,
                               HardwareDeviceInitializer initializer) {
@@ -30,7 +33,8 @@ public class HardwareSchema {
         this.schema.remove(key);
     }
 
-    /** Returns in the inner schema map. Should only be used by the Hardware class. */
+    /** Returns in the inner schema map. Should only be used by the Hardware class.
+     * @return The inner schema representation. */
     public HashMap<String, HardwareSchemaElement<?>> inner() {
         return this.schema;
     }

@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.subsystems.hardware;
 
-import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
+/* import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.robotcore.hardware.DcMotorEx; */
 
+/**
+ * TODO: @teowelton, please document. No idea what this is.
+ */
 public class RobotComponents {
-    private final DcMotorEx motor;
+    /* private final DcMotorEx motor;
     private final double ticks_per_degree;
     private final double F;
     private final PIDController controller;
@@ -51,5 +54,5 @@ public class RobotComponents {
 
     public boolean motorCloseEnough(int range) {
         return (target - range <= motor.getCurrentPosition()) && (target + range >= motor.getCurrentPosition());
-    }
+    } */
 }

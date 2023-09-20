@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems.fsm;
 
+/** An edge in the state machine graph. */
 public class Edge {
     /**
      * The state to transition to.
@@ -21,6 +22,7 @@ public class Edge {
 
     /**
      * Gets the name of the state to transition to.
+     * @return Returns the state to transition to.
      */
     public String getTo() {
         return to;
@@ -28,6 +30,7 @@ public class Edge {
 
     /**
      * Gets the callback that decides if the transition should occur.
+     * @return Returns the callback.
      */
     public EdgeCallback getCallback() {
         return callback;

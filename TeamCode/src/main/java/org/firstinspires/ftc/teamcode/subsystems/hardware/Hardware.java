@@ -27,6 +27,10 @@ public class Hardware {
      */
     private final Telemetry telemetry;
 
+    /** Constructs the hardware manager.
+     * @param schema The hardware schema to verify.
+     * @param hardwareMap The FTC SDK hardware map to verify with.
+     * @param telemetry The telemetry object to use.*/
     public Hardware(@NonNull HardwareSchema schema, @NonNull HardwareMap hardwareMap, @NonNull Telemetry telemetry) {
         this.telemetry = telemetry;
 
@@ -55,6 +59,8 @@ public class Hardware {
     /** Get a device loaded into the hardware class. Is casted to the argument supplied.
      * @param name The name of the device to get.
      * @param type The type of the device to cast to.
+     * @param <T> The class of the device to get.
+     * @return The device we've heard so much about!
      */
     public <T> T getDevice(String name, Class<T> type) {
         HardwareDevice device = registrar.get(name);
@@ -69,6 +75,7 @@ public class Hardware {
 
     /**
      * Gets the telemetry object.
+     * @return Ditto.
      */
     public Telemetry getTelemetry() {
         return telemetry;

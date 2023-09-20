@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.subsystems.hardware.Hardware;
 import org.firstinspires.ftc.teamcode.subsystems.hardware.HardwareSchema;
 import org.firstinspires.ftc.teamcode.subsystems.hardware.TemplateDeviceInitializers;
 
+/** A basic strafe drive opmode. */
 @TeleOp(name = "Basic Strafe Drive", group = "Iterative OpMode")
 public class StrafeDrive extends OpMode {
     /**

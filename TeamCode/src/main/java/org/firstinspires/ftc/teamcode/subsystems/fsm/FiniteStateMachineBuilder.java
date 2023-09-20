@@ -27,25 +27,31 @@ public class FiniteStateMachineBuilder {
     }
 
     /** Add a state to the state machine. The first state added is the initial state.
-     * @param state The state to add. */
+     * @param state The state to add.
+     * @return Returns the updated builder. */
     public FiniteStateMachineBuilder addState(State state) {
         states.add(state);
         return this;
     }
 
     /** Removes a state from the state machine.
-     * @param state The state to remove. */
+     * @param state The state to remove.
+     * @return Returns the updated builder. */
     public FiniteStateMachineBuilder deleteState(State state) {
         states.remove(state);
         return this;
     }
 
-    /** Gets an unmodifiable list of added states. */
+    /** Gets an unmodifiable list of added states.
+     * @return Returns all the associated states, in an unmodifiable form.
+     */
     public List<State> getStates() {
         return Collections.unmodifiableList(states);
     }
 
-    /** Gets if deterministicity is enforced. */
+    /** Gets if deterministicity is enforced.
+     * @return Is deterministicity enforced?
+     */
     public boolean isEnforceDeterministicity() {
         return enforceDeterministicity;
     }

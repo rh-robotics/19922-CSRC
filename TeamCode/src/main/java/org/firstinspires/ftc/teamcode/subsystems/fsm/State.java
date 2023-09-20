@@ -4,10 +4,12 @@ package org.firstinspires.ftc.teamcode.subsystems.fsm;
  * A state, belonging to an abstract state machine.
  */
 public interface State {
-    /** The edges of the current state. */
+    /** The edges of the current state.
+     * @return Ditto. */
     Edge[] getEdges();
 
-    /** The name of the current state. */
+    /** The name of the current state.
+     * @return Ditto. */
     String getName();
 
     /**
