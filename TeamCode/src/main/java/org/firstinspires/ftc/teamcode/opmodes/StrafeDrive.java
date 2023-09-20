@@ -50,13 +50,6 @@ public class StrafeDrive extends OpMode {
     }
 
     /**
-     * Runs continuously until the driver hits play.
-     */
-    @Override
-    public void init_loop() {
-    }
-
-    /**
      * Runs ONCE when the driver presses play. Very little initialization should be done here, if
      * any. Maybe resetting the elapsed time.
      */
