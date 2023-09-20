@@ -1,4 +1,2 @@
-# Basecode Repository
-This repository contains some basic code for Hardware Class (with drive motors), a basic teleop, PID stuff, and some Auton.
-
-Feel free to use this as a template for your FTC Repository! :D
+# 19922-CSRC
+This repository contains all of our code for the Iron Lions in the FTC Centerstage (2023-2024) season!
