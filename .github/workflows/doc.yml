@@ -24,7 +24,7 @@ jobs:
         run: sudo apt-get install -y graphviz
 
       - name: Build and generate Javadocs
-        run: ./gradlew generateDebugJavadoc --no-daemon
+        run: ./gradlew generateDebugJavadoc -PgenerateUML --no-daemon
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
