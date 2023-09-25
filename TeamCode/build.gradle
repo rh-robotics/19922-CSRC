@@ -27,19 +27,26 @@ android {
     afterEvaluate {
         android.applicationVariants.each { variant ->
            project.tasks.register('generate' + variant.name.capitalize() + 'Javadoc', Javadoc) {
-                group = "TeamcodeDoc"
-                description = "Generate documentation for Teamcode ($variant.name)."
+               group = "TeamcodeDoc"
+               description = "Generate documentation for Teamcode ($variant.name)."
 
-                source = android.sourceSets.main.java.srcDirs
-                classpath += variant.javaCompileProvider.get().classpath
-                classpath += files(variant.javaCompileProvider.get().destinationDirectory)
+               source = android.sourceSets.main.java.srcDirs
+               classpath += variant.javaCompileProvider.get().classpath
+               classpath += files(variant.javaCompileProvider.get().destinationDirectory)
 
-                if (project.hasProperty("generateUML")) {
-                    options.docletpath = configurations.umlDoclet.files as List
-                    options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
-                } else {
-                    logger.info('Use -PgenerateUML to generate UML diagrams.')
-                }
+               if (project.hasProperty("generateUML")) {
+                   options.docletpath = configurations.umlDoclet.files as List
+                   options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
+               } else {
+                   logger.info('Use -PgenerateUML to generate UML diagrams.')
+               }
+
+               doFirst {
+                   ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+                   classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
+
+                   options.addStringOption "-show-members", "package"
+               }
             }
         }
     }
