@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.HWC;
+import org.firstinspires.ftc.teamcode.subsystems.HWC;
 
 /**
  * TeleOp OpMode for simply driving with strafing wheels
