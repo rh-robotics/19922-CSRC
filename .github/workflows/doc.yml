@@ -21,13 +21,7 @@ jobs:
           java-version: 17
 
       - name: Install dependencies
-        run: sudo apt-get install graphviz
+        run: sudo apt-get install -y graphviz
 
       - name: Build and generate Javadocs
-        run: ./gradlew generateDebugJavadoc
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          publish_dir: ./TeamCode/build/docs/javadoc/
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew generateDebugJavadoc --no-daemon
