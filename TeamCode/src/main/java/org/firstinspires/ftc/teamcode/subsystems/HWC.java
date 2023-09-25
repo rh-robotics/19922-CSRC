@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
- * Stores and Declares all hardware devices & related methods
+ * Stores and Declares all hardware devices &amp; related methods
  */
 public class HWC {
     // Declare empty variables for robot hardware
