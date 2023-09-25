@@ -7,10 +7,13 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.HWC;
 
+/**
+ * TeleOp OpMode for simply driving with strafing wheels
+ */
 @TeleOp(name = "Basic Strafe Drive", group = "Iterative OpMode")
 public class StrafeDrive extends OpMode {
-    HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
     private final ElapsedTime time = new ElapsedTime();
+    HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
 
     // init() Runs ONCE after the driver hits initialize
     @Override
@@ -28,7 +31,8 @@ public class StrafeDrive extends OpMode {
 
     // init_loop() - Runs continuously until the driver hits play
     @Override
-    public void init_loop() {}
+    public void init_loop() {
+    }
 
     // Start() - Runs ONCE when the driver presses play
     @Override
