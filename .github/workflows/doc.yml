@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - milo-ghp-javadoc
 
 jobs:
   deploy:
