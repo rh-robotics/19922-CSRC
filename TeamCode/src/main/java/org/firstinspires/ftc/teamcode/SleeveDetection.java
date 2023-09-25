@@ -9,39 +9,10 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+/**
+ * OpenCvPipeline to detect sleeves given color ranges (PowerPlay! code)
+ */
 public class SleeveDetection extends OpenCvPipeline {
-  static int X= 145; //145
-  static int Y = 168;
-  static int W = 30;//30
-  static int H = 50;//50
-
-    public SleeveDetection(int boundX, int boundY, int width, int height ){
-       X = boundX;
-       Y = boundY;
-       W = width;
-       H = height;
-    }
-
-    /*
-    white  = Parking Left
-    black    = Parking Middle
-    green = Parking Right
-     */
-
-    public enum ParkingPosition {
-        LEFT,
-        CENTER,
-        RIGHT
-    }
-
-
-    // TOPLEFT anchor point for the bounding box
-    private static Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(X,Y);
-
-    // Width and height for the bounding box
-    public static int REGION_WIDTH = W;
-    public static int REGION_HEIGHT = H;
-
     // Lower and upper boundaries for colors
     private static final Scalar
             lower_white_bounds = new Scalar(200, 200, 200, 255),
@@ -50,17 +21,29 @@ public class SleeveDetection extends OpenCvPipeline {
             upper_black_bounds = new Scalar(100, 100, 100, 255),
             lower_green_bounds = new Scalar(0, 70, 0, 255),
             upper_green_bounds = new Scalar(80, 255, 80, 255);
+    static int X = 145; //145
+    static int Y = 168;
+    // TOPLEFT anchor point for the bounding box
+    private static final Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(X, Y);
+    static int W = 30;//30
 
+    /*
+    white  = Parking Left
+    black    = Parking Middle
+    green = Parking Right
+     */
+    // Width and height for the bounding box
+    public static int REGION_WIDTH = W;
+    static int H = 50;//50
+    public static int REGION_HEIGHT = H;
     // Color definitions
     private final Scalar
             WHITE = new Scalar(255, 255, 255),
             BLACK = new Scalar(0, 0, 0),
             GREEN = new Scalar(0, 255, 0);
-
-    // Percent and mat definitions
-    private double whiPercent, blaPercent, grePercent;
-    private Mat whiMat = new Mat(), blaMat = new Mat(), greMat = new Mat(), blurredMat = new Mat();
-
+    private final Mat whiMat = new Mat();
+    private final Mat blaMat = new Mat();
+    private final Mat greMat = new Mat();
     // Anchor point definitions
     Point sleeve_pointA = new Point(
             SLEEVE_TOPLEFT_ANCHOR_POINT.x,
@@ -68,9 +51,28 @@ public class SleeveDetection extends OpenCvPipeline {
     Point sleeve_pointB = new Point(
             SLEEVE_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
             SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
-
     // Running variable storing the parking position
     int position = 0;
+    // Percent and mat definitions
+    private double whiPercent, blaPercent, grePercent;
+    private Mat blurredMat = new Mat();
+
+    // TODO: Update param. descriptions
+
+    /**
+     * Constructor for SleeveDetection class
+     *
+     * @param boundX The bound in the X direction for camera
+     * @param boundY The bound in the Y direction for camera
+     * @param width  Width
+     * @param height Height
+     */
+    public SleeveDetection(int boundX, int boundY, int width, int height) {
+        X = boundX;
+        Y = boundY;
+        W = width;
+        H = height;
+    }
 
     @Override
     public Mat processFrame(Mat input) {
@@ -135,10 +137,14 @@ public class SleeveDetection extends OpenCvPipeline {
         return input;
     }
 
-
-    // Returns an enum being the current position where the robot will park
+    /** Returns an enum being the current position where the robot will park */
     public int getPosition() {
         return position;
     }
-}
 
+    public enum ParkingPosition {
+        LEFT,
+        CENTER,
+        RIGHT
+    }
+}
