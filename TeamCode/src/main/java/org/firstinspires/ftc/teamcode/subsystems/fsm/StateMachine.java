@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems.fsm;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -55,17 +54,22 @@ public class StateMachine {
         /* Run the current state's looping function. */
         current.loop();
 
-        /*
-         * Figure out which, if any, state the current state wants to pass off execution to.
-         * Filter out all the closed valves, get all the states that the true valves point to,
-         * and set that to the current.
-         */
-        current = Arrays.stream(current.edges).filter(e -> e.getCallback().valve(current)).map((e) -> {
-            // TODO: Handle multiple true valves instead of blindly accepting the first.
-            return states_reached.keySet().stream().filter((s) -> {
-                //noinspection CodeBlock2Expr
-                return s.getClass().isInstance(e.getTo());
-            }).findFirst().orElseThrow(() -> new RuntimeException("Valve function referenced non-existent state '" + e.getTo() + "'."));
-        }).findFirst().orElseThrow(() -> new RuntimeException("State '" + current.getClass().getSimpleName() + "' has no children."));
+        /* Current state state switching logic. */
+        for (Edge<?> edge : current.getEdges()) {
+            if (edge.getCallback().valve(current)) {
+                boolean stateFound = false;
+                for (State state : states_reached.keySet()) {
+                    if (state.getClass() == edge.getTo()) {
+                        current = state;
+                        stateFound = true;
+                        break;
+                    }
+                }
+
+                if (!stateFound) {
+                    throw new RuntimeException("Valve function referenced non-existent state '" + edge.getTo() + "'.");
+                }
+            }
+        }
     }
 }

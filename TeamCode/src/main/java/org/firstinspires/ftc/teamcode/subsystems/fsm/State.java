@@ -5,7 +5,7 @@ package org.firstinspires.ftc.teamcode.subsystems.fsm;
  */
 public interface State {
     /** The edges of the current state. */
-    Edge<?>[] edges = new Edge[0];
+    Edge<?>[] getEdges();
 
     /**
      * Runs ONCE during state machine initialization.
