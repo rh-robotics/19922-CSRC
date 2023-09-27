@@ -1,8 +1,10 @@
 package org.firstinspires.ftc.teamcode.auton;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.fsm.Edge;
 import org.firstinspires.ftc.teamcode.subsystems.fsm.State;
 import org.firstinspires.ftc.teamcode.subsystems.fsm.StateMachine;
@@ -10,17 +12,23 @@ import org.firstinspires.ftc.teamcode.subsystems.fsm.StateMachine;
 /**
  * Autonomous OpMode to test the FSM subsystem.
  */
-@Autonomous(name = "Subsystem test", group = "Testing OpModes")
-public class StateMachineTest extends LinearOpMode {
-    StateMachine stateMachine;
+@Autonomous(name = "State machine test", group = "Testing OpModes")
+public class StateMachineTest extends OpMode {
+    public static Telemetry pTelemetry;
+    public static Gamepad gamepad;
+    private final StateMachine stateMachine = new StateMachine();
 
     @Override
-    public void runOpMode() {
+    public void init() {
+        pTelemetry = telemetry;
+        gamepad = gamepad1;
         stateMachine.addState(new IdleState()).addState(new ForwardState());
+    }
 
-        while (opModeIsActive()) {
-            stateMachine.loop();
-        }
+    @Override
+    public void loop() {
+        stateMachine.loop();
+        telemetry.update();
     }
 }
 
@@ -28,24 +36,36 @@ public class StateMachineTest extends LinearOpMode {
  * A state representing moving forward.
  */
 class ForwardState implements State {
-    Edge<?>[] edges = new Edge[]{
-        new Edge<>(IdleState.class, (state) -> {
-            // You can replace this with any logic that, when it returns true, will switch
-            // the state machine over to IdleState.
-            return false;
-        })
-    };
+    @Override
+    public Edge<?>[] getEdges() {
+        return new Edge[]{
+                new Edge<>(IdleState.class, (state) -> StateMachineTest.gamepad.a)
+        };
+    }
+
+    @Override
+    public void loop() {
+        StateMachineTest.pTelemetry.addData("state", "ForwardState");
+        StateMachineTest.pTelemetry.addData("buttonA", StateMachineTest.gamepad.a);
+        StateMachineTest.pTelemetry.addData("buttonB", StateMachineTest.gamepad.b);
+    }
 }
 
 /**
  * A state representing idelation.
  */
 class IdleState implements State {
-    Edge<?>[] edges = new Edge[]{
-            new Edge<>(ForwardState.class, (state) -> {
-                // You can replace this with any logic that, when it returns true, will switch
-                // the state machine over to ForwardState.
-                return false;
-            })
-    };
+    @Override
+    public Edge<?>[] getEdges() {
+        return new Edge[]{
+                new Edge<>(ForwardState.class, (state) -> StateMachineTest.gamepad.b)
+        };
+    }
+
+    @Override
+    public void loop() {
+        StateMachineTest.pTelemetry.addData("state", "IdleState");
+        StateMachineTest.pTelemetry.addData("buttonA", StateMachineTest.gamepad.a);
+        StateMachineTest.pTelemetry.addData("buttonB", StateMachineTest.gamepad.b);
+    }
 }
