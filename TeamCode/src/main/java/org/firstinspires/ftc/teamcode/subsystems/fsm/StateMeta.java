@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface StateMeta {
     /** The color to use when graphing with GraphViz DOT. */
-    String color() default "#ffffff";
+    String color() default "#000000";
 
     /** How to use the state. */
     StateUsage usage() default StateUsage.TRANSITIONAL;
