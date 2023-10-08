@@ -8,6 +8,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.subsystems.fsm.Edge;
 import org.firstinspires.ftc.teamcode.subsystems.fsm.State;
 import org.firstinspires.ftc.teamcode.subsystems.fsm.StateMachine;
+import org.firstinspires.ftc.teamcode.subsystems.fsm.StateMeta;
+import org.firstinspires.ftc.teamcode.subsystems.fsm.StateRole;
 
 /**
  * Autonomous OpMode to test the FSM subsystem.
@@ -22,7 +24,11 @@ public class StateMachineTest extends OpMode {
     public void init() {
         pTelemetry = telemetry;
         gamepad = gamepad1;
-        stateMachine.addState(new IdleState()).addState(new ForwardState());
+        stateMachine
+                .addState(new IdleState())
+                .addState(new ForwardState());
+
+        telemetry.addData("State Machine", stateMachine.generateDot());
     }
 
     @Override
@@ -35,6 +41,7 @@ public class StateMachineTest extends OpMode {
 /**
  * A state representing moving forward.
  */
+@StateMeta(color = "#E09F3E")
 class ForwardState implements State {
     @Override
     public Edge<?>[] getEdges() {
@@ -54,6 +61,7 @@ class ForwardState implements State {
 /**
  * A state representing idelation.
  */
+@StateMeta(role = StateRole.INITIAL, color = "#335C67")
 class IdleState implements State {
     @Override
     public Edge<?>[] getEdges() {
