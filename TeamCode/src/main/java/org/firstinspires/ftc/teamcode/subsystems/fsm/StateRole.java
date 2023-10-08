@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.subsystems.fsm;
 /**
  * How to use the state; initial, transitional, or terminating.
  */
-public enum StateUsage {
+public enum StateRole {
     /** This is the first state to jump to. */
     INITIAL,
 

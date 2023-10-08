@@ -15,5 +15,5 @@ public @interface StateMeta {
     String color() default "#000000";
 
     /** How to use the state. */
-    StateUsage usage() default StateUsage.TRANSITIONAL;
+    StateRole role() default StateRole.TRANSITIONAL;
 }

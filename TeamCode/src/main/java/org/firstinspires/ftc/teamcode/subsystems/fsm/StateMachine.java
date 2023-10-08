@@ -12,7 +12,7 @@ public class StateMachine {
     private final HashMap<State, Boolean> statesReached = new HashMap<>();
 
     /* Unique state registry. */
-    private final HashMap<StateUsage, State> uniqueStateRegistry = new HashMap<>();
+    private final HashMap<StateRole, State> uniqueStateRegistry = new HashMap<>();
 
     /* The current state. */
     private State currentState;
@@ -48,8 +48,8 @@ public class StateMachine {
         }
 
         /* Ensure there's only ever one INITIAL and TERMINATING state. */
-        Arrays.stream(new StateUsage[] {StateUsage.INITIAL, StateUsage.TERMINATING}).forEach(usage -> {
-            if (metadata.usage().equals(usage)) {
+        Arrays.stream(new StateRole[] {StateRole.INITIAL, StateRole.TERMINATING}).forEach(usage -> {
+            if (metadata.role().equals(usage)) {
                 if (uniqueStateRegistry.containsKey(usage)) {
                     throw new StateMachineConstructionException(state.getClass(), "another state " +
                             "marked as " + usage.name() + ", '" +
@@ -62,7 +62,7 @@ public class StateMachine {
             }
         });
 
-        currentState = uniqueStateRegistry.get(StateUsage.INITIAL);
+        currentState = uniqueStateRegistry.get(StateRole.INITIAL);
         statesReached.put(state, false);
         state.init();
         return this;
@@ -116,7 +116,7 @@ public class StateMachine {
                 if (stateFound) {
                     /* It's fine to use '==' here, since we're checking for object identity, not
                      * equivalence. Thanks AP CSA! */
-                    terminated = uniqueStateRegistry.get(StateUsage.TERMINATING) == currentState;
+                    terminated = uniqueStateRegistry.get(StateRole.TERMINATING) == currentState;
                 } else {
                     throw new UnknownStateException(edge.getTo());
                 }
