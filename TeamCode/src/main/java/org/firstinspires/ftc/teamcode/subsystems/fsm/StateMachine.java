@@ -20,15 +20,6 @@ public class StateMachine {
     }
 
     /**
-     * A runtime exception representing a malformed state encountered at state machine construction.
-     */
-    public static class MalformedStateException extends RuntimeException {
-        public MalformedStateException(Class<?> offender, String reason) {
-            super("State '" + offender.getSimpleName() + "' is malformed: " + reason + ".");
-        }
-    }
-
-    /**
      * A runtime exception representing an error that occurred during state machine construction, not
      * runtime.
      */
@@ -42,7 +33,7 @@ public class StateMachine {
     /**
      * A runtime exception representing an unknown state.
      * <br/>
-     * TODO: Figure out if this can be collapsed and covered under InsaneStateMachinrException.
+     * TODO: Figure out if this can be collapsed and covered under InsaneException.
      */
     public static class UnknownStateException extends RuntimeException {
         public UnknownStateException(Class<?> offender) {
@@ -86,7 +77,7 @@ public class StateMachine {
             metadata = state.getClass().getAnnotation(Meta.class);
             assert metadata != null;
         } else {
-            throw new MalformedStateException(state.getClass(), "isn't annotated with StateMeta");
+            throw new ConstructionException(state.getClass(), "isn't annotated with StateMeta");
         }
 
         /* Ensure there's only ever one INITIAL and TERMINATING state. */
