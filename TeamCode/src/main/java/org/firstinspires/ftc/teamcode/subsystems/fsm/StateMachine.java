@@ -3,16 +3,58 @@ package org.firstinspires.ftc.teamcode.subsystems.fsm;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
+import org.firstinspires.ftc.teamcode.subsystems.fsm.State.Role;
+import org.firstinspires.ftc.teamcode.subsystems.fsm.State.Meta;
 
 /**
  * Represents a finite state machine.
  */
 public class StateMachine {
+    /**
+     * A runtime exception representing an insane state machine configuration encountered at runtime.
+     */
+    public static class InsaneStateMachineException extends RuntimeException {
+        public InsaneStateMachineException(String reason) {
+            super("Encountered an insane state machine: " + reason + ".");
+        }
+    }
+
+    /**
+     * A runtime exception representing a malformed state encountered at state machine construction.
+     */
+    public static class MalformedStateException extends RuntimeException {
+        public MalformedStateException(Class<?> offender, String reason) {
+            super("State '" + offender.getSimpleName() + "' is malformed: " + reason + ".");
+        }
+    }
+
+    /**
+     * A runtime exception representing an error that occurred during state machine construction, not
+     * runtime.
+     */
+    public static class StateMachineConstructionException extends RuntimeException {
+        public StateMachineConstructionException(Class<?> offender, String reason) {
+            super("State machine construction is invalid, caused by state '" +
+                    offender.getSimpleName() + "': " + reason + ".");
+        }
+    }
+
+    /**
+     * A runtime exception representing an unknown state.
+     * <br/>
+     * TODO: Figure out if this can be collapsed and covered under InsaneStateMachinrException.
+     */
+    public static class UnknownStateException extends RuntimeException {
+        public UnknownStateException(Class<?> offender) {
+            super("Valve function referenced unknown state, '" + offender.getSimpleName() + "'.");
+        }
+    }
+
     /* The flat list of states. The key is the state, the value is if it's been reached. */
     private final HashMap<State, Boolean> statesReached = new HashMap<>();
 
     /* Unique state registry. */
-    private final HashMap<StateRole, State> uniqueStateRegistry = new HashMap<>();
+    private final HashMap<Role, State> uniqueStateRegistry = new HashMap<>();
 
     /* The current state. */
     private State currentState;
@@ -30,7 +72,7 @@ public class StateMachine {
      * @return The state machine.
      */
     public StateMachine addState(State state) {
-        StateMeta metadata;
+        Meta metadata;
 
         /* Throw an exception if a state of the type passed into this method is already present,
          * so we don't fail and overwrite silently. */
@@ -40,15 +82,15 @@ public class StateMachine {
         }
 
         /* Make sure we have the annotation needed, and load them. */
-        if (state.getClass().isAnnotationPresent(StateMeta.class)) {
-            metadata = state.getClass().getAnnotation(StateMeta.class);
+        if (state.getClass().isAnnotationPresent(Meta.class)) {
+            metadata = state.getClass().getAnnotation(Meta.class);
             assert metadata != null;
         } else {
             throw new MalformedStateException(state.getClass(), "isn't annotated with StateMeta");
         }
 
         /* Ensure there's only ever one INITIAL and TERMINATING state. */
-        Arrays.stream(new StateRole[] {StateRole.INITIAL, StateRole.TERMINATING}).forEach(usage -> {
+        Arrays.stream(new Role[] {Role.INITIAL, Role.TERMINATING}).forEach(usage -> {
             if (metadata.role().equals(usage)) {
                 if (uniqueStateRegistry.containsKey(usage)) {
                     throw new StateMachineConstructionException(state.getClass(), "another state " +
@@ -62,7 +104,7 @@ public class StateMachine {
             }
         });
 
-        currentState = uniqueStateRegistry.get(StateRole.INITIAL);
+        currentState = uniqueStateRegistry.get(Role.INITIAL);
         statesReached.put(state, false);
         state.init();
         return this;
@@ -116,7 +158,7 @@ public class StateMachine {
                 if (stateFound) {
                     /* It's fine to use '==' here, since we're checking for object identity, not
                      * equivalence. Thanks AP CSA! */
-                    terminated = uniqueStateRegistry.get(StateRole.TERMINATING) == currentState;
+                    terminated = uniqueStateRegistry.get(Role.TERMINATING) == currentState;
                 } else {
                     throw new UnknownStateException(edge.getTo());
                 }
@@ -135,7 +177,7 @@ public class StateMachine {
 
         /* Styling and whatnot of the vertices/nodes. */
         for (State state : statesReached.keySet()) {
-            StateMeta stateMeta = state.getClass().getAnnotation(StateMeta.class);
+            Meta stateMeta = state.getClass().getAnnotation(Meta.class);
 
             assert stateMeta != null;
             str.append("\t\"")
