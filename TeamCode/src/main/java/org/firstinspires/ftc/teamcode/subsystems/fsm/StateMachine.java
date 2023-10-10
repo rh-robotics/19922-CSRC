@@ -13,8 +13,8 @@ public class StateMachine {
     /**
      * A runtime exception representing an insane state machine configuration encountered at runtime.
      */
-    public static class InsaneStateMachineException extends RuntimeException {
-        public InsaneStateMachineException(String reason) {
+    public static class InsaneException extends RuntimeException {
+        public InsaneException(String reason) {
             super("Encountered an insane state machine: " + reason + ".");
         }
     }
@@ -32,8 +32,8 @@ public class StateMachine {
      * A runtime exception representing an error that occurred during state machine construction, not
      * runtime.
      */
-    public static class StateMachineConstructionException extends RuntimeException {
-        public StateMachineConstructionException(Class<?> offender, String reason) {
+    public static class ConstructionException extends RuntimeException {
+        public ConstructionException(Class<?> offender, String reason) {
             super("State machine construction is invalid, caused by state '" +
                     offender.getSimpleName() + "': " + reason + ".");
         }
@@ -77,7 +77,7 @@ public class StateMachine {
         /* Throw an exception if a state of the type passed into this method is already present,
          * so we don't fail and overwrite silently. */
         if (statesReached.containsKey(state)) {
-            throw new StateMachineConstructionException(state.getClass(), "state of ditto type " +
+            throw new ConstructionException(state.getClass(), "state of ditto type " +
                     "already included in state machine");
         }
 
@@ -93,7 +93,7 @@ public class StateMachine {
         Arrays.stream(new Role[] {Role.INITIAL, Role.TERMINATING}).forEach(usage -> {
             if (metadata.role().equals(usage)) {
                 if (uniqueStateRegistry.containsKey(usage)) {
-                    throw new StateMachineConstructionException(state.getClass(), "another state " +
+                    throw new ConstructionException(state.getClass(), "another state " +
                             "marked as " + usage.name() + ", '" +
                             Objects.requireNonNull(uniqueStateRegistry.get(usage)).getClass().getSimpleName() +
                             "', is already included in state machine."
@@ -131,7 +131,7 @@ public class StateMachine {
 
         /* Sanity. */
         if (statesReached.size() == 0) {
-            throw new InsaneStateMachineException("no states in state machine");
+            throw new InsaneException("no states in state machine");
         }
 
         /* Run start() once we reach the state. */
