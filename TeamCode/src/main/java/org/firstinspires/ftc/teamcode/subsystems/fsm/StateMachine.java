@@ -97,18 +97,6 @@ public class StateMachine {
 
         currentState = uniqueStateRegistry.get(Role.INITIAL);
         statesReached.put(state, false);
-        state.init();
-        return this;
-    }
-
-    /**
-     * Remove a state from the state machine.
-     *
-     * @param state The state to remove.
-     * @return The state machine.
-     */
-    public StateMachine deleteState(State state) {
-        statesReached.remove(state);
         return this;
     }
 
@@ -125,9 +113,9 @@ public class StateMachine {
             throw new InsaneException("no states in state machine");
         }
 
-        /* Run start() once we reach the state. */
+        /* Run init() once we reach the state. */
         if (Boolean.FALSE.equals(statesReached.get(currentState))) {
-            currentState.start();
+            currentState.init();
             statesReached.put(currentState, true);
         }
 
@@ -141,6 +129,7 @@ public class StateMachine {
                 for (State state : statesReached.keySet()) {
                     if (state.getClass() == edge.getTo()) {
                         currentState = state;
+                        currentState.start();
                         stateFound = true;
                         break;
                     }
