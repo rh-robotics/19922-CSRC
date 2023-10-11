@@ -3,6 +3,19 @@ package org.firstinspires.ftc.teamcode.subsystems.fsm;
 /** An edge in the state machine graph. */
 public class Edge<T> {
     /**
+     * A callback to decide if a state machine should shift state.
+     */
+    public interface EdgeCallback {
+        /**
+         * Ditto.
+         *
+         * @param state The state to evaluate with.
+         * @return Should we transition?
+         */
+        boolean valve(State state);
+    }
+
+    /**
      * The state to transition to.
      */
     private final Class<T> to;
