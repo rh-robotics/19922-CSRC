@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
 
 /**
  * Stores and Declares all hardware devices &amp; related methods
@@ -17,9 +18,11 @@ public class HWC {
     // Declare empty variables for robot hardware
     public DcMotorEx leftFront, rightFront, leftRear, rightRear;
 
+
     // Other Variables
     Telemetry telemetry;
     ElapsedTime time = new ElapsedTime();
+    public SampleMecanumDrive drive;
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -29,6 +32,8 @@ public class HWC {
      */
     public HWC(@NonNull HardwareMap hardwareMap, Telemetry telemetry) {
         this.telemetry = telemetry;
+
+        drive = new SampleMecanumDrive(hardwareMap);
 
         // Declare motors
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
