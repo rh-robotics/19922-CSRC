@@ -29,10 +29,12 @@ public class Auton extends OpMode {
     }
 
     @Override
-    public void init_loop() {}
+    public void init_loop() {
+    }
 
     @Override
-    public void start() {}
+    public void start() {
+    }
 
     @Override
     public void loop() {
@@ -57,6 +59,7 @@ class ID2B implements State {
 
     }
 }
+
 @State.Meta(color = "#335C67")
 class DPP implements State {
     @Override

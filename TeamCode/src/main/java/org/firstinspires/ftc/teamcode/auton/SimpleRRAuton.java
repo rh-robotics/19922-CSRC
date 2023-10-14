@@ -7,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
-import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
 
 @Autonomous
 @Disabled
