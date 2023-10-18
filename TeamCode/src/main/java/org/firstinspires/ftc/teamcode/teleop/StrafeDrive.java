@@ -14,6 +14,10 @@ import org.firstinspires.ftc.teamcode.subsystems.HWC;
 public class StrafeDrive extends OpMode {
     private final ElapsedTime time = new ElapsedTime();
     HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
+    double tSpeed = 0.6;
+    double dSpeed = 0.8;
+    double sSpeed = 0.8;
+
 
     // init() Runs ONCE after the driver hits initialize
     @Override
@@ -23,6 +27,10 @@ public class StrafeDrive extends OpMode {
 
         // Do all init stuff
         // TODO: ADD INITS THAT YOU NEED
+
+        //Speed Variables
+
+
         robot = new HWC(hardwareMap, telemetry);
 
         // Tell the driver the robot is ready
@@ -32,6 +40,27 @@ public class StrafeDrive extends OpMode {
     // init_loop() - Runs continuously until the driver hits play
     @Override
     public void init_loop() {
+        if (gamepad1.a == true) {
+
+            if (gamepad1.dpad_down == true) {
+                tSpeed -= 1;
+            } else if (gamepad1.dpad_up == true) {
+                tSpeed += 1;
+            } else if (gamepad1.b == true) {
+
+                if (gamepad1.dpad_down == true) {
+                    dSpeed -= 1;
+                } else if (gamepad1.dpad_up) {
+                    dSpeed += 1;
+                } else if (gamepad1.x == true) {
+                    if (gamepad1.dpad_down == true) {
+                        sSpeed -= 1;
+                    } else if (gamepad1.dpad_up) {
+                        sSpeed += 1;
+                    }
+                }
+            }
+        }
     }
 
     // Start() - Runs ONCE when the driver presses play
@@ -47,9 +76,9 @@ public class StrafeDrive extends OpMode {
         double rightFPower;
         double leftBPower;
         double rightBPower;
-        double drive = -gamepad1.left_stick_x * 0.8;
-        double turn = gamepad1.left_stick_y * 0.6;
-        double strafe = -gamepad1.right_stick_x * 0.8;
+        double drive = -gamepad1.left_stick_x * dSpeed;
+        double turn = gamepad1.left_stick_y * tSpeed;
+        double strafe = -gamepad1.right_stick_x * sSpeed;
 
         // Calculate drive power
         if (drive != 0 || turn != 0) {
@@ -75,5 +104,8 @@ public class StrafeDrive extends OpMode {
         robot.leftRear.setPower(leftBPower);
         robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
+
+        telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
+        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
     }
 }
