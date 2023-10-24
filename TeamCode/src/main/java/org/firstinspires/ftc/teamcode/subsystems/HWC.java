@@ -21,7 +21,7 @@ public class HWC {
 
     // Other Variables
     Telemetry telemetry;
-    ElapsedTime time = new ElapsedTime();
+    public ElapsedTime time = new ElapsedTime();
     public SampleMecanumDrive drive;
 
     /**

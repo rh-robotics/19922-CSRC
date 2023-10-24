@@ -12,61 +12,56 @@ import org.firstinspires.ftc.teamcode.subsystems.HWC;
  */
 @TeleOp(name = "Basic Strafe Drive", group = "Iterative OpMode")
 public class StrafeDrive extends OpMode {
-    private final ElapsedTime time = new ElapsedTime();
     HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
-    double tSpeed = 0.6;
-    double dSpeed = 0.8;
-    double sSpeed = 0.8;
-
+    double turnSpeed = 0.6; // Speed multiplier for turning
+    double driveSpeed = 0.8; // Speed multiplier for driving
+    double strafeSpeed = 0.8; // Speed multiplier for strafing
+    MultiplierSelection selection; // String for selecting which speed to change
 
     // init() Runs ONCE after the driver hits initialize
     @Override
     public void init() {
         // Tell the driver the Op is initializing
         telemetry.addData("Status", "Initializing");
-
-        // Do all init stuff
-        // TODO: ADD INITS THAT YOU NEED
-
-        //Speed Variables
+        telemetry.update();
 
 
         robot = new HWC(hardwareMap, telemetry);
 
         // Tell the driver the robot is ready
         telemetry.addData("Status", "Initialized");
+        telemetry.update();
     }
 
     // init_loop() - Runs continuously until the driver hits play
     @Override
     public void init_loop() {
-        if (gamepad1.a == true) {
+        // Select which speed to change
+        if(gamepad1.a) { selection = MultiplierSelection.TURN_SPEED; }
+        else if(gamepad1.b) { selection = MultiplierSelection.DRIVE_SPEED; }
+        else if(gamepad1.x) { selection = MultiplierSelection.STRAFE_SPEED; }
 
-            if (gamepad1.dpad_down == true) {
-                tSpeed -= 1;
-            } else if (gamepad1.dpad_up == true) {
-                tSpeed += 1;
-            } else if (gamepad1.b == true) {
-
-                if (gamepad1.dpad_down == true) {
-                    dSpeed -= 1;
-                } else if (gamepad1.dpad_up) {
-                    dSpeed += 1;
-                } else if (gamepad1.x == true) {
-                    if (gamepad1.dpad_down == true) {
-                        sSpeed -= 1;
-                    } else if (gamepad1.dpad_up) {
-                        sSpeed += 1;
-                    }
-                }
-            }
+        // Change the speed multiplier for selection
+        switch(selection) {
+            case TURN_SPEED:
+                if(gamepad1.dpad_up) { turnSpeed += 0.1; }
+                else if(gamepad1.dpad_down) { turnSpeed -= 0.1; }
+                break;
+            case DRIVE_SPEED:
+                if(gamepad1.dpad_up) { driveSpeed += 0.1; }
+                else if(gamepad1.dpad_down) { driveSpeed -= 0.1; }
+                break;
+            case STRAFE_SPEED:
+                if(gamepad1.dpad_up) { strafeSpeed += 0.1; }
+                else if(gamepad1.dpad_down) { strafeSpeed -= 0.1; }
+                break;
         }
     }
 
     // Start() - Runs ONCE when the driver presses play
     @Override
     public void start() {
-        time.reset();
+        robot.time.reset();
     }
 
     // loop() - Runs continuously while the OpMode is active
@@ -108,4 +103,13 @@ public class StrafeDrive extends OpMode {
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
     }
+}
+
+/**
+ * Enum representing which speed to change in init_loop()
+ */
+enum MultiplierSelection {
+    TURN_SPEED,
+    DRIVE_SPEED,
+    STRAFE_SPEED
 }
