@@ -119,6 +119,7 @@ public class StrafeDrive extends OpMode {
 
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
+        telemetry.update();
     }
 }
 
