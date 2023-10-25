@@ -86,11 +86,8 @@ public class HWC {
     // TODO: ADD ANY HARDWARE RELATED FUNCTIONS BELOW
 
     public void runIntake(double pwr){
-
             intakeMotor.setPower(pwr);
             intakeL.setPower(pwr);
             intakeR.setPower(pwr);
-
-        }
     }
 }
