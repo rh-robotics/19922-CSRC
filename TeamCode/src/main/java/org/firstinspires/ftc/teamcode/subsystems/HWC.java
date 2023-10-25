@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -16,7 +17,8 @@ import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumD
  */
 public class HWC {
     // Declare empty variables for robot hardware
-    public DcMotorEx leftFront, rightFront, leftRear, rightRear;
+    public DcMotorEx leftFront, rightFront, leftRear, rightRear;// rightPulley, leftPulley, intakeMotor;
+    //public Servo intakeL, intakeR;
 
 
     // Other Variables
@@ -35,12 +37,17 @@ public class HWC {
 
         drive = new SampleMecanumDrive(hardwareMap);
 
-        // Declare motors
+        // Declare driving motors
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
 
+        /* Declare other motors
+        rightPulley = hardwareMap.get(DcMotorEx.class, "R_Pulley");
+        leftPulley = hardwareMap.get(DcMotorEx.class, "L_Pulley");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+*/
         // Set the direction of motors
         // TODO: UPDATE VALUES WITH NEW BOT
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
@@ -54,12 +61,18 @@ public class HWC {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+      //  rightPulley.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //leftPulley.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Run motors using encoder, so that we can move accurately.
-        leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+      /*  leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightPulley.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        leftPulley.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);*/
     }
     // TODO: ADD ANY HARDWARE RELATED FUNCTIONS BELOW
 }
