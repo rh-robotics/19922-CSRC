@@ -85,18 +85,12 @@ public class HWC {
     }
     // TODO: ADD ANY HARDWARE RELATED FUNCTIONS BELOW
 
-    public void runIntake(boolean isRunning){
-        if (isRunning == true){
-            intakeMotor.setPower(0);
-            intakeL.setPower(0);
-            intakeR.setPower(0);
-        }
-        else {
-            // sensor code
-            // while (sensors not triggered){
-            intakeMotor.setPower(1);
-            intakeL.setPower(1);
-            intakeR.setPower(1);
+    public void runIntake(double pwr){
+
+            intakeMotor.setPower(pwr);
+            intakeL.setPower(pwr);
+            intakeR.setPower(pwr);
+
         }
     }
 }

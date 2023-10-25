@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
@@ -10,8 +9,8 @@ import org.firstinspires.ftc.teamcode.subsystems.HWC;
 /**
  * TeleOp OpMode for simply driving with strafing wheels
  */
-@TeleOp(name = "Basic Strafe Drive", group = "Iterative OpMode")
-public class StrafeDrive extends OpMode {
+@TeleOp(name = "TeleOp", group = "Iterative OpMode")
+public class TeleOpMode extends OpMode {
     HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
     double turnSpeed = 0.6; // Speed multiplier for turning
     double driveSpeed = 0.8; // Speed multiplier for driving
@@ -27,6 +26,7 @@ public class StrafeDrive extends OpMode {
 
 
         robot = new HWC(hardwareMap, telemetry);
+
 
         // Tell the driver the robot is ready
         telemetry.addData("Status", "Initialized");
@@ -110,6 +110,11 @@ public class StrafeDrive extends OpMode {
             leftBPower = 0;
             rightBPower = 0;
         }
+
+        // Run Intake
+       if (gamepad1.right_trigger != 0){
+           robot.runIntake(gamepad1.right_trigger);
+       }
 
         // Set power to values calculated above
         robot.leftFront.setPower(leftFPower);
