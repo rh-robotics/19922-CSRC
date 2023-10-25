@@ -56,6 +56,23 @@ public class StrafeDrive extends OpMode {
                 else if(gamepad1.dpad_down) { strafeSpeed -= 0.1; }
                 break;
         }
+
+        // Tell driver the commands
+        telemetry.addData("Press A to start changing turn speed", "");
+        telemetry.addData("Press B to start changing drive speed", "");
+        telemetry.addData("Press X to start changing strafe speed", "");
+
+        // Divider Line
+        telemetry.addLine();
+
+        // Display the current modifiers
+        telemetry.addData("Modifying", selection);
+        telemetry.addData("Turn Speed", turnSpeed);
+        telemetry.addData("Drive Speed", driveSpeed);
+        telemetry.addData("Strafe Speed", strafeSpeed);
+
+        // Update telemetry
+        telemetry.update();
     }
 
     // Start() - Runs ONCE when the driver presses play
@@ -102,6 +119,7 @@ public class StrafeDrive extends OpMode {
 
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
+        telemetry.update();
     }
 }
 
