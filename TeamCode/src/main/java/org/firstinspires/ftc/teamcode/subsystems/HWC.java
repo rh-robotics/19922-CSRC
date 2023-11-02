@@ -30,8 +30,11 @@ public class HWC {
     public ElapsedTime time = new ElapsedTime();
     public SampleMecanumDrive drive;
     // Declare Position Variables
+    //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
     double intakePos = 5; //made up number, needs to be tested and actually found
     double armPos = 6; // Another made up variable
+    double openClawPos = 5;
+    double closedClawPos = 0;
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -43,9 +46,6 @@ public class HWC {
         this.telemetry = telemetry;
 
         drive = new SampleMecanumDrive(hardwareMap);
-
-
-
 
 
         // Declare driving motors
@@ -99,9 +99,31 @@ public class HWC {
     }
     // TODO: ADD ANY HARDWARE RELATED FUNCTIONS BELOW
 
-    public void runIntake(double pwr){
+    public void runIntake(double pwr) {
         intakeR.setPosition(intakePos);
         intakeMotor.setPower(pwr);
 
+    }
+
+    public void toggleClaw(char servo) {
+        if (servo == 'L') {
+            if (clawL.getPosition() == openClawPos) {
+                clawL.setPosition(closedClawPos);
+            } else if (servo == 'R') {
+                if (clawR.getPosition() == openClawPos) {
+                    clawR.setPosition(closedClawPos);
+                } else if (servo == 'C') {
+                    clawR.setPosition(closedClawPos);
+                    clawL.setPosition(closedClawPos);
+                } else if (servo == 'O') {
+                    clawR.setPosition(openClawPos);
+                    clawL.setPosition(openClawPos);
+                } else {
+                    if (clawR.getPosition() == openClawPos) {
+                        clawR.setPosition(closedClawPos);
+                    }
+                }
+            }
+        }
     }
 }
