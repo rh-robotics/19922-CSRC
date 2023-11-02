@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import androidx.annotation.NonNull;
 
+import com.arcrobotics.ftclib.kinematics.Odometry;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -20,8 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumD
 public class HWC {
     // Declare empty variables for robot hardware
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
-    public CRServo intakeL, intakeR;
-
+    public Servo intakeL, intakeR, elbowL, elbowR, clawR, clawL;
     public SensorTouch buttonL, buttonR;
 
 
@@ -29,6 +29,9 @@ public class HWC {
     Telemetry telemetry;
     public ElapsedTime time = new ElapsedTime();
     public SampleMecanumDrive drive;
+    // Declare Position Variables
+    double intakePos = 5; //made up number, needs to be tested and actually found
+    double armPos = 6; // Another made up variable
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -41,6 +44,10 @@ public class HWC {
 
         drive = new SampleMecanumDrive(hardwareMap);
 
+
+
+
+
         // Declare driving motors
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
@@ -52,6 +59,13 @@ public class HWC {
         leftPulley = hardwareMap.get(DcMotorEx.class, "L_Pulley");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
+        // Declare Servos
+        intakeL = hardwareMap.get(Servo.class, "Intake_L");
+        intakeR = hardwareMap.get(Servo.class, "Intake_R");
+        elbowL = hardwareMap.get(Servo.class, "Elbow_L");
+        elbowR = hardwareMap.get(Servo.class, "Elbow_R");
+        clawL = hardwareMap.get(Servo.class, "Claw_L");
+        clawR = hardwareMap.get(Servo.class, "Claw_R");
         // Declare Sensors
         buttonL = hardwareMap.get(SensorTouch.class, "L_Button");
         buttonR = hardwareMap.get(SensorTouch.class, "R_Button");
@@ -86,8 +100,8 @@ public class HWC {
     // TODO: ADD ANY HARDWARE RELATED FUNCTIONS BELOW
 
     public void runIntake(double pwr){
-            intakeMotor.setPower(pwr);
-            intakeL.setPower(pwr);
-            intakeR.setPower(pwr);
+        intakeR.setPosition(intakePos);
+        intakeMotor.setPower(pwr);
+
     }
 }
