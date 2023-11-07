@@ -6,6 +6,7 @@ import com.arcrobotics.ftclib.kinematics.Odometry;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,7 +23,7 @@ public class HWC {
     // Declare empty variables for robot hardware
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
     public Servo intakeL, intakeR, elbowL, elbowR, clawR, clawL;
-    public SensorTouch buttonL, buttonR;
+    public TouchSensor buttonL, buttonR;
 
 
     // Other Variables
@@ -67,8 +68,8 @@ public class HWC {
         clawL = hardwareMap.get(Servo.class, "Claw_L");
         clawR = hardwareMap.get(Servo.class, "Claw_R");
         // Declare Sensors
-        buttonL = hardwareMap.get(SensorTouch.class, "L_Button");
-        buttonR = hardwareMap.get(SensorTouch.class, "R_Button");
+        buttonL = hardwareMap.get(TouchSensor.class, "L_Button");
+        buttonR = hardwareMap.get(TouchSensor.class, "R_Button");
 
 
         // Set the direction of motors
@@ -100,11 +101,14 @@ public class HWC {
     // TODO: ADD ANY HARDWARE RELATED FUNCTIONS BELOW
 
     public void runIntake(double pwr) {
-        intakeR.setPosition(intakePos);
         intakeMotor.setPower(pwr);
 
     }
 
+    public void changeIntakePos(double pos){
+        intakeL.setPosition(pos);
+        intakeR.setPosition(pos);
+    }
     public void toggleClaw(char servo) {
         if (servo == 'L') {
             if (clawL.getPosition() == openClawPos) {
@@ -125,5 +129,25 @@ public class HWC {
                 }
             }
         }
+    }
+    public char checkIntakeSensors(){
+        //add new sensor if used
+       if (buttonL.isPressed() && buttonR.isPressed()) {
+           return 'B';
+       }
+       else if (buttonL.isPressed()) {
+           return 'L';
+       }
+       else if (buttonR.isPressed()){
+           return 'R';
+       }
+       else return '0';
+    }
+
+    public void fullIntake(){
+    changeIntakePos(intakePos);
+    while (checkIntakeSensors() != 'B'){
+        runIntake(1);
+    }
     }
 }

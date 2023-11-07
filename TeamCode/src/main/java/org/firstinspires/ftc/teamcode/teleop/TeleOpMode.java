@@ -115,7 +115,9 @@ public class TeleOpMode extends OpMode {
        if (gamepad1.right_trigger != 0){
            robot.runIntake(gamepad1.right_trigger);
        }
-
+        if (gamepad1.left_trigger != 0){
+            robot.runIntake(-gamepad1.left_trigger);
+        }
         // Set power to values calculated above
         robot.leftFront.setPower(leftFPower);
         robot.leftRear.setPower(leftBPower);
