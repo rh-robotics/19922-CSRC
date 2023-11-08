@@ -7,6 +7,6 @@ assignees: ''
 
 ---
 
-## QCR<Number> - <Goal Title>
-**Due Date: <Date of QCR>**
-- <Extra goal information/details>
+## QCR[Number] - [Goal Title]
+**Due Date: [Date of QCR]**
+- [Extra goal information/details]
