@@ -1,61 +1,25 @@
 package org.firstinspires.ftc.teamcode.subsystems.fsm;
 
+import org.firstinspires.ftc.teamcode.subsystems.fsm.State.Meta;
+import org.firstinspires.ftc.teamcode.subsystems.fsm.State.Role;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
-import org.firstinspires.ftc.teamcode.subsystems.fsm.State.Role;
-import org.firstinspires.ftc.teamcode.subsystems.fsm.State.Meta;
 
 /**
  * Represents a finite state machine.
  */
 public class StateMachine {
-    /**
-     * A runtime exception representing an insane state machine configuration encountered at runtime.
-     */
-    public static class InsaneException extends RuntimeException {
-        public InsaneException(String reason) {
-            super("Encountered an insane state machine: " + reason + ".");
-        }
-    }
-
-    /**
-     * A runtime exception representing an error that occurred during state machine construction, not
-     * runtime.
-     */
-    public static class ConstructionException extends RuntimeException {
-        public ConstructionException(Class<?> offender, String reason) {
-            super("State machine construction is invalid, caused by state '" +
-                    offender.getSimpleName() + "': " + reason + ".");
-        }
-    }
-
-    /**
-     * A runtime exception representing an unknown state.
-     * <br/>
-     * TODO: Figure out if this can be collapsed and covered under InsaneException.
-     */
-    public static class UnknownStateException extends RuntimeException {
-        public UnknownStateException(Class<?> offender) {
-            super("Valve function referenced unknown state, '" + offender.getSimpleName() + "'.");
-        }
-    }
-
     /* The flat list of states. The key is the state, the value is if it's been reached. */
     private final HashMap<State, Boolean> statesReached = new HashMap<>();
-
     /* Unique state registry. */
     private final HashMap<Role, State> uniqueStateRegistry = new HashMap<>();
-
     /* The current state. */
     private State currentState;
-
     /* Are we done? */
     private boolean terminated = false;
 
-    /* TODO: There's a lot work work here done on the addage of every state. This only needs
-     *   to happen at the end. A StateMachineBuilder and a StateMachine, like originally
-     *   architected, would solve this. */
     /**
      * Add a state to the state machine.
      *
@@ -81,7 +45,7 @@ public class StateMachine {
         }
 
         /* Ensure there's only ever one INITIAL and TERMINATING state. */
-        Arrays.stream(new Role[] {Role.INITIAL, Role.TERMINATING}).forEach(usage -> {
+        Arrays.stream(new Role[]{Role.INITIAL, Role.TERMINATING}).forEach(usage -> {
             if (metadata.role().equals(usage)) {
                 if (uniqueStateRegistry.containsKey(usage)) {
                     throw new ConstructionException(state.getClass(), "another state " +
@@ -181,5 +145,40 @@ public class StateMachine {
         str.append("}");
 
         return str.toString();
+    }
+
+    /* TODO: There's a lot work work here done on the addage of every state. This only needs
+     *   to happen at the end. A StateMachineBuilder and a StateMachine, like originally
+     *   architected, would solve this. */
+
+    /**
+     * A runtime exception representing an insane state machine configuration encountered at runtime.
+     */
+    public static class InsaneException extends RuntimeException {
+        public InsaneException(String reason) {
+            super("Encountered an insane state machine: " + reason + ".");
+        }
+    }
+
+    /**
+     * A runtime exception representing an error that occurred during state machine construction, not
+     * runtime.
+     */
+    public static class ConstructionException extends RuntimeException {
+        public ConstructionException(Class<?> offender, String reason) {
+            super("State machine construction is invalid, caused by state '" +
+                    offender.getSimpleName() + "': " + reason + ".");
+        }
+    }
+
+    /**
+     * A runtime exception representing an unknown state.
+     * <br/>
+     * TODO: Figure out if this can be collapsed and covered under InsaneException.
+     */
+    public static class UnknownStateException extends RuntimeException {
+        public UnknownStateException(Class<?> offender) {
+            super("Valve function referenced unknown state, '" + offender.getSimpleName() + "'.");
+        }
     }
 }

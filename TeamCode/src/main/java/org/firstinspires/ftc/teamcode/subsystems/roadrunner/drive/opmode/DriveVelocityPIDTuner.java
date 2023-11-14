@@ -14,8 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
 
 import java.util.List;
 
@@ -47,11 +47,6 @@ import java.util.List;
 @Autonomous(group = "drive")
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 72; // in
-
-    enum Mode {
-        DRIVER_MODE,
-        TUNING_MODE
-    }
 
     private static MotionProfile generateProfile(boolean movingForward) {
         MotionState start = new MotionState(movingForward ? 0 : DISTANCE, 0, 0, 0);
@@ -162,5 +157,10 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
 
             telemetry.update();
         }
+    }
+
+    enum Mode {
+        DRIVER_MODE,
+        TUNING_MODE
     }
 }

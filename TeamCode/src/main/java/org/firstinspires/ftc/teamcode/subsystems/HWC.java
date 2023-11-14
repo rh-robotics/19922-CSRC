@@ -23,6 +23,7 @@ public class HWC {
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
     public Servo intakeL, intakeR, elbowL, elbowR, clawR, clawL;
     public TouchSensor buttonL, buttonR;
+    public Servo passoverArmLeft, passoverArmRight;
 
 
     // Other Variables
@@ -35,6 +36,8 @@ public class HWC {
     double armPos = 6; // Another made up variable
     double openClawPos = 5;
     double closedClawPos = 0;
+
+    // Other Variables
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -66,20 +69,22 @@ public class HWC {
         elbowR = hardwareMap.get(Servo.class, "Elbow_R");
         clawL = hardwareMap.get(Servo.class, "Claw_L");
         clawR = hardwareMap.get(Servo.class, "Claw_R");
+        // Declare servos
+        passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
+        passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
+
         // Declare Sensors
         buttonL = hardwareMap.get(TouchSensor.class, "L_Button");
         buttonR = hardwareMap.get(TouchSensor.class, "R_Button");
 
 
         // Set the direction of motors
-        // TODO: UPDATE VALUES WITH NEW BOT
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         leftRear.setDirection(DcMotorEx.Direction.FORWARD);
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
         // Set motors to break when power = 0
-        // TODO: REMOVE IF THIS BEHAVIOUR IS NOT DESIRED ON NEW BOT
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -104,10 +109,11 @@ public class HWC {
 
     }
 
-    public void changeIntakePos(double pos){
+    public void changeIntakePos(double pos) {
         intakeL.setPosition(pos);
         intakeR.setPosition(pos);
     }
+
     public void toggleClaw(char servo) {
         if (servo == 'L') {
             if (clawL.getPosition() == openClawPos) {
@@ -129,24 +135,23 @@ public class HWC {
             }
         }
     }
-    public char checkIntakeSensors(){
+
+    public char checkIntakeSensors() {
         //add new sensor if used
-       if (buttonL.isPressed() && buttonR.isPressed()) {
-           return 'B';
-       }
-       else if (buttonL.isPressed()) {
-           return 'L';
-       }
-       else if (buttonR.isPressed()){
-           return 'R';
-       }
-       else return '0';
+        if (buttonL.isPressed() && buttonR.isPressed()) {
+            return 'B';
+        } else if (buttonL.isPressed()) {
+            return 'L';
+        } else if (buttonR.isPressed()) {
+            return 'R';
+        } else return '0';
     }
 
-    public void fullIntake(){
-    changeIntakePos(intakePos);
-    while (checkIntakeSensors() != 'B'){
-        runIntake(1);
-    }
+    public void fullIntake() {
+        changeIntakePos(intakePos);
+        while (checkIntakeSensors() != 'B') {
+            runIntake(1);
+        }
+
     }
 }

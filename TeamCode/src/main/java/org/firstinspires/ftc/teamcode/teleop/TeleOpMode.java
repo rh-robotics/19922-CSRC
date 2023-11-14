@@ -7,6 +7,15 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 
 /**
+ * Enum representing which speed to change in init_loop()
+ */
+enum MultiplierSelection {
+    TURN_SPEED,
+    DRIVE_SPEED,
+    STRAFE_SPEED
+}
+
+/**
  * TeleOp OpMode for simply driving with strafing wheels
  */
 @TeleOp(name = "TeleOp", group = "Iterative OpMode")
@@ -33,9 +42,12 @@ public class TeleOpMode extends OpMode {
         telemetry.addData("Status", "Initializing");
         telemetry.update();
 
-
+        // Initialize the robot hardware
         robot = new HWC(hardwareMap, telemetry);
 
+        // Move servos to position 0
+        robot.passoverArmLeft.setPosition(0);
+        robot.passoverArmRight.setPosition(0);
 
         // Tell the driver the robot is ready
         telemetry.addData("Status", "Initialized");
@@ -46,23 +58,36 @@ public class TeleOpMode extends OpMode {
     @Override
     public void init_loop() {
         // Select which speed to change
-        if(gamepad1.a) { selection = MultiplierSelection.TURN_SPEED; }
-        else if(gamepad1.b) { selection = MultiplierSelection.DRIVE_SPEED; }
-        else if(gamepad1.x) { selection = MultiplierSelection.STRAFE_SPEED; }
+        if (gamepad1.a) {
+            selection = MultiplierSelection.TURN_SPEED;
+        } else if (gamepad1.b) {
+            selection = MultiplierSelection.DRIVE_SPEED;
+        } else if (gamepad1.x) {
+            selection = MultiplierSelection.STRAFE_SPEED;
+        }
 
         // Change the speed multiplier for selection
-        switch(selection) {
+        switch (selection) {
             case TURN_SPEED:
-                if(gamepad1.dpad_up) { turnSpeed += 0.1; }
-                else if(gamepad1.dpad_down) { turnSpeed -= 0.1; }
+                if (gamepad1.dpad_up) {
+                    turnSpeed += 0.1;
+                } else if (gamepad1.dpad_down) {
+                    turnSpeed -= 0.1;
+                }
                 break;
             case DRIVE_SPEED:
-                if(gamepad1.dpad_up) { driveSpeed += 0.1; }
-                else if(gamepad1.dpad_down) { driveSpeed -= 0.1; }
+                if (gamepad1.dpad_up) {
+                    driveSpeed += 0.1;
+                } else if (gamepad1.dpad_down) {
+                    driveSpeed -= 0.1;
+                }
                 break;
             case STRAFE_SPEED:
-                if(gamepad1.dpad_up) { strafeSpeed += 0.1; }
-                else if(gamepad1.dpad_down) { strafeSpeed -= 0.1; }
+                if (gamepad1.dpad_up) {
+                    strafeSpeed += 0.1;
+                } else if (gamepad1.dpad_down) {
+                    strafeSpeed -= 0.1;
+                }
                 break;
         }
 
@@ -132,7 +157,7 @@ public class TeleOpMode extends OpMode {
         double turn = gamepad1.left_stick_y * turnSpeed;
         double strafe = -gamepad1.right_stick_x * strafeSpeed;
 
-        // Calculate drive power
+        // --------------- Calculate drive power --------------- //
         if (drive != 0 || turn != 0) {
             leftFPower = Range.clip(drive + turn, -1.0, 1.0);
             rightFPower = Range.clip(drive - turn, -1.0, 1.0);
@@ -152,29 +177,21 @@ public class TeleOpMode extends OpMode {
         }
 
         // Run Intake
-       if (gamepad1.right_trigger != 0){
-           robot.runIntake(gamepad1.right_trigger);
-       }
+        if (gamepad1.right_trigger != 0) {
+            robot.runIntake(gamepad1.right_trigger);
+        }
         if (gamepad1.left_trigger != 0){
             robot.runIntake(-gamepad1.left_trigger);
         }
-        // Set power to values calculated above
+        // --------------- Run Drive Motors --------------- //
         robot.leftFront.setPower(leftFPower);
         robot.leftRear.setPower(leftBPower);
         robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
 
+        // --------------- Telemetry Updates --------------- //
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
         telemetry.update();
     }
-}
-
-/**
- * Enum representing which speed to change in init_loop()
- */
-enum MultiplierSelection {
-    TURN_SPEED,
-    DRIVE_SPEED,
-    STRAFE_SPEED
 }
