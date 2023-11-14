@@ -5,7 +5,6 @@ import androidx.annotation.NonNull;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -22,13 +21,12 @@ public class HWC {
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
     public CRServo intakeL, intakeR;
 
+    public Servo passoverArmLeft, passoverArmRight;
     public SensorTouch buttonL, buttonR;
-
-
-    // Other Variables
-    Telemetry telemetry;
     public ElapsedTime time = new ElapsedTime();
     public SampleMecanumDrive drive;
+    // Other Variables
+    Telemetry telemetry;
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -52,20 +50,22 @@ public class HWC {
         leftPulley = hardwareMap.get(DcMotorEx.class, "L_Pulley");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
+        // Declare servos
+        passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
+        passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
+
         // Declare Sensors
         buttonL = hardwareMap.get(SensorTouch.class, "L_Button");
         buttonR = hardwareMap.get(SensorTouch.class, "R_Button");
 
 
         // Set the direction of motors
-        // TODO: UPDATE VALUES WITH NEW BOT
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         leftRear.setDirection(DcMotorEx.Direction.FORWARD);
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
 
         // Set motors to break when power = 0
-        // TODO: REMOVE IF THIS BEHAVIOUR IS NOT DESIRED ON NEW BOT
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -85,9 +85,9 @@ public class HWC {
     }
     // TODO: ADD ANY HARDWARE RELATED FUNCTIONS BELOW
 
-    public void runIntake(double pwr){
-            intakeMotor.setPower(pwr);
-            intakeL.setPower(pwr);
-            intakeR.setPower(pwr);
+    public void runIntake(double pwr) {
+        intakeMotor.setPower(pwr);
+        intakeL.setPower(pwr);
+        intakeR.setPower(pwr);
     }
 }

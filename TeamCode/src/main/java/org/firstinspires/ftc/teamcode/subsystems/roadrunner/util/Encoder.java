@@ -10,6 +10,26 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
  */
 public class Encoder {
     private final static int CPS_STEP = 0x10000;
+    private final DcMotorEx motor;
+    private final NanoClock clock;
+    private Direction direction;
+    private int lastPosition;
+    private int velocityEstimateIdx;
+    private final double[] velocityEstimates;
+    private double lastUpdateTime;
+    public Encoder(DcMotorEx motor, NanoClock clock) {
+        this.motor = motor;
+        this.clock = clock;
+
+        this.direction = Direction.FORWARD;
+
+        this.lastPosition = 0;
+        this.velocityEstimates = new double[3];
+        this.lastUpdateTime = clock.seconds();
+    }
+    public Encoder(DcMotorEx motor) {
+        this(motor, NanoClock.system());
+    }
 
     private static double inverseOverflow(double input, double estimate) {
         // convert to uint16
@@ -22,60 +42,21 @@ public class Encoder {
         return real;
     }
 
-    public enum Direction {
-        FORWARD(1),
-        REVERSE(-1);
-
-        private int multiplier;
-
-        Direction(int multiplier) {
-            this.multiplier = multiplier;
-        }
-
-        public int getMultiplier() {
-            return multiplier;
-        }
-    }
-
-    private DcMotorEx motor;
-    private NanoClock clock;
-
-    private Direction direction;
-
-    private int lastPosition;
-    private int velocityEstimateIdx;
-    private double[] velocityEstimates;
-    private double lastUpdateTime;
-
-    public Encoder(DcMotorEx motor, NanoClock clock) {
-        this.motor = motor;
-        this.clock = clock;
-
-        this.direction = Direction.FORWARD;
-
-        this.lastPosition = 0;
-        this.velocityEstimates = new double[3];
-        this.lastUpdateTime = clock.seconds();
-    }
-
-    public Encoder(DcMotorEx motor) {
-        this(motor, NanoClock.system());
-    }
-
     public Direction getDirection() {
         return direction;
     }
 
-    private int getMultiplier() {
-        return getDirection().getMultiplier() * (motor.getDirection() == DcMotorSimple.Direction.FORWARD ? 1 : -1);
-    }
-
     /**
      * Allows you to set the direction of the counts and velocity without modifying the motor's direction state
+     *
      * @param direction either reverse or forward depending on if encoder counts should be negated
      */
     public void setDirection(Direction direction) {
         this.direction = direction;
+    }
+
+    private int getMultiplier() {
+        return getDirection().getMultiplier() * (motor.getDirection() == DcMotorSimple.Direction.FORWARD ? 1 : -1);
     }
 
     /**
@@ -121,5 +102,20 @@ public class Encoder {
                 ? Math.max(velocityEstimates[1], Math.min(velocityEstimates[0], velocityEstimates[2]))
                 : Math.max(velocityEstimates[0], Math.min(velocityEstimates[1], velocityEstimates[2]));
         return inverseOverflow(getRawVelocity(), median);
+    }
+
+    public enum Direction {
+        FORWARD(1),
+        REVERSE(-1);
+
+        private final int multiplier;
+
+        Direction(int multiplier) {
+            this.multiplier = multiplier;
+        }
+
+        public int getMultiplier() {
+            return multiplier;
+        }
     }
 }
