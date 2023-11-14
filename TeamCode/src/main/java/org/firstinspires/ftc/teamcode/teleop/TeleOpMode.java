@@ -116,8 +116,6 @@ public class TeleOpMode extends OpMode {
         double drive = -gamepad1.left_stick_x * driveSpeed;
         double turn = gamepad1.left_stick_y * turnSpeed;
         double strafe = -gamepad1.right_stick_x * strafeSpeed;
-        double passoverPositionLeft = robot.passoverArmLeft.getPosition();
-        double passoverPositionRight = robot.passoverArmRight.getPosition();
 
         // --------------- Calculate drive power --------------- //
         if (drive != 0 || turn != 0) {
@@ -138,22 +136,6 @@ public class TeleOpMode extends OpMode {
             rightBPower = 0;
         }
 
-        // --------------- Update Servo Position Values --------------- //
-        // Dpad up and down control the left servo
-        if (gamepad1.dpad_up) {
-            passoverPositionLeft += 0.01;
-        } else if (gamepad1.dpad_down) {
-            passoverPositionLeft -= 0.01;
-        }
-
-        // Right Bumper and Trigger control the right servo
-        if (gamepad1.right_bumper) {
-            passoverPositionRight += 0.01;
-        } else if (gamepad1.right_trigger != 0) {
-            passoverPositionRight -= 0.01;
-        }
-
-
         // Run Intake
         if (gamepad1.right_trigger != 0) {
             robot.runIntake(gamepad1.right_trigger);
@@ -164,10 +146,6 @@ public class TeleOpMode extends OpMode {
         robot.leftRear.setPower(leftBPower);
         robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
-
-        // --------------- Move Servos --------------- //
-        robot.passoverArmLeft.setPosition(passoverPositionLeft);
-        robot.passoverArmRight.setPosition(passoverPositionRight);
 
         // --------------- Telemetry Updates --------------- //
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
