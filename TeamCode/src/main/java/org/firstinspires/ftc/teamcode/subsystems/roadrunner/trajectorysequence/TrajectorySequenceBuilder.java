@@ -34,22 +34,16 @@ public class TrajectorySequenceBuilder {
 
     private final TrajectoryVelocityConstraint baseVelConstraint;
     private final TrajectoryAccelerationConstraint baseAccelConstraint;
-
-    private TrajectoryVelocityConstraint currentVelConstraint;
-    private TrajectoryAccelerationConstraint currentAccelConstraint;
-
     private final double baseTurnConstraintMaxAngVel;
     private final double baseTurnConstraintMaxAngAccel;
-
-    private double currentTurnConstraintMaxAngVel;
-    private double currentTurnConstraintMaxAngAccel;
-
     private final List<SequenceSegment> sequenceSegments;
-
     private final List<TemporalMarker> temporalMarkers;
     private final List<DisplacementMarker> displacementMarkers;
     private final List<SpatialMarker> spatialMarkers;
-
+    private TrajectoryVelocityConstraint currentVelConstraint;
+    private TrajectoryAccelerationConstraint currentAccelConstraint;
+    private double currentTurnConstraintMaxAngVel;
+    private double currentTurnConstraintMaxAngAccel;
     private Pose2d lastPose;
 
     private double tangentOffset;
@@ -574,7 +568,7 @@ public class TrajectorySequenceBuilder {
                 }
             }
             if (segmentIndex >= sequenceSegments.size()) {
-                segment = sequenceSegments.get(sequenceSegments.size()-1);
+                segment = sequenceSegments.get(sequenceSegments.size() - 1);
                 segmentOffsetTime = segment.getDuration();
             }
 
@@ -582,14 +576,14 @@ public class TrajectorySequenceBuilder {
 
             if (segment instanceof WaitSegment) {
                 WaitSegment thisSegment = (WaitSegment) segment;
-                
+
                 List<TrajectoryMarker> newMarkers = new ArrayList<>(thisSegment.getMarkers());
                 newMarkers.add(new TrajectoryMarker(segmentOffsetTime, marker.getCallback()));
 
                 newSegment = new WaitSegment(thisSegment.getStartPose(), thisSegment.getDuration(), newMarkers);
             } else if (segment instanceof TurnSegment) {
                 TurnSegment thisSegment = (TurnSegment) segment;
-                
+
                 List<TrajectoryMarker> newMarkers = new ArrayList<>(thisSegment.getMarkers());
                 newMarkers.add(new TrajectoryMarker(segmentOffsetTime, marker.getCallback()));
 
