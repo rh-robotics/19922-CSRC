@@ -12,6 +12,15 @@ import org.firstinspires.ftc.teamcode.subsystems.HWC;
 @TeleOp(name = "TeleOp", group = "Iterative OpMode")
 public class TeleOpMode extends OpMode {
     HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
+
+    public enum RobotState {
+        DRIVING,
+        INTAKING,
+        DELIVERYING,
+        RESTING,
+        UNKNOWN
+    }
+    RobotState state;
     double turnSpeed = 0.6; // Speed multiplier for turning
     double driveSpeed = 0.8; // Speed multiplier for driving
     double strafeSpeed = 0.8; // Speed multiplier for strafing
@@ -84,6 +93,37 @@ public class TeleOpMode extends OpMode {
     // loop() - Runs continuously while the OpMode is active
     @Override
     public void loop() {
+
+
+        switch (state) {
+
+            case DRIVING:
+                telemetry.addData("Robot State", "Driving");
+                break;
+
+            case DELIVERYING:
+                telemetry.addData("Robot State", "Delivering");
+                break;
+
+            case INTAKING:
+                telemetry.addData("Robot State", "Intake");
+                break;
+
+            case RESTING:
+                telemetry.addData("Robot State", "Resting");
+                break;
+
+            case UNKNOWN:
+                telemetry.addData("Robot State", "UNKNOWN");
+                break;
+
+            default:
+                telemetry.addData("Robot State", "UNKNOWN");
+                state = RobotState.UNKNOWN;
+                break;
+        }
+
+
         double leftFPower;
         double rightFPower;
         double leftBPower;
