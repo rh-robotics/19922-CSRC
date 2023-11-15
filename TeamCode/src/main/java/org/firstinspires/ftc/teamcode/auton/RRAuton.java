@@ -68,9 +68,12 @@ public class RRAuton extends OpMode {
         // TODO: Update beacon position using CV (what does our beacon even look like?!?)
 
         // --------------- Update Telemetry --------------- //
-        telemetry.addData("Alliance", alliance);
-        telemetry.addData("Start Position", startPosition);
-        telemetry.addData("Beacon Position", beaconPosition);
+        telemetry.addData("Press 'A' for red alliance, and press 'B' for blue alliance");
+        telemetry.addData("Press 'X' for LEFT starting position, Press 'Y' for RIGHT starting position");
+        telemetry.addLine();
+        telemetry.addData("Selected Alliance", alliance);
+        telemetry.addData("Selected Position", startPosition);
+        telemetry.addData("Detected Beacon Position", beaconPosition);
         telemetry.update();
     }
 
