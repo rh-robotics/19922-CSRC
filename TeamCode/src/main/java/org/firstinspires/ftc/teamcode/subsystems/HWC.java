@@ -152,6 +152,8 @@ public class HWC {
         while (checkIntakeSensors() != 'B') {
             runIntake(1);
         }
+        toggleClaw('C');
+
 
     }
 
@@ -161,4 +163,19 @@ public class HWC {
         rightPulley.setTargetPosition(armPos);
         leftPulley.setTargetPosition(armPos);
     }
+
+    public void deliver(char claw){
+        if (claw == 'L'){
+            toggleClaw('L');
+        }
+        else if (claw == 'R'){
+            toggleClaw('R');
+        }
+        else{
+            toggleClaw('O');
+        }
+
+
+    }
+
 }
