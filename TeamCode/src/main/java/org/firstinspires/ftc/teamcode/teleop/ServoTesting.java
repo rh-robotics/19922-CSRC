@@ -2,15 +2,22 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 
 /***
- * TeleOp OpMode for simply running the passover servos, will be deleted
+ * TeleOp for simply running the passover servos, will be deleted
  */
+enum ServoControl {
+    LEFT,
+    RIGHT
+}
+
 @TeleOp(name = "ServoTesting", group = "Testing")
 public class ServoTesting extends OpMode {
-    HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
+    HWC robot; // Robot Hardware Class - Contains all hardware devices & related methods
+    ServoControl servoControl = ServoControl.LEFT;
 
     // init() Runs ONCE after the driver hits initialize
     @Override
@@ -45,25 +52,20 @@ public class ServoTesting extends OpMode {
         double passoverPositionLeft = robot.passoverArmLeft.getPosition();
         double passoverPositionRight = robot.passoverArmRight.getPosition();
 
+        // --------------- Update Which Servo Is Being Controlled --------------- //
+        if(gamepad1.a) { servoControl = ServoControl.LEFT; }
+        else if(gamepad1.b) { servoControl = ServoControl.RIGHT; }
+
         // --------------- Update Servo Position Values --------------- //
-        // Dpad up and down control the left servo
-        if (gamepad1.dpad_up) {
-            passoverPositionLeft += 0.01;
-        } else if (gamepad1.dpad_down) {
-            passoverPositionLeft -= 0.01;
-        }
-
-        // Right Bumper and Trigger control the right servo
-        if (gamepad1.right_bumper) {
-            passoverPositionRight += 0.01;
-        } else if (gamepad1.right_trigger != 0) {
-            passoverPositionRight -= 0.01;
-        }
-
-
-        // Run Intake
-        if (gamepad1.right_trigger != 0) {
-            robot.runIntake(gamepad1.right_trigger);
+        switch(servoControl) {
+            case LEFT:
+                if(gamepad1.dpad_up) { passoverPositionLeft += 0.01; }
+                else if(gamepad1.dpad_down) { passoverPositionLeft -= 0.01; }
+                break;
+            case RIGHT:
+                if(gamepad1.dpad_up) { passoverPositionRight += 0.01; }
+                else if(gamepad1.dpad_down) { passoverPositionRight -= 0.01; }
+                break;
         }
 
         // --------------- Move Servos --------------- //
@@ -73,8 +75,15 @@ public class ServoTesting extends OpMode {
         // --------------- Telemetry Updates --------------- //
         telemetry.addData("Status", "Running");
         telemetry.addLine();
-        telemetry.addData("Passover Left Position", passoverPositionLeft);
-        telemetry.addData("Passover Right Position", passoverPositionRight);
+        telemetry.addData("Press 'A' to control left servo", "");
+        telemetry.addData("Press 'B' to control right servo", "");
+        telemetry.addData("Press 'DPAD_UP'/'DPAD_DOWN' to increase/decrease servo target position", "");
+        telemetry.addLine();
+        telemetry.addData("Controlling Servo", servoControl);
+        telemetry.addData("Passover Left Target Position", passoverPositionLeft);
+        telemetry.addData("Passover Right Target Position", passoverPositionRight);
+        telemetry.addData("Passover Left Actual Position", robot.passoverArmLeft.getPosition());
+        telemetry.addData("Passover Right Actual Position", robot.passoverArmRight.getPosition());
         telemetry.update();
     }
 }
