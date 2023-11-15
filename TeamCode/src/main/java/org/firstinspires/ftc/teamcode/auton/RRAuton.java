@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.auton;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -31,6 +33,12 @@ public class RRAuton extends OpMode {
     StartPosition startPosition;
     BeaconPosition beaconPosition;
 
+    // --------------- Declare Trajectories --------------- //
+    Trajectory LINESSIDE_park, FARSIDE_park;
+
+    // --------------- Declare Variables --------------- //
+    boolean parkOnly = true;
+
     @Override
     public void init() {
         // --------------- Update Telemetry --------------- //
@@ -42,6 +50,15 @@ public class RRAuton extends OpMode {
         alliance = Alliance.RED;
         startPosition = StartPosition.LEFT;
         beaconPosition = BeaconPosition.LEFT;
+
+        // --------------- Declare Trajectories --------------- //
+        FARSIDE_park = robot.drive.trajectoryBuilder(new Pose2d(12, -35, Math.toRadians(90)))
+                .strafeLeft(40)
+                .build();
+
+        LINESSIDE_park = robot.drive.trajectoryBuilder(new Pose2d())
+                .strafeLeft(84)
+                .build();
 
         // --------------- Update Telemetry --------------- //
         telemetry.addData("Status", "Initialized");
@@ -64,15 +81,24 @@ public class RRAuton extends OpMode {
             startPosition = StartPosition.RIGHT;
         }
 
+        // --------------- Update ParkOnly Value --------------- //
+        if (gamepad1.left_bumper) {
+            parkOnly = true;
+        } else if (gamepad1.right_bumper) {
+            parkOnly = false;
+        }
+
         // --------------- Update Beacon Position --------------- //
         // TODO: Update beacon position using CV (what does our beacon even look like?!?)
 
         // --------------- Update Telemetry --------------- //
-        telemetry.addData("Press 'A' for red alliance, and press 'B' for blue alliance");
-        telemetry.addData("Press 'X' for LEFT starting position, Press 'Y' for RIGHT starting position");
+        telemetry.addData("Press 'A' for red alliance, and press 'B' for blue alliance", "");
+        telemetry.addData("Press 'X' for LEFT starting position, Press 'Y' for RIGHT starting position", "");
+        telemetry.addData("Press 'LEFT BUMPER' for park only, Press 'RIGHT BUMPER' for full auton", "");
         telemetry.addLine();
         telemetry.addData("Selected Alliance", alliance);
         telemetry.addData("Selected Position", startPosition);
+        telemetry.addData("Park Only", parkOnly);
         telemetry.addData("Detected Beacon Position", beaconPosition);
         telemetry.update();
     }
@@ -80,10 +106,39 @@ public class RRAuton extends OpMode {
     @Override
     public void loop() {
         // --------------- Run Auton --------------- //
-        // TODO: Write auton & trajectories
+        if (parkOnly) {
+            switch(alliance) {
+                case RED:
+                    switch(startPosition) {
+                        case LEFT:
+                            robot.drive.followTrajectory(LINESSIDE_park);
+                            break;
+                        case RIGHT:
+                            robot.drive.followTrajectoryAsync(FARSIDE_park);
+                            break;
+                    }
+                    break;
+                case BLUE:
+                    // TODO: Write blue alliance park only auton
+                    break;
+            }
+        } else {
+            // TODO: Write full auton
+        }
+
+        // --------------- Update Things --------------- //
+        robot.drive.update();
 
         // --------------- Update Telemetry --------------- //
         telemetry.addData("Status", "Running");
+        telemetry.addLine();
+        telemetry.addData("Selected Alliance", alliance);
+        telemetry.addData("Selected Position", startPosition);
+        telemetry.addData("Park Only", parkOnly);
+        telemetry.addData("Detected Beacon Position", beaconPosition);
+        telemetry.addLine();
+        telemetry.addData("Robot Pose", robot.drive.getPoseEstimate());
+        telemetry.addData("Robot Heading", robot.drive.getRawExternalHeading());
         telemetry.update();
     }
 }
