@@ -58,24 +58,21 @@ public class HWC {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
 
         // Declare other motors
-        rightPulley = hardwareMap.get(DcMotorEx.class, "R_Pulley");
-        leftPulley = hardwareMap.get(DcMotorEx.class, "L_Pulley");
+        rightPulley = hardwareMap.get(DcMotorEx.class, "PulleyR");
+        leftPulley = hardwareMap.get(DcMotorEx.class, "PulleyL");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
         // Declare Servos
-        intakeL = hardwareMap.get(Servo.class, "Intake_L");
-        intakeR = hardwareMap.get(Servo.class, "Intake_R");
-        elbowL = hardwareMap.get(Servo.class, "Elbow_L");
-        elbowR = hardwareMap.get(Servo.class, "Elbow_R");
-        clawL = hardwareMap.get(Servo.class, "Claw_L");
-        clawR = hardwareMap.get(Servo.class, "Claw_R");
-        // Declare servos
+        intakeL = hardwareMap.get(Servo.class, "IntakeL");
+        intakeR = hardwareMap.get(Servo.class, "IntakeR");
+        clawL = hardwareMap.get(Servo.class, "ClawL");
+        clawR = hardwareMap.get(Servo.class, "ClawR");
         passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
         passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
 
         // Declare Sensors
-        buttonL = hardwareMap.get(TouchSensor.class, "L_Button");
-        buttonR = hardwareMap.get(TouchSensor.class, "R_Button");
+        buttonL = hardwareMap.get(TouchSensor.class, "ButtonL");
+        buttonR = hardwareMap.get(TouchSensor.class, "ButtonR");
 
 
         // Set the direction of motors
