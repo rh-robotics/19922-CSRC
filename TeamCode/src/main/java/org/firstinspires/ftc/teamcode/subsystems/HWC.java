@@ -58,8 +58,9 @@ public class HWC {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
 
         // Declare other motors
-        rightPulley = hardwareMap.get(DcMotorEx.class, "PulleyR");
-        leftPulley = hardwareMap.get(DcMotorEx.class, "PulleyL");
+
+        rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
+        leftPulley = hardwareMap.get(DcMotorEx.class, "pulleyL");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
         // Declare Servos
@@ -71,9 +72,8 @@ public class HWC {
         passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
 
         // Declare Sensors
-        buttonL = hardwareMap.get(TouchSensor.class, "ButtonL");
-        buttonR = hardwareMap.get(TouchSensor.class, "ButtonR");
-
+        buttonL = hardwareMap.get(TouchSensor.class, "buttonL");
+        buttonR = hardwareMap.get(TouchSensor.class, "buttonR");
 
         // Set the direction of motors
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
@@ -99,7 +99,6 @@ public class HWC {
         leftPulley.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
-    // TODO: ADD ANY HARDWARE RELATED FUNCTIONS BELOW
 
     public void runIntake(double pwr) {
         intakeMotor.setPower(pwr);
