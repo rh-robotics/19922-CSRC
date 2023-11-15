@@ -95,6 +95,7 @@ public class HWC {
         rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
         rightPulley.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftPulley.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightPulley.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
