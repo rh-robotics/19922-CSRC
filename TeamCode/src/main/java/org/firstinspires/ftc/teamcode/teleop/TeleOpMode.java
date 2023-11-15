@@ -119,6 +119,49 @@ public class TeleOpMode extends OpMode {
     @Override
     public void loop() {
 
+        double leftFPower;
+        double rightFPower;
+        double leftBPower;
+        double rightBPower;
+        double drive = -gamepad1.left_stick_x * driveSpeed;
+        double turn = gamepad1.left_stick_y * turnSpeed;
+        double strafe = -gamepad1.right_stick_x * strafeSpeed;
+
+        // --------------- Calculate drive power --------------- //
+        if (drive != 0 || turn != 0) {
+            state = RobotState.DRIVING;
+            leftFPower = Range.clip(drive + turn, -1.0, 1.0);
+            rightFPower = Range.clip(drive - turn, -1.0, 1.0);
+            leftBPower = Range.clip(drive + turn, -1.0, 1.0);
+            rightBPower = Range.clip(drive - turn, -1.0, 1.0);
+        } else if (strafe != 0) {
+            // Strafing
+            state = RobotState.DRIVING;
+            leftFPower = -strafe;
+            rightFPower = strafe;
+            leftBPower = strafe;
+            rightBPower = -strafe;
+        } else {
+            leftFPower = 0;
+            rightFPower = 0;
+            leftBPower = 0;
+            rightBPower = 0;
+        }
+
+        // Run Intake
+        if (gamepad1.right_trigger != 0) {
+            robot.runIntake(gamepad1.right_trigger);
+            state = RobotState.INTAKING;
+        }
+        if (gamepad1.left_trigger != 0){
+            robot.runIntake(-gamepad1.left_trigger);
+            state = RobotState.INTAKING;
+        }
+        // --------------- Run Drive Motors --------------- //
+        robot.leftFront.setPower(leftFPower);
+        robot.leftRear.setPower(leftBPower);
+        robot.rightFront.setPower(rightFPower);
+        robot.rightRear.setPower(rightBPower);
 
         switch (state) {
 
@@ -147,47 +190,6 @@ public class TeleOpMode extends OpMode {
                 state = RobotState.UNKNOWN;
                 break;
         }
-
-
-        double leftFPower;
-        double rightFPower;
-        double leftBPower;
-        double rightBPower;
-        double drive = -gamepad1.left_stick_x * driveSpeed;
-        double turn = gamepad1.left_stick_y * turnSpeed;
-        double strafe = -gamepad1.right_stick_x * strafeSpeed;
-
-        // --------------- Calculate drive power --------------- //
-        if (drive != 0 || turn != 0) {
-            leftFPower = Range.clip(drive + turn, -1.0, 1.0);
-            rightFPower = Range.clip(drive - turn, -1.0, 1.0);
-            leftBPower = Range.clip(drive + turn, -1.0, 1.0);
-            rightBPower = Range.clip(drive - turn, -1.0, 1.0);
-        } else if (strafe != 0) {
-            // Strafing
-            leftFPower = -strafe;
-            rightFPower = strafe;
-            leftBPower = strafe;
-            rightBPower = -strafe;
-        } else {
-            leftFPower = 0;
-            rightFPower = 0;
-            leftBPower = 0;
-            rightBPower = 0;
-        }
-
-        // Run Intake
-        if (gamepad1.right_trigger != 0) {
-            robot.runIntake(gamepad1.right_trigger);
-        }
-        if (gamepad1.left_trigger != 0){
-            robot.runIntake(-gamepad1.left_trigger);
-        }
-        // --------------- Run Drive Motors --------------- //
-        robot.leftFront.setPower(leftFPower);
-        robot.leftRear.setPower(leftBPower);
-        robot.rightFront.setPower(rightFPower);
-        robot.rightRear.setPower(rightBPower);
 
         // --------------- Telemetry Updates --------------- //
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
