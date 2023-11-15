@@ -51,22 +51,20 @@ public class HWC {
         drive = new SampleMecanumDrive(hardwareMap);
 
 
-        // Declare driving motors
+        // Declare motors
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-
-        // Declare other motors
         rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
         leftPulley = hardwareMap.get(DcMotorEx.class, "pulleyL");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
         // Declare Servos
-        intakeL = hardwareMap.get(Servo.class, "IntakeL");
-        intakeR = hardwareMap.get(Servo.class, "IntakeR");
-        clawL = hardwareMap.get(Servo.class, "ClawL");
-        clawR = hardwareMap.get(Servo.class, "ClawR");
+        intakeL = hardwareMap.get(Servo.class, "intakeL");
+        intakeR = hardwareMap.get(Servo.class, "intakeR");
+        clawL = hardwareMap.get(Servo.class, "clawL");
+        clawR = hardwareMap.get(Servo.class, "clawR");
         passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
         passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
 
