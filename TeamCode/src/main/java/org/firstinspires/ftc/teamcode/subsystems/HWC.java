@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import android.util.Size;
+
 import androidx.annotation.NonNull;
 
 import com.arcrobotics.ftclib.kinematics.Odometry;
@@ -13,23 +15,28 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorTouch;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 /**
  * Stores and Declares all hardware devices &amp; related methods
  */
 public class HWC {
-    // Declare empty variables for robot hardware
+    // --------------- Declare Empty Hardware --------------- //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
     public Servo intakeL, intakeR, elbowL, elbowR, clawR, clawL;
     public TouchSensor buttonL, buttonR;
     public Servo passoverArmLeft, passoverArmRight;
+    public WebcamName webcam;
 
 
     // Other Variables
     Telemetry telemetry;
     public ElapsedTime time = new ElapsedTime();
     public SampleMecanumDrive drive;
+
     // Declare Position Variables
     //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
     double intakePos = 5; //made up number, needs to be tested and actually found
@@ -49,7 +56,6 @@ public class HWC {
         this.telemetry = telemetry;
 
         drive = new SampleMecanumDrive(hardwareMap);
-
 
         // Declare motors
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -71,6 +77,7 @@ public class HWC {
         // Declare Sensors
         buttonL = hardwareMap.get(TouchSensor.class, "buttonL");
         buttonR = hardwareMap.get(TouchSensor.class, "buttonR");
+        webcam = hardwareMap.get(WebcamName.class, "webcam");
 
         // Set the direction of motors
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
@@ -145,5 +152,25 @@ public class HWC {
             runIntake(1);
         }
 
+    }
+
+    /**
+     * Initialize the AprilTag processor.
+     */
+    public static void initAprilTag(AprilTagProcessor aprilTag, VisionPortal visionPortal, HWC robot) {
+
+        aprilTag = new AprilTagProcessor.Builder()
+                .setDrawTagOutline(true)
+                //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                .build();
+
+        // Create the vision portal by using a builder.
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+
+        builder.setCamera(robot.webcam); // Set Camera to webcam
+        builder.setCameraResolution(new Size(640, 480)); // Set Camera Resolution
+        builder.enableLiveView(true); // Enable preview on Robot Controller (Driver Station)
+        builder.addProcessor(aprilTag); // Set and enable the processor
+        visionPortal = builder.build(); // Build the Vision Portal, using the above settings
     }
 }
