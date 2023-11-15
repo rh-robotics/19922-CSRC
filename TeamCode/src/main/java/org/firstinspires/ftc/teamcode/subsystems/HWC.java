@@ -40,9 +40,11 @@ public class HWC {
     // Declare Position Variables
     //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
     double intakePos = 5; //made up number, needs to be tested and actually found
-    double armPos = 6; // Another made up variable
+    int armPos = 6; // Another made up variable
     double openClawPos = 5;
     double closedClawPos = 0;
+
+    double elbowDeliveryPos = 20;
 
     // Other Variables
 
@@ -62,9 +64,11 @@ public class HWC {
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
-//        rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
-//        leftPulley = hardwareMap.get(DcMotorEx.class, "pulleyL");
-//        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+
+        // Declare other motors
+        rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
+        leftPulley = hardwareMap.get(DcMotorEx.class, "pulleyL");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
         // Declare Servos
         intakeL = hardwareMap.get(Servo.class, "intakeL");
@@ -99,9 +103,12 @@ public class HWC {
         rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-//        rightPulley.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-//        leftPulley.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-//        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        rightPulley.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        leftPulley.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        rightPulley.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        leftPulley.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
     public void runIntake(double pwr) {
@@ -151,7 +158,16 @@ public class HWC {
         while (checkIntakeSensors() != 'B') {
             runIntake(1);
         }
+        toggleClaw('C');
 
+
+    }
+
+    public void moveArmToDelivery(){
+        elbowL.setPosition(elbowDeliveryPos);
+        elbowR.setPosition(elbowDeliveryPos);
+        rightPulley.setTargetPosition(armPos);
+        leftPulley.setTargetPosition(armPos);
     }
 
     /**
@@ -173,4 +189,19 @@ public class HWC {
         builder.addProcessor(aprilTag); // Set and enable the processor
         visionPortal = builder.build(); // Build the Vision Portal, using the above settings
     }
+
+    public void deliver(char claw){
+        if (claw == 'L'){
+            toggleClaw('L');
+        }
+        else if (claw == 'R'){
+            toggleClaw('R');
+        }
+        else{
+            toggleClaw('O');
+        }
+
+
+    }
+
 }
