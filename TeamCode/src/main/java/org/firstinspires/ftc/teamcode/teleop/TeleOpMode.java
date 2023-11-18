@@ -21,14 +21,6 @@ enum MultiplierSelection {
 @TeleOp(name = "TeleOp", group = "Iterative OpMode")
 public class TeleOpMode extends OpMode {
     HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
-
-    public enum RobotState {
-        DRIVING,
-        INTAKING,
-        DELIVERYING,
-        RESTING,
-        UNKNOWN
-    }
     RobotState state;
     double turnSpeed = 0.6; // Speed multiplier for turning
     double driveSpeed = 0.8; // Speed multiplier for driving
@@ -153,7 +145,7 @@ public class TeleOpMode extends OpMode {
             robot.runIntake(gamepad1.right_trigger);
             state = RobotState.INTAKING;
         }
-        if (gamepad1.left_trigger != 0){
+        if (gamepad1.left_trigger != 0) {
             robot.runIntake(-gamepad1.left_trigger);
             state = RobotState.INTAKING;
         }
@@ -195,5 +187,13 @@ public class TeleOpMode extends OpMode {
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
         telemetry.update();
+    }
+
+    public enum RobotState {
+        DRIVING,
+        INTAKING,
+        DELIVERYING,
+        RESTING,
+        UNKNOWN
     }
 }
