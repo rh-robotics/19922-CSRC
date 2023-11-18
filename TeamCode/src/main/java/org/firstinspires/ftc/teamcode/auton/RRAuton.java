@@ -107,9 +107,9 @@ public class RRAuton extends OpMode {
     public void loop() {
         // --------------- Run Auton --------------- //
         if (parkOnly) {
-            switch(alliance) {
+            switch (alliance) {
                 case RED:
-                    switch(startPosition) {
+                    switch (startPosition) {
                         case LEFT:
                             robot.drive.followTrajectory(LINESSIDE_park);
                             break;

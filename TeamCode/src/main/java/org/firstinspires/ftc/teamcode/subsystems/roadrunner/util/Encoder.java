@@ -12,11 +12,12 @@ public class Encoder {
     private final static int CPS_STEP = 0x10000;
     private final DcMotorEx motor;
     private final NanoClock clock;
+    private final double[] velocityEstimates;
     private Direction direction;
     private int lastPosition;
     private int velocityEstimateIdx;
-    private final double[] velocityEstimates;
     private double lastUpdateTime;
+
     public Encoder(DcMotorEx motor, NanoClock clock) {
         this.motor = motor;
         this.clock = clock;
@@ -27,6 +28,7 @@ public class Encoder {
         this.velocityEstimates = new double[3];
         this.lastUpdateTime = clock.seconds();
     }
+
     public Encoder(DcMotorEx motor) {
         this(motor, NanoClock.system());
     }

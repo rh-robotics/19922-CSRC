@@ -4,16 +4,13 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
-import com.arcrobotics.ftclib.kinematics.Odometry;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorTouch;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
@@ -26,17 +23,14 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 public class HWC {
     // --------------- Declare Empty Hardware --------------- //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
-    public Servo intakeL, intakeR, elbowL, elbowR, clawR, clawL;
+    public Servo intakeL, intakeR, wristL, wristR, clawR, clawL;
     public TouchSensor buttonL, buttonR;
     public Servo passoverArmLeft, passoverArmRight;
     public WebcamName webcam;
-
-
-    // Other Variables
-    Telemetry telemetry;
     public ElapsedTime time = new ElapsedTime();
     public SampleMecanumDrive drive;
-
+    // Other Variables
+    Telemetry telemetry;
     // Declare Position Variables
     //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
     double intakePos = 5; //made up number, needs to be tested and actually found
@@ -77,6 +71,8 @@ public class HWC {
         clawR = hardwareMap.get(Servo.class, "clawR");
         passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
         passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
+        wristL = hardwareMap.get(Servo.class, "wristL");
+        wristR = hardwareMap.get(Servo.class, "wristR");
 
         // Declare Sensors
         buttonL = hardwareMap.get(TouchSensor.class, "buttonL");
@@ -109,6 +105,26 @@ public class HWC {
         rightPulley.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         leftPulley.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+    }
+
+    /**
+     * Initialize the AprilTag processor.
+     */
+    public static void initAprilTag(AprilTagProcessor aprilTag, VisionPortal visionPortal, HWC robot) {
+
+        aprilTag = new AprilTagProcessor.Builder()
+                .setDrawTagOutline(true)
+                //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                .build();
+
+        // Create the vision portal by using a builder.
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+
+        builder.setCamera(robot.webcam); // Set Camera to webcam
+        builder.setCameraResolution(new Size(640, 480)); // Set Camera Resolution
+        builder.enableLiveView(true); // Enable preview on Robot Controller (Driver Station)
+        builder.addProcessor(aprilTag); // Set and enable the processor
+        visionPortal = builder.build(); // Build the Vision Portal, using the above settings
     }
 
     public void runIntake(double pwr) {
@@ -163,41 +179,19 @@ public class HWC {
 
     }
 
-    public void moveArmToDelivery(){
-        elbowL.setPosition(elbowDeliveryPos);
-        elbowR.setPosition(elbowDeliveryPos);
+    public void moveArmToDelivery() {
+        wristL.setPosition(elbowDeliveryPos);
+        wristR.setPosition(elbowDeliveryPos);
         rightPulley.setTargetPosition(armPos);
         leftPulley.setTargetPosition(armPos);
     }
 
-    /**
-     * Initialize the AprilTag processor.
-     */
-    public static void initAprilTag(AprilTagProcessor aprilTag, VisionPortal visionPortal, HWC robot) {
-
-        aprilTag = new AprilTagProcessor.Builder()
-                .setDrawTagOutline(true)
-                //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-                .build();
-
-        // Create the vision portal by using a builder.
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-
-        builder.setCamera(robot.webcam); // Set Camera to webcam
-        builder.setCameraResolution(new Size(640, 480)); // Set Camera Resolution
-        builder.enableLiveView(true); // Enable preview on Robot Controller (Driver Station)
-        builder.addProcessor(aprilTag); // Set and enable the processor
-        visionPortal = builder.build(); // Build the Vision Portal, using the above settings
-    }
-
-    public void deliver(char claw){
-        if (claw == 'L'){
+    public void deliver(char claw) {
+        if (claw == 'L') {
             toggleClaw('L');
-        }
-        else if (claw == 'R'){
+        } else if (claw == 'R') {
             toggleClaw('R');
-        }
-        else{
+        } else {
             toggleClaw('O');
         }
 
