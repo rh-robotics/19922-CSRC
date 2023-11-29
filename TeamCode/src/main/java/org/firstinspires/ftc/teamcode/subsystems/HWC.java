@@ -33,8 +33,15 @@ public class HWC {
     Telemetry telemetry;
     // Declare Position Variables
     //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
-    double intakePos = 5; //made up number, needs to be tested and actually found
-    int armPos = 6; // Another made up variable
+
+    //intake variable
+    int intakePos = 5; //made up number, needs to be tested and actually found
+
+    //arm variables
+    int armDeliveryPos = 6; // Another made up variable
+    int armRetractedPos = 0;
+
+    //claw variables
     double openClawPos = 5;
     double closedClawPos = 0;
 
@@ -182,8 +189,8 @@ public class HWC {
     public void moveArmToDelivery() {
         wristL.setPosition(elbowDeliveryPos);
         wristR.setPosition(elbowDeliveryPos);
-        rightPulley.setTargetPosition(armPos);
-        leftPulley.setTargetPosition(armPos);
+        rightPulley.setTargetPosition(armDeliveryPos);
+        leftPulley.setTargetPosition(armDeliveryPos);
     }
 
     public void deliver(char claw) {
