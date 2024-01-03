@@ -34,12 +34,11 @@ public class SlideTest extends OpMode {
     // loop() - Runs continuously while the OpMode is active
     @Override
     public void loop() {
-
         robot.rightPulley.setPower(gamepad1.left_stick_y);
-
-
+        robot.leftPulley.setPower(gamepad1.left_stick_y);
 
         // --------------- Telemetry Updates --------------- //
+        telemetry.addData("Use `Left Stick Y` to control slides", "");
         telemetry.addData("Pulley Power", robot.rightPulley.getPower());
         telemetry.addData("Pulley Position", robot.rightPulley.getCurrentPosition());
         telemetry.update();

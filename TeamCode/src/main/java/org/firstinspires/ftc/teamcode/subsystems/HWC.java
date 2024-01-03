@@ -21,7 +21,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
  * Stores and Declares all hardware devices &amp; related methods
  */
 public class HWC {
-    // --------------- Declare Empty Hardware --------------- //
+    // ------ Declare Empty Hardware ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
     public Servo intakeL, intakeR, wristL, wristR, clawR, clawL;
     public TouchSensor buttonL, buttonR;
@@ -29,25 +29,21 @@ public class HWC {
     public WebcamName webcam;
     public ElapsedTime time = new ElapsedTime();
     public SampleMecanumDrive drive;
-    // Other Variables
+
+    // ------ Telemetry ------ //
     Telemetry telemetry;
     // Declare Position Variables
     //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
 
-    //intake variable
     int intakePos = 5; //made up number, needs to be tested and actually found
 
-    //arm variables
     int armDeliveryPos = 6; // Another made up variable
     int armRetractedPos = 0;
 
-    //claw variables
     double openClawPos = 5;
     double closedClawPos = 0;
 
     double elbowDeliveryPos = 20;
-
-    // Other Variables
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -97,21 +93,22 @@ public class HWC {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        rightPulley.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        leftPulley.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightPulley.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftPulley.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Run motors using encoder, so that we can move accurately.
         leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        rightPulley.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
+        leftPulley.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
 
         rightPulley.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftPulley.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightPulley.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        leftPulley.setMode(DcMotorEx.RunMode.RUN_TO_POSITION);
-        intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
     /**
