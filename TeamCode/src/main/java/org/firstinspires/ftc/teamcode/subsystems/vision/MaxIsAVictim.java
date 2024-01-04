@@ -12,20 +12,26 @@ import org.openftc.easyopencv.OpenCvPipeline;
 /**
  * OpenCvPipeline to detect sleeves given color ranges (PowerPlay! code)
  */
-public class SleeveDetection extends OpenCvPipeline {
+public class MaxIsAVictim extends OpenCvPipeline {
     // Lower and upper boundaries for colors
     private static final Scalar
             lower_blue_bounds = new Scalar(30, 30, 200, 255),
             upper_blue_bounds = new Scalar(70, 70, 255, 255),
             lower_red_bounds = new Scalar(100, 0, 0 ,255),
             upper_red_bounds = new Scalar(255, 80, 80 ,255),
-            lower_none_bounds = new Scalar(0, 0, 0 ,255),
-            upper_none_bounds = new Scalar(255, 255, 255 ,255);
+            lower_none_bounds = new Scalar(70, 100, 80 ,255),
+            upper_none_bounds = new Scalar(100, 255, 200 ,255);
 
+    int  i;
+    public MaxIsAVictim(int iteration) {
+        i  =iteration;
+    }
     static int X = 145; //145
     static int Y = 0;
     // TOPLEFT anchor point for the bounding box
-    private static final Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(X, Y);
+
+
+    private static  Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(X, Y);
     static int W = 100;//30
 
     // Width and height for the bounding box
@@ -42,12 +48,12 @@ public class SleeveDetection extends OpenCvPipeline {
     private final Mat noneMat = new Mat();
 
     // Anchor point definitions
-    Point sleeve_pointA = new Point(
+    /*Point sleeve_pointA = new Point(
             SLEEVE_TOPLEFT_ANCHOR_POINT.x,
-            SLEEVE_TOPLEFT_ANCHOR_POINT.y);
-    Point sleeve_pointB = new Point(
+            SLEEVE_TOPLEFT_ANCHOR_POINT.y); */
+   /* Point sleeve_pointB = new Point(
             SLEEVE_TOPLEFT_ANCHOR_POINT.x + REGION_WIDTH,
-            SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);
+            SLEEVE_TOPLEFT_ANCHOR_POINT.y + REGION_HEIGHT);*/
     // Running variable storing the parking position
     int position = 0;
     // Percent and mat definitions
@@ -59,23 +65,30 @@ public class SleeveDetection extends OpenCvPipeline {
     /**
      * Constructor for SleeveDetection class
      *
-     * @param boundX The bound in the X direction for camera
-     * @param boundY The bound in the Y direction for camera
-     * @param width  Width
-     * @param height Height
      */
-    public SleeveDetection(int boundX, int boundY, int width, int height) {
-        X = boundX;
-        Y = boundY;
-        W = width;
-        H = height;
-    }
+
 
     @Override
     public Mat processFrame(Mat input) {
+
+
+
+
         // Noise reduction
+        Rect sleeveRect;
         Imgproc.blur(input, blurredMat, new Size(5, 5));
-        blurredMat = blurredMat.submat(new Rect(sleeve_pointA, sleeve_pointB));
+        if (i ==1) {
+             sleeveRect = new Rect(0,0,50,80);
+            blurredMat = blurredMat.submat(sleeveRect);
+        }
+        else if (i == 2){
+             sleeveRect = new Rect(80,0,50,80);
+            blurredMat = blurredMat.submat(sleeveRect);
+        }
+        else {
+             sleeveRect = new Rect(160,0,50,80);
+            blurredMat = blurredMat.submat(sleeveRect);
+        }
 
         // Apply Morphology
         Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3));
@@ -100,8 +113,7 @@ public class SleeveDetection extends OpenCvPipeline {
             position = 2;
             Imgproc.rectangle(
                     input,
-                    sleeve_pointA,
-                    sleeve_pointB,
+                    sleeveRect,
                     BLUE,
                     2
             );
@@ -109,8 +121,7 @@ public class SleeveDetection extends OpenCvPipeline {
             position = 1;
             Imgproc.rectangle(
                     input,
-                    sleeve_pointA,
-                    sleeve_pointB,
+                    sleeveRect,
                     RED,
                     2
             );
@@ -119,8 +130,7 @@ public class SleeveDetection extends OpenCvPipeline {
             position = 0;
             Imgproc.rectangle(
                     input,
-                    sleeve_pointA,
-                    sleeve_pointB,
+                    sleeveRect,
                     NONE,
                     2);
         }
@@ -128,6 +138,7 @@ public class SleeveDetection extends OpenCvPipeline {
         blurredMat.release();
         bluMat.release();
         redMat.release();
+        noneMat.release();
 
         return input;
     }
