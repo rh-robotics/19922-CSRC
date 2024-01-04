@@ -4,8 +4,10 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -25,7 +27,7 @@ public class HWC {
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
     public Servo intakeL, intakeR, wristL, wristR, clawR, clawL;
     public TouchSensor buttonL, buttonR;
-    public Servo passoverArmLeft, passoverArmRight;
+    public CRServo passoverArmLeft, passoverArmRight;
     public WebcamName webcam;
     public ElapsedTime time = new ElapsedTime();
     public SampleMecanumDrive drive;
@@ -63,17 +65,17 @@ public class HWC {
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
 
         // Declare other motors
-        rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
-        leftPulley = hardwareMap.get(DcMotorEx.class, "pulleyL");
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+       // rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
+        //leftPulley = hardwareMap.get(DcMotorEx.class, "pulleyL");
+        //intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
         // Declare Servos
         intakeL = hardwareMap.get(Servo.class, "intakeL");
         intakeR = hardwareMap.get(Servo.class, "intakeR");
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
-        passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
-        passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
+        passoverArmLeft = hardwareMap.get(CRServo.class, "passoverArmLeft");
+        passoverArmRight = hardwareMap.get(CRServo.class, "passoverArmRight");
         wristL = hardwareMap.get(Servo.class, "wristL");
         wristR = hardwareMap.get(Servo.class, "wristR");
 
@@ -87,6 +89,8 @@ public class HWC {
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         leftRear.setDirection(DcMotorEx.Direction.FORWARD);
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        leftPulley.setDirection(DcMotorEx.Direction.REVERSE);
+        passoverArmLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Set motors to break when power = 0
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -103,6 +107,8 @@ public class HWC {
         leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+
     }
 
     /**
@@ -177,13 +183,24 @@ public class HWC {
 
     }
 
+    public void manualArm(float pwr){
+        rightPulley.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftPulley.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftPulley.setPower(pwr);
+        rightPulley.setPower(pwr);
+    }
+
     public void moveArmToDelivery() {
         wristL.setPosition(elbowDeliveryPos);
         wristR.setPosition(elbowDeliveryPos);
         rightPulley.setTargetPosition(armDeliveryPos);
         leftPulley.setTargetPosition(armDeliveryPos);
     }
+    public void movePassover(float pwr){
+        passoverArmLeft.setPower(pwr);
+        passoverArmRight.setPower(pwr);
 
+    }
     public void deliver(char claw) {
         if (claw == 'L') {
             toggleClaw('L');

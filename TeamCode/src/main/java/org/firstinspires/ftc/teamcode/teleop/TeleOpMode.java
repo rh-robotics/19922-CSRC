@@ -38,8 +38,7 @@ public class TeleOpMode extends OpMode {
         robot = new HWC(hardwareMap, telemetry);
 
         // Move servos to position 0
-        robot.passoverArmLeft.setPosition(0);
-        robot.passoverArmRight.setPosition(0);
+
 
         // Tell the driver the robot is ready
         telemetry.addData("Status", "Initialized");
@@ -149,6 +148,33 @@ public class TeleOpMode extends OpMode {
             robot.runIntake(-gamepad1.left_trigger);
             state = RobotState.INTAKING;
         }
+
+
+        if (gamepad2.right_stick_y != 0){
+        robot.manualArm(-gamepad2.right_stick_y);
+        }
+
+       //claw control
+        if (gamepad2.a){
+            robot.toggleClaw('C');
+        }
+        else if (gamepad2.b){
+            robot.toggleClaw('O');
+        }
+        else if (gamepad2.left_bumper){
+            robot.toggleClaw('L');
+        }
+        else if (gamepad2.right_bumper){
+            robot.toggleClaw('R');
+        }
+
+        //passover arm control
+
+        if (gamepad2.left_stick_y != 0){
+            robot.movePassover(-gamepad2.left_stick_y);
+        }
+
+
         // --------------- Run Drive Motors --------------- //
         robot.leftFront.setPower(leftFPower);
         robot.leftRear.setPower(leftBPower);
