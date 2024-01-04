@@ -39,7 +39,8 @@ public class SlideTest extends OpMode {
 
         // --------------- Telemetry Updates --------------- //
         telemetry.addData("Use `Left Stick Y` to control slides", "");
-        telemetry.addData("Pulley Power", robot.rightPulley.getPower());
+        telemetry.addData("Right Pulley Power", robot.rightPulley.getPower());
+        telemetry.addData("Left Pulley Power", robot.leftPulley.getPower());
         telemetry.addData("Pulley Position", robot.rightPulley.getCurrentPosition());
         telemetry.update();
     }
