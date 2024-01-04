@@ -38,8 +38,7 @@ public class TeleOpMode extends OpMode {
         robot = new HWC(hardwareMap, telemetry);
 
         // Move servos to position 0
-        robot.passoverArmLeft.setPosition(0);
-        robot.passoverArmRight.setPosition(0);
+
 
         // Tell the driver the robot is ready
         telemetry.addData("Status", "Initialized");
