@@ -21,11 +21,11 @@ enum MultiplierSelection {
 @TeleOp(name = "TeleOp", group = "Iterative OpMode")
 public class TeleOpMode extends OpMode {
     HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
-    RobotState state;
+    RobotState state = RobotState.RESTING;
     double turnSpeed = 0.6; // Speed multiplier for turning
     double driveSpeed = 0.8; // Speed multiplier for driving
     double strafeSpeed = 0.8; // Speed multiplier for strafing
-    MultiplierSelection selection; // String for selecting which speed to change
+    MultiplierSelection selection = MultiplierSelection.TURN_SPEED; // String for selecting which speed to change
 
     // init() Runs ONCE after the driver hits initialize
     @Override
@@ -48,6 +48,10 @@ public class TeleOpMode extends OpMode {
     // init_loop() - Runs continuously until the driver hits play
     @Override
     public void init_loop() {
+        // Reset Servos to Position 0
+        robot.clawL.setPosition(1);
+        robot.clawR.setPosition(0);
+
         // Select which speed to change
         if (gamepad1.a) {
             selection = MultiplierSelection.TURN_SPEED;
@@ -168,12 +172,9 @@ public class TeleOpMode extends OpMode {
             robot.toggleClaw('R');
         }
 
-        //passover arm control
-
         if (gamepad2.left_stick_y != 0){
             robot.movePassover(-gamepad2.left_stick_y);
         }
-
 
         // --------------- Run Drive Motors --------------- //
         robot.leftFront.setPower(leftFPower);
@@ -182,7 +183,6 @@ public class TeleOpMode extends OpMode {
         robot.rightRear.setPower(rightBPower);
 
         switch (state) {
-
             case DRIVING:
                 telemetry.addData("Robot State", "Driving");
                 break;
@@ -210,8 +210,15 @@ public class TeleOpMode extends OpMode {
         }
 
         // --------------- Telemetry Updates --------------- //
+        telemetry.addData("Turn Speed", turnSpeed);
+        telemetry.addData("Drive Speed", driveSpeed);
+        telemetry.addData("Strafe Speed", strafeSpeed);
+        telemetry.addLine();
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
+        telemetry.addLine();
+        telemetry.addData("Claw Left Position", robot.clawL.getPosition());
+        telemetry.addData("Claw Right Position", robot.clawR.getPosition());
         telemetry.update();
     }
 
