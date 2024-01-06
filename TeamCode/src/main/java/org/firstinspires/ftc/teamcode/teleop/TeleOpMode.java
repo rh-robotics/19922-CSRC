@@ -155,7 +155,7 @@ public class TeleOpMode extends OpMode {
 
 
         if (gamepad2.right_stick_y != 0){
-        robot.manualArm(-gamepad2.right_stick_y);
+            robot.manualArm(-gamepad2.right_stick_y);
         }
 
         if (gamepad2.left_bumper){

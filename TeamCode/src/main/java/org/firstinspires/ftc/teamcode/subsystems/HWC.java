@@ -138,19 +138,19 @@ public class HWC {
         if (servo == 'L') {
             // 1 is open, 0.5 is closed. If clawL is open, close it. Otherwise, open it.
             if (clawL.getPosition() == 1) {
-                clawL.setPosition(0.5);
+                clawL.setPosition(0.15);
             } else {
                 clawL.setPosition(1);
             }
         } else if (servo == 'R') {
             if (clawR.getPosition() == 0) {
-                clawR.setPosition(0.5);
+                clawR.setPosition(0.85);
             } else {
                 clawR.setPosition(0);
             }
         } else if (servo == 'C') {
-            clawR.setPosition(0.5);
-            clawL.setPosition(0.5);
+            clawR.setPosition(0.85);
+            clawL.setPosition(0.15);
         }
         betterSleep(10000);
     }
@@ -174,13 +174,11 @@ public class HWC {
         toggleClaw('C');
     }
 
-    public void manualArm(float pwr){
-        rightPulley.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftPulley.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void manualArm(float pwr) {
         leftPulley.setPower(pwr);
         rightPulley.setPower(pwr);
     }
-    public void betterSleep(int milliseconds){
+    public void betterSleep(int milliseconds) {
         time.reset();
         while (time.milliseconds() > milliseconds){}
         telemetry.addData("slept for ", milliseconds);
