@@ -158,14 +158,7 @@ public class TeleOpMode extends OpMode {
         robot.manualArm(-gamepad2.right_stick_y);
         }
 
-       //claw control
-        if (gamepad2.a){
-            robot.toggleClaw('C');
-        }
-        else if (gamepad2.b){
-            robot.toggleClaw('O');
-        }
-        else if (gamepad2.left_bumper){
+        if (gamepad2.left_bumper){
             robot.toggleClaw('L');
         }
         else if (gamepad2.right_bumper){

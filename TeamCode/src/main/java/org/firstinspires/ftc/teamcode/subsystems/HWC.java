@@ -136,25 +136,23 @@ public class HWC {
 
     public void toggleClaw(char servo) {
         if (servo == 'L') {
-            if (clawL.getPosition() == 0) {
+            // 1 is open, 0.5 is closed. If clawL is open, close it. Otherwise, open it.
+            if (clawL.getPosition() == 1) {
                 clawL.setPosition(0.5);
             } else {
-                clawL.setPosition(0);
+                clawL.setPosition(1);
             }
         } else if (servo == 'R') {
-            if (clawR.getPosition() == 1) {
-                clawR.setPosition(0);
+            if (clawR.getPosition() == 0) {
+                clawR.setPosition(0.5);
             } else {
-                clawR.setPosition(1);
+                clawR.setPosition(0);
             }
         } else if (servo == 'C') {
-            clawR.setPosition(0);
+            clawR.setPosition(0.5);
             clawL.setPosition(0.5);
-        } else if (servo == 'O') {
-            clawR.setPosition(1);
-            clawL.setPosition(0);
         }
-        betterSleep(10);
+        betterSleep(10000);
     }
 
     public char checkIntakeSensors() {
@@ -174,8 +172,6 @@ public class HWC {
             runIntake(1);
         }
         toggleClaw('C');
-
-
     }
 
     public void manualArm(float pwr){
