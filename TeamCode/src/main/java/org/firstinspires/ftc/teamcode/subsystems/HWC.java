@@ -154,6 +154,7 @@ public class HWC {
             clawR.setPosition(1);
             clawL.setPosition(0);
         }
+        betterSleep(10);
     }
 
     public char checkIntakeSensors() {
@@ -183,7 +184,11 @@ public class HWC {
         leftPulley.setPower(pwr);
         rightPulley.setPower(pwr);
     }
-
+    public void betterSleep(int milliseconds){
+        time.reset();
+        while (time.milliseconds() > milliseconds){}
+        telemetry.addData("slept for ", milliseconds);
+    }
     public void moveArmToDelivery() {
         wristL.setPosition(elbowDeliveryPos);
         wristR.setPosition(elbowDeliveryPos);
