@@ -190,7 +190,7 @@ public class HWC {
         leftPulley.setTargetPosition(armDeliveryPos);
     }
     public void movePassover(float pwr){
-        passoverArmLeft.setPower(pwr);
+        //passoverArmLeft.setPower(pwr);
         passoverArmRight.setPower(pwr);
     }
     public void deliver(char claw) {
