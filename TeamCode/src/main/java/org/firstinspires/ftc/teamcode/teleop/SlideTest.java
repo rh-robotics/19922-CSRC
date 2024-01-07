@@ -8,6 +8,7 @@ import org.firstinspires.ftc.teamcode.subsystems.HWC;
 @TeleOp(name = "slide test", group = "Testing")
 public class SlideTest extends OpMode {
     HWC robot;
+
     // init() Runs ONCE after the driver hits initialize
     @Override
     public void init() {
