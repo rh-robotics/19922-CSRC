@@ -155,19 +155,19 @@ public class TeleOpMode extends OpMode {
         }
 
 
-        if (gamepad2.right_stick_y != 0){
-        robot.manualArm(-gamepad2.right_stick_y);
+        if (gamepad2.right_stick_y != 0) {
+            robot.manualArm(-gamepad2.right_stick_y);
         }
 
-        if (gamepad2.left_bumper){
+        if (gamepad2.left_bumper) {
             robot.toggleClaw('L');
-        }
-        else if (gamepad2.right_bumper){
+        } else if (gamepad2.right_bumper) {
             robot.toggleClaw('R');
         }
 
-        if (gamepad2.left_stick_y != 0){
-            robot.movePassover(-gamepad2.left_stick_y);
+        if (gamepad2.left_stick_y != 0) {
+            robot.passoverArmLeft.setPower(-gamepad2.left_stick_y);
+            robot.passoverArmRight.setPower(-gamepad2.left_stick_y);
         }
         else{robot.movePassover(0);}
 
@@ -205,15 +205,17 @@ public class TeleOpMode extends OpMode {
         }
 
         // --------------- Telemetry Updates --------------- //
-        telemetry.addData("Turn Speed", turnSpeed);
-        telemetry.addData("Drive Speed", driveSpeed);
-        telemetry.addData("Strafe Speed", strafeSpeed);
+        telemetry.addData("Status", "Running");
+        telemetry.addData("Robot State", state);
         telemetry.addLine();
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
         telemetry.addLine();
         telemetry.addData("Claw Left Position", robot.clawL.getPosition());
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
+        telemetry.addLine();
+        telemetry.addData("Left Passover Power", robot.passoverArmLeft.getPower());
+        telemetry.addData("Right Passover Power", robot.passoverArmRight.getPower());
         telemetry.update();
     }
 

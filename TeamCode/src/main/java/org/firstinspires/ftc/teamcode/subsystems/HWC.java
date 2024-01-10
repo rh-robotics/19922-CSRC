@@ -50,45 +50,52 @@ public class HWC {
      * @param telemetry   Telemetry - Used to add telemetry to driver hub
      */
     public HWC(@NonNull HardwareMap hardwareMap, Telemetry telemetry) {
+        // ------ Telemetry ------ //
         this.telemetry = telemetry;
 
+        // ------ Declare RR Drivetrain ------ //
         drive = new SampleMecanumDrive(hardwareMap);
 
-        // Declare motors
+        // ------ Retrieve Hardware Devices ------ //
+
+        // Drive Motors
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
 
-        // Declare other motors
+        // Other Motors
         rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
         leftPulley = hardwareMap.get(DcMotorEx.class, "pulleyL");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
-        // Declare Servos
+        // Servos
         intakeL = hardwareMap.get(Servo.class, "intakeL");
         intakeR = hardwareMap.get(Servo.class, "intakeR");
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
-        passoverArmLeft = hardwareMap.get(CRServo.class, "passoverArmLeft");
-        passoverArmRight = hardwareMap.get(CRServo.class, "passoverArmRight");
         wristL = hardwareMap.get(Servo.class, "wristL");
         wristR = hardwareMap.get(Servo.class, "wristR");
 
-        // Declare Sensors
+        // Continuous Rotation Servos
+        passoverArmLeft = hardwareMap.get(CRServo.class, "passoverArmLeft");
+        passoverArmRight = hardwareMap.get(CRServo.class, "passoverArmRight");
+
+        // Sensors
         buttonL = hardwareMap.get(TouchSensor.class, "buttonL");
         buttonR = hardwareMap.get(TouchSensor.class, "buttonR");
         webcam = hardwareMap.get(WebcamName.class, "webcam");
 
-        // Set the direction of motors
+        // ------ Set Motor Directions ------ //
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
         leftRear.setDirection(DcMotorEx.Direction.FORWARD);
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
         leftPulley.setDirection(DcMotorEx.Direction.REVERSE);
         passoverArmLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        passoverArmRight.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        // Set motors to break when power = 0
+        // ------ Set Motor Brake Modes ------ //
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -97,7 +104,7 @@ public class HWC {
         leftPulley.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Run motors using encoder, so that we can move accurately.
+        // ------ Set Motor Modes ------ //
         leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
@@ -138,19 +145,19 @@ public class HWC {
         if (servo == 'L') {
             // 1 is open, 0.5 is closed. If clawL is open, close it. Otherwise, open it.
             if (clawL.getPosition() == 1) {
-                clawL.setPosition(0.5);
+                clawL.setPosition(0.15);
             } else {
                 clawL.setPosition(1);
             }
         } else if (servo == 'R') {
             if (clawR.getPosition() == 0) {
-                clawR.setPosition(0.5);
+                clawR.setPosition(0.85);
             } else {
                 clawR.setPosition(0);
             }
         } else if (servo == 'C') {
-            clawR.setPosition(0.5);
-            clawL.setPosition(0.5);
+            clawR.setPosition(0.85);
+            clawL.setPosition(0.15);
         }
         betterSleep(10000);
     }
@@ -174,13 +181,11 @@ public class HWC {
         toggleClaw('C');
     }
 
-    public void manualArm(float pwr){
-        rightPulley.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftPulley.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public void manualArm(float pwr) {
         leftPulley.setPower(pwr);
         rightPulley.setPower(pwr);
     }
-    public void betterSleep(int milliseconds){
+    public void betterSleep(int milliseconds) {
         time.reset();
         while (time.milliseconds() > milliseconds){}
         telemetry.addData("slept for ", milliseconds);
@@ -191,10 +196,7 @@ public class HWC {
         rightPulley.setTargetPosition(armDeliveryPos);
         leftPulley.setTargetPosition(armDeliveryPos);
     }
-    public void movePassover(float pwr){
-        //passoverArmLeft.setPower(pwr);
-        passoverArmRight.setPower(pwr);
-    }
+
     public void deliver(char claw) {
         if (claw == 'L') {
             toggleClaw('L');

@@ -20,9 +20,9 @@ enum ServoControl {
  */
 @TeleOp(name = "ServoTesting", group = "Testing")
 public class ServoTesting extends OpMode {
+    final double SERVO_SPEED = 0.001;
     HWC robot;
     ServoControl servoControl = ServoControl.PASSOVER_LEFT;
-    final double SERVO_SPEED = 0.001;
     double servoPosition, servoPower;
 
     // init() Runs ONCE after the driver hits initialize

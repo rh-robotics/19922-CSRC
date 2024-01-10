@@ -10,31 +10,24 @@ import org.opencv.imgproc.Imgproc;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 public class PixelCameraTest extends OpenCvPipeline {
-    Telemetry telemetry;
-    Mat mat = new Mat();
-    public enum Location {
-        LEFT,
-        RIGHT,
-        MIDDLE,
-        NOT_FOUND
-    }
-    private Location location;
-
     static final Rect LEFT_ROI = new Rect(
             new Point(15, 20),
             new Point(100, 80));
     static final Rect RIGHT_ROI = new Rect(
             new Point(205, 20),
             new Point(239, 80));
-
     static final Rect MID_ROI = new Rect(
             new Point(110, 20)
-,
+            ,
             new Point(200, 80));
-
     static double PERCENT_COLOR_THRESHOLD = 0.3;
+    Telemetry telemetry;
+    Mat mat = new Mat();
+    private Location location;
 
-    public PixelCameraTest(Telemetry t) { telemetry = t; }
+    public PixelCameraTest(Telemetry t) {
+        telemetry = t;
+    }
 
     @Override
     public Mat processFrame(Mat input) {
@@ -73,24 +66,19 @@ public class PixelCameraTest extends OpenCvPipeline {
         if (stoneLeft && stoneRight) {
             location = Location.NOT_FOUND;
             telemetry.addData("Skystone Location", "not found");
-        }
-        else if (stoneLeft && stoneMid) {
+        } else if (stoneLeft && stoneMid) {
             location = Location.NOT_FOUND;
             telemetry.addData("Skystone Location", "not found");
-        }
-        else if (stoneRight && stoneMid) {
+        } else if (stoneRight && stoneMid) {
             location = Location.NOT_FOUND;
             telemetry.addData("Skystone Location", "not found");
-        }
-        else if (stoneLeft) {
+        } else if (stoneLeft) {
             location = Location.RIGHT;
             telemetry.addData("Box Location", "right");
-        }
-        else if (stoneMid) {
+        } else if (stoneMid) {
             location = Location.MIDDLE;
             telemetry.addData("Box Location", "right");
-        }
-        else {
+        } else {
             location = Location.LEFT;
             telemetry.addData("Box Location", "left");
         }
@@ -101,14 +89,21 @@ public class PixelCameraTest extends OpenCvPipeline {
         Scalar colorStone = new Scalar(0, 0, 255);
         Scalar colorSkystone = new Scalar(0, 255, 0);
 
-        Imgproc.rectangle(mat, LEFT_ROI, location == Location.LEFT? colorSkystone:colorStone);
-        Imgproc.rectangle(mat, RIGHT_ROI, location == Location.RIGHT? colorSkystone:colorStone);
-        Imgproc.rectangle(mat, MID_ROI, location == Location.MIDDLE? colorSkystone:colorStone);
+        Imgproc.rectangle(mat, LEFT_ROI, location == Location.LEFT ? colorSkystone : colorStone);
+        Imgproc.rectangle(mat, RIGHT_ROI, location == Location.RIGHT ? colorSkystone : colorStone);
+        Imgproc.rectangle(mat, MID_ROI, location == Location.MIDDLE ? colorSkystone : colorStone);
 
         return mat;
     }
 
     public Location getLocation() {
         return location;
+    }
+
+    public enum Location {
+        LEFT,
+        RIGHT,
+        MIDDLE,
+        NOT_FOUND
     }
 }
