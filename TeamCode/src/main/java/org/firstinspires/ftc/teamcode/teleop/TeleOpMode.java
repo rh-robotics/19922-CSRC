@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
@@ -168,6 +169,7 @@ public class TeleOpMode extends OpMode {
         if (gamepad2.left_stick_y != 0){
             robot.movePassover(-gamepad2.left_stick_y);
         }
+        else{robot.movePassover(0);}
 
         // --------------- Run Drive Motors --------------- //
         robot.leftFront.setPower(leftFPower);
