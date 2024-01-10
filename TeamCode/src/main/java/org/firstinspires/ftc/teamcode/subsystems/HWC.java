@@ -159,7 +159,7 @@ public class HWC {
             clawR.setPosition(0.85);
             clawL.setPosition(0.15);
         }
-        betterSleep(10000);
+        betterSleep(2000);
     }
 
     public char checkIntakeSensors() {
@@ -185,27 +185,22 @@ public class HWC {
         leftPulley.setPower(pwr);
         rightPulley.setPower(pwr);
     }
+
     public void betterSleep(int milliseconds) {
         time.reset();
-        while (time.milliseconds() > milliseconds){}
+        while (time.milliseconds() > milliseconds) {
+        }
         telemetry.addData("slept for ", milliseconds);
     }
+
     public void moveArmToDelivery() {
         wristL.setPosition(elbowDeliveryPos);
         wristR.setPosition(elbowDeliveryPos);
         rightPulley.setTargetPosition(armDeliveryPos);
         leftPulley.setTargetPosition(armDeliveryPos);
     }
-    public void movePassover(float pwr){
+
+    public void movePassover(float pwr) {
         passoverArmRight.setPower(pwr);
-    }
-    public void deliver(char claw) {
-        if (claw == 'L') {
-            toggleClaw('L');
-        } else if (claw == 'R') {
-            toggleClaw('R');
-        } else {
-            toggleClaw('O');
-        }
     }
 }

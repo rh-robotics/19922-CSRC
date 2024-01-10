@@ -23,8 +23,8 @@ enum MultiplierSelection {
 public class TeleOpMode extends OpMode {
     HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
     RobotState state = RobotState.RESTING;
-    double turnSpeed = 0.6; // Speed multiplier for turning
-    double driveSpeed = 0.8; // Speed multiplier for driving
+    double turnSpeed = 0.5; // Speed multiplier for turning
+    double driveSpeed = 1; // Speed multiplier for driving
     double strafeSpeed = 0.8; // Speed multiplier for strafing
     MultiplierSelection selection = MultiplierSelection.TURN_SPEED; // String for selecting which speed to change
 
@@ -170,7 +170,16 @@ public class TeleOpMode extends OpMode {
         // --------------- Run Drive Motors --------------- //
         robot.leftFront.setPower(leftFPower);
         robot.leftRear.setPower(leftBPower);
-        robot.rightFront.setPower(rightFPower);
+
+        if (rightFPower != 0){
+            robot.rightFront.setPower(rightFPower +0.1);
+            robot.leftRear.setPower(leftBPower+0.1);
+        }
+        else{
+            robot.rightFront.setPower(rightFPower);
+            robot.leftRear.setPower(leftBPower);
+        }
+
         robot.rightRear.setPower(rightBPower);
         robot.passoverArmLeft.setPower(-gamepad2.left_stick_y);
         robot.passoverArmRight.setPower(-gamepad2.left_stick_y);
