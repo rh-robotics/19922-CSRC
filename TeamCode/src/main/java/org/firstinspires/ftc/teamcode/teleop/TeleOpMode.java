@@ -38,9 +38,6 @@ public class TeleOpMode extends OpMode {
         // Initialize the robot hardware
         robot = new HWC(hardwareMap, telemetry);
 
-        // Move servos to position 0
-
-
         // Tell the driver the robot is ready
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -114,7 +111,6 @@ public class TeleOpMode extends OpMode {
     // loop() - Runs continuously while the OpMode is active
     @Override
     public void loop() {
-
         double leftFPower;
         double rightFPower;
         double leftBPower;
@@ -133,9 +129,9 @@ public class TeleOpMode extends OpMode {
         } else if (strafe != 0) {
             // Strafing
             state = RobotState.DRIVING;
-            leftFPower = -strafe;
+            leftFPower = strafe;
             rightFPower = strafe;
-            leftBPower = strafe;
+            leftBPower = -strafe;
             rightBPower = -strafe;
         } else {
             leftFPower = 0;
@@ -144,24 +140,28 @@ public class TeleOpMode extends OpMode {
             rightBPower = 0;
         }
 
-        // Run Intake
-        if (gamepad1.right_trigger != 0) {
-            robot.runIntake(gamepad1.right_trigger);
+        // ------ Intake Controls ------ //
+        if (gamepad2.right_trigger != 0) {
+            robot.runIntake(gamepad2.right_trigger);
             state = RobotState.INTAKING;
         }
-        if (gamepad1.left_trigger != 0) {
-            robot.runIntake(-gamepad1.left_trigger);
+        if (gamepad2.left_trigger != 0) {
+            robot.runIntake(-gamepad2.left_trigger);
             state = RobotState.INTAKING;
         }
 
-
+        // ------ Passover Controls ------ //
         if (gamepad2.right_stick_y != 0) {
             robot.manualArm(-gamepad2.right_stick_y);
+        } else {
+            robot.manualArm(0);
         }
 
+        // ------ Claw Controls ------ //
         if (gamepad2.left_bumper) {
             robot.toggleClaw('L');
-        } else if (gamepad2.right_bumper) {
+        }
+        if (gamepad2.right_bumper) {
             robot.toggleClaw('R');
         }
 
@@ -206,12 +206,18 @@ public class TeleOpMode extends OpMode {
         telemetry.addData("Status", "Running");
         telemetry.addData("Robot State", state);
         telemetry.addLine();
-        telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
-        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
+        telemetry.addData("Gamepad 1 Left Stick X", "Driving Forward / Backward");
+        telemetry.addData("Gamepad 1 Left Stick Y", "Turning");
+        telemetry.addData("Gamepad 1 Right Stick X", "Strafing");
+        telemetry.addData("Gamepad 2 Left Stick Y", "Passover Control");
+        telemetry.addData("Gamepad 2 Right Stick Y", "Arm Control");
+        telemetry.addData("Gamepad 2 Left Bumper", "Toggle Claw Left");
+        telemetry.addData("Gamepad 2 Right Bumper", "Toggle Claw Right");
+        telemetry.addData("Gamepad 2 Left Trigger", "Intake Out");
+        telemetry.addData("Gamepad 2 Right Trigger", "Intake In");
         telemetry.addLine();
         telemetry.addData("Claw Left Position", robot.clawL.getPosition());
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
-        telemetry.addLine();
         telemetry.addData("Left Passover Power", robot.passoverArmLeft.getPower());
         telemetry.addData("Right Passover Power", robot.passoverArmRight.getPower());
         telemetry.update();
