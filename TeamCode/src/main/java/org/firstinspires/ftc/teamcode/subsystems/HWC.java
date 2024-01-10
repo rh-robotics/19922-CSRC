@@ -196,7 +196,9 @@ public class HWC {
         rightPulley.setTargetPosition(armDeliveryPos);
         leftPulley.setTargetPosition(armDeliveryPos);
     }
-
+    public void movePassover(float pwr){
+        passoverArmRight.setPower(pwr);
+    }
     public void deliver(char claw) {
         if (claw == 'L') {
             toggleClaw('L');

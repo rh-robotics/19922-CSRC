@@ -165,17 +165,15 @@ public class TeleOpMode extends OpMode {
             robot.toggleClaw('R');
         }
 
-        if (gamepad2.left_stick_y != 0) {
-            robot.passoverArmLeft.setPower(-gamepad2.left_stick_y);
-            robot.passoverArmRight.setPower(-gamepad2.left_stick_y);
-        }
-        else{robot.movePassover(0);}
+
 
         // --------------- Run Drive Motors --------------- //
         robot.leftFront.setPower(leftFPower);
         robot.leftRear.setPower(leftBPower);
         robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
+        robot.passoverArmLeft.setPower(-gamepad2.left_stick_y);
+        robot.passoverArmRight.setPower(-gamepad2.left_stick_y);
 
         switch (state) {
             case DRIVING:
