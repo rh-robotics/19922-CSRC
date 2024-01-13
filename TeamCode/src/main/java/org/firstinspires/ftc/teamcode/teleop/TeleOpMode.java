@@ -49,6 +49,7 @@ public class TeleOpMode extends OpMode {
         // Reset Servos to Position 0
         robot.clawL.setPosition(1);
         robot.clawR.setPosition(0);
+        robot.wristL.setPosition(0);
 
         // Select which speed to change
         if (gamepad1.a) {

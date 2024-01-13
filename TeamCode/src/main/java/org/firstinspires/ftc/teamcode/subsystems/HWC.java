@@ -140,6 +140,20 @@ public class HWC {
 
     public void runIntake(double pwr) {
         intakeMotor.setPower(pwr);
+        if (returnColor(colorLeft)=="unknown"){
+            clawL.setPosition(1);
+        }
+        else if (returnColor(colorRight)=="unknown"){
+            clawR.setPosition(1);
+        }
+        else if (returnColor(colorLeft) != "unknown"){
+            clawL.setPosition(.15);
+
+        }
+        else if (returnColor(colorRight) != "unknown"){
+            clawR.setPosition(.85);
+
+        }
     }
 
     public void changeIntakePos(double pos) {
