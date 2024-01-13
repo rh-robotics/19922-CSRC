@@ -165,7 +165,9 @@ public class TeleOpMode extends OpMode {
             robot.toggleClaw('R');
         }
 
-
+        if (gamepad1.a){
+            robot.testColorSensor(robot.colorLeft);
+        }
 
         // --------------- Run Drive Motors --------------- //
         robot.leftFront.setPower(leftFPower);

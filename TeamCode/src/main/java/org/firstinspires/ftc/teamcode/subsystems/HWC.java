@@ -5,6 +5,7 @@ import android.util.Size;
 import androidx.annotation.NonNull;
 
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -25,8 +26,9 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 public class HWC {
     // ------ Declare Hardware ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
-    public Servo intakeL, intakeR, wristL, wristR, clawR, clawL;
+    public Servo intakeL, intakeR, wristL, wristR, clawR, clawL, droneKicker, droneAimer;
     public TouchSensor buttonL, buttonR;
+    public ColorSensor colorLeft, colorRight;
     public CRServo passoverArmLeft, passoverArmRight;
     public WebcamName webcam;
     public ElapsedTime time = new ElapsedTime();
@@ -76,6 +78,8 @@ public class HWC {
         clawR = hardwareMap.get(Servo.class, "clawR");
         wristL = hardwareMap.get(Servo.class, "wristL");
         wristR = hardwareMap.get(Servo.class, "wristR");
+        droneAimer = hardwareMap.get(Servo.class, "droneAim");
+        droneKicker = hardwareMap.get(Servo.class, "droneKick");
 
         // Continuous Rotation Servos
         passoverArmLeft = hardwareMap.get(CRServo.class, "passoverArmLeft");
@@ -85,6 +89,8 @@ public class HWC {
         buttonL = hardwareMap.get(TouchSensor.class, "buttonL");
         buttonR = hardwareMap.get(TouchSensor.class, "buttonR");
         webcam = hardwareMap.get(WebcamName.class, "webcam");
+        colorLeft =hardwareMap.get(ColorSensor.class,"colorL");
+        colorRight =hardwareMap.get(ColorSensor.class,"colorR");
 
         // ------ Set Motor Directions ------ //
         leftFront.setDirection(DcMotorEx.Direction.FORWARD);
@@ -172,6 +178,37 @@ public class HWC {
             return 'R';
         } else return '0';
     }
+    public String returnColor(ColorSensor CS) {
+        int red = CS.red();
+        int green = CS.green();
+        int blue = CS.blue();
+        String color;
+
+        if (red > 200 && green > 200 && blue > 200) {
+            color = "white";
+        } else if (210 < red && green >200 & blue < 160) {
+            color = "yellow";}
+
+        else if (green > red+blue){
+            color = "green";}
+        else {
+            color = "unknown";}
+
+        return color;
+    }
+
+    public void testColorSensor(ColorSensor CS){
+        telemetry.addData("R, G, B", CS.argb());
+    }
+
+
+    public void slapDrone(int pos){
+    droneKicker.setPosition(pos);
+
+    }
+    public void aimDrone(int pos){
+        droneAimer.setPosition(pos);
+    }
 
     public void fullIntake() {
         changeIntakePos(intakePos);
@@ -188,8 +225,12 @@ public class HWC {
 
     public void betterSleep(int milliseconds) {
         time.reset();
+
         while (time.milliseconds() > milliseconds) {
+            //noinspection UnnecessaryContinue
+            continue;
         }
+
         telemetry.addData("slept for ", milliseconds);
     }
 
