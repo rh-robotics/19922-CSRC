@@ -31,13 +31,11 @@ public class Drivetrain extends BasicComponent implements ActionFactory {
     private static final TurnConstraints BASE_TURN_CONSTRAINTS = new TurnConstraints(0.0, 0.0, 0.0);
     private static final VelConstraint BASE_VEL_CONSTRAINT = new TranslationalVelConstraint(0.0);
     private static final AccelConstraint BASE_ACCEL_CONSTRAINT = new ProfileAccelConstraint(0.0, 0.0);
-    private final BasicComponent.Concrete actor;
     private final ActualizationContext actualizationContext = new ActualizationContext(this, this, BASE_VEL_CONSTRAINT, BASE_ACCEL_CONSTRAINT, BASE_TURN_CONSTRAINTS, EPS, BEGIN_END_VAL, DISP_RESOLUTION, ANG_RESOLUTION);
     private final PathfindingPipeline pipeline;
 
     public Drivetrain(@NonNull BasicComponent.Concrete actor, @NonNull OpModeProvider belonging, @Nullable Component parent) {
         super(belonging, parent, "Drivetrain");
-        this.actor = actor;
         this.pipeline = new PathfindingPipeline(actor, actualizationContext, new GridTreeFitter.Builder().resolution(3), new AStar.Builder());
     }
 
