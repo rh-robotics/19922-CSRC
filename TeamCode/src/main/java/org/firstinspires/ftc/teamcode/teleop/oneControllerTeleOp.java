@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.subsystems.HWC;
 /**
  * Enum representing which speed to change in init_loop()
  */
-enum MultiplierSelection {
+enum Selection {
     TURN_SPEED,
     DRIVE_SPEED,
     STRAFE_SPEED
@@ -19,14 +19,15 @@ enum MultiplierSelection {
 /**
  * TeleOp OpMode for simply driving with strafing wheels
  */
-@TeleOp(name = "TeleOp", group = "Iterative OpMode")
-public class TeleOpMode extends OpMode {
+@TeleOp(name = "1P TeleOp", group = "Iterative OpMode")
+public class oneControllerTeleOp extends OpMode {
     HWC robot; // Declare the object for HWC, will allow us to access all the motors declared there!
     RobotState state = RobotState.RESTING;
     double turnSpeed = 0.5; // Speed multiplier for turning
     double driveSpeed = 1; // Speed multiplier for driving
     double strafeSpeed = 0.8; // Speed multiplier for strafing
-    MultiplierSelection selection = MultiplierSelection.TURN_SPEED; // String for selecting which speed to change
+    double armPwr = 0;
+    Selection selection = Selection.TURN_SPEED; // String for selecting which speed to change
 
     // init() Runs ONCE after the driver hits initialize
     @Override
@@ -52,11 +53,11 @@ public class TeleOpMode extends OpMode {
 
         // Select which speed to change
         if (gamepad1.a) {
-            selection = MultiplierSelection.TURN_SPEED;
+            selection = Selection.TURN_SPEED;
         } else if (gamepad1.b) {
-            selection = MultiplierSelection.DRIVE_SPEED;
+            selection = Selection.DRIVE_SPEED;
         } else if (gamepad1.x) {
-            selection = MultiplierSelection.STRAFE_SPEED;
+            selection = Selection.STRAFE_SPEED;
         }
 
         // Change the speed multiplier for selection
@@ -116,8 +117,8 @@ public class TeleOpMode extends OpMode {
         double leftBPower;
         double rightBPower;
         double drive = -gamepad1.left_stick_x * driveSpeed;
-        double turn = gamepad1.left_stick_y * turnSpeed;
-        double strafe = -gamepad1.right_stick_x * strafeSpeed;
+        double turn = (gamepad1.right_trigger-gamepad1.left_trigger) * turnSpeed;
+        double strafe = -gamepad1.left_stick_x * strafeSpeed;
 
         // --------------- Calculate drive power --------------- //
         if (drive != 0 || turn != 0) {
@@ -141,27 +142,23 @@ public class TeleOpMode extends OpMode {
         }
 
         // ------ Intake Controls ------ //
-        if (gamepad2.right_trigger != 0) {
-            robot.runIntake(gamepad2.right_trigger);
-            state = RobotState.INTAKING;
-        }
-        if (gamepad2.left_trigger != 0) {
-            robot.runIntake(-gamepad2.left_trigger);
+        if (gamepad1.right_stick_x != 0) {
+            robot.oldIntake(gamepad1.right_stick_x);
             state = RobotState.INTAKING;
         }
 
-        // ------ Passover Controls ------ //
-        if (gamepad2.right_stick_y != 0) {
-            robot.manualArm(-gamepad2.right_stick_y);
+        // ------ Pulley ------ //
+        if (gamepad1.right_stick_y != 0) {
+            robot.manualArm(-gamepad1.right_stick_y);
         } else {
             robot.manualArm(0);
         }
 
         // ------ Claw Controls ------ //
-        if (gamepad2.left_bumper) {
+        if (gamepad1.x) {
             robot.toggleClaw('L');
         }
-        if (gamepad2.right_bumper) {
+        if (gamepad1.y) {
             robot.toggleClaw('R');
         }
 
@@ -169,20 +166,18 @@ public class TeleOpMode extends OpMode {
 
         // --------------- Run Drive Motors --------------- //
         robot.leftFront.setPower(leftFPower);
+        robot.rightFront.setPower(rightFPower);
         robot.leftRear.setPower(leftBPower);
-
-        if (rightFPower != 0){
-            robot.rightFront.setPower(rightFPower +0.1);
-            robot.leftRear.setPower(leftBPower+0.1);
-        }
-        else{
-            robot.rightFront.setPower(rightFPower);
-            robot.leftRear.setPower(leftBPower);
-        }
-
         robot.rightRear.setPower(rightBPower);
-        robot.passoverArmLeft.setPower(-gamepad2.left_stick_y);
-        robot.passoverArmRight.setPower(-gamepad2.left_stick_y);
+
+        if (gamepad1.left_bumper){
+            armPwr = 0.8;
+        }
+        else if (gamepad1.right_bumper){
+            armPwr = -0.8;
+        }
+        robot.passoverArmLeft.setPower(armPwr);
+        robot.passoverArmRight.setPower(-armPwr);
 
         switch (state) {
             case DRIVING:
@@ -209,6 +204,12 @@ public class TeleOpMode extends OpMode {
                 telemetry.addData("Robot State", "UNKNOWN");
                 state = RobotState.UNKNOWN;
                 break;
+        }
+        if (gamepad1.y){
+            robot.moveWrist(1,-1);
+        }
+        else if (gamepad1.a){
+            robot.moveWrist(0,0);
         }
 
         // --------------- Telemetry Updates --------------- //

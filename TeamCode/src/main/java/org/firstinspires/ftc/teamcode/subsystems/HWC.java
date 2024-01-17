@@ -26,8 +26,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 public class HWC {
     // ------ Declare Hardware ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
-    public Servo intakeL, intakeR, wristL, wristR, clawR, clawL, droneKicker, droneAimer;
-    public TouchSensor buttonL, buttonR;
+    public Servo intakeL, wristL, wristR, clawR, clawL, droneKicker, droneAimer;
+   // public TouchSensor buttonL, buttonR;
     public ColorSensor colorLeft, colorRight;
     public CRServo passoverArmLeft, passoverArmRight;
     public WebcamName webcam;
@@ -73,21 +73,21 @@ public class HWC {
 
         // Servos
         intakeL = hardwareMap.get(Servo.class, "intakeL");
-        intakeR = hardwareMap.get(Servo.class, "intakeR");
+       // intakeR = hardwareMap.get(Servo.class, "intakeR");
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
         wristL = hardwareMap.get(Servo.class, "wristL");
         wristR = hardwareMap.get(Servo.class, "wristR");
-        droneAimer = hardwareMap.get(Servo.class, "droneAim");
-        droneKicker = hardwareMap.get(Servo.class, "droneKick");
+       // droneAimer = hardwareMap.get(Servo.class, "droneAim");
+        //droneKicker = hardwareMap.get(Servo.class, "droneKick");
 
         // Continuous Rotation Servos
         passoverArmLeft = hardwareMap.get(CRServo.class, "passoverArmLeft");
         passoverArmRight = hardwareMap.get(CRServo.class, "passoverArmRight");
 
         // Sensors
-        buttonL = hardwareMap.get(TouchSensor.class, "buttonL");
-        buttonR = hardwareMap.get(TouchSensor.class, "buttonR");
+        //buttonL = hardwareMap.get(TouchSensor.class, "buttonL");
+       // buttonR = hardwareMap.get(TouchSensor.class, "buttonR");
         webcam = hardwareMap.get(WebcamName.class, "webcam");
         colorLeft =hardwareMap.get(ColorSensor.class,"colorL");
         colorRight =hardwareMap.get(ColorSensor.class,"colorR");
@@ -156,9 +156,13 @@ public class HWC {
         }
     }
 
+    public void oldIntake(double pwr) {
+        intakeMotor.setPower(pwr);
+    }
+
     public void changeIntakePos(double pos) {
         intakeL.setPosition(pos);
-        intakeR.setPosition(pos);
+       // intakeR.setPosition(pos);
     }
 
     public void toggleClaw(char servo) {
@@ -182,7 +186,7 @@ public class HWC {
         betterSleep(2000);
     }
 
-    public char checkIntakeSensors() {
+    /*public char checkIntakeSensors() {
         //add new sensor if used
         if (buttonL.isPressed() && buttonR.isPressed()) {
             return 'B';
@@ -191,7 +195,7 @@ public class HWC {
         } else if (buttonR.isPressed()) {
             return 'R';
         } else return '0';
-    }
+    }*/
     public String returnColor(ColorSensor CS) {
         int red = CS.red();
         int green = CS.green();
@@ -216,22 +220,22 @@ public class HWC {
     }
 
 
-    public void slapDrone(int pos){
-    droneKicker.setPosition(pos);
+  /*  public void slapDrone(int pos){
+        droneKicker.setPosition(pos);
 
     }
     public void aimDrone(int pos){
         droneAimer.setPosition(pos);
     }
-
-    public void fullIntake() {
+*/
+  /*  public void fullIntake() {
         changeIntakePos(intakePos);
         while (checkIntakeSensors() != 'B') {
             runIntake(1);
         }
         toggleClaw('C');
     }
-
+*/
     public void manualArm(float pwr) {
         leftPulley.setPower(pwr);
         rightPulley.setPower(pwr);
@@ -253,6 +257,11 @@ public class HWC {
         wristR.setPosition(elbowDeliveryPos);
         rightPulley.setTargetPosition(armDeliveryPos);
         leftPulley.setTargetPosition(armDeliveryPos);
+    }
+
+    public void moveWrist(int posL, int posR){
+        wristL.setPosition(posL);
+        wristR.setPosition(posR);
     }
 
     public void movePassover(float pwr) {
