@@ -9,9 +9,9 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -24,15 +24,32 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
  * Stores and Declares all hardware devices &amp; related methods
  */
 public class HWC {
-    // ------ Declare Hardware ------ //
+    // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
+
+    // ------ Declare Servos ------ //
     public Servo intakeL, wristL, wristR, clawR, clawL, droneKicker, droneAimer;
-   // public TouchSensor buttonL, buttonR;
+
+    // ------ Declare Sensors ------ //
     public ColorSensor colorLeft, colorRight;
+
+    // ------ Declare Continuous Rotation Servos ------ //
     public CRServo passoverArmLeft, passoverArmRight;
+
+    // ------ Declare Gamepads ------ //
+    public Gamepad currentGamepad1 = new Gamepad();
+    public Gamepad currentGamepad2 = new Gamepad();
+    public Gamepad previousGamepad1 = new Gamepad();
+    public Gamepad previousGamepad2 = new Gamepad();
+
+    // ------ Declare Webcam ------ //
     public WebcamName webcam;
-    public ElapsedTime time = new ElapsedTime();
+
+    // ------ Declare Roadrunner Drive ------ //
     public SampleMecanumDrive drive;
+
+    // ------ ElapsedTime Variable ------ //
+    public ElapsedTime time = new ElapsedTime();
 
     // ------ Telemetry ------ //
     Telemetry telemetry;
@@ -58,39 +75,34 @@ public class HWC {
         // ------ Declare RR Drivetrain ------ //
         drive = new SampleMecanumDrive(hardwareMap);
 
-        // ------ Retrieve Hardware Devices ------ //
-
-        // Drive Motors
+        // ------ Retrieve Drive Motors ------ //
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
         leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
         rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
 
-        // Other Motors
+        // ------ Retrieve Other Motors ------ //
         rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
         leftPulley = hardwareMap.get(DcMotorEx.class, "pulleyL");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
-        // Servos
+        // ------ Retrieve Servos ------ //
         intakeL = hardwareMap.get(Servo.class, "intakeL");
-       // intakeR = hardwareMap.get(Servo.class, "intakeR");
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
         wristL = hardwareMap.get(Servo.class, "wristL");
         wristR = hardwareMap.get(Servo.class, "wristR");
-       // droneAimer = hardwareMap.get(Servo.class, "droneAim");
-        //droneKicker = hardwareMap.get(Servo.class, "droneKick");
+        // droneAimer = hardwareMap.get(Servo.class, "droneAim");
+        // droneKicker = hardwareMap.get(Servo.class, "droneKick");
 
-        // Continuous Rotation Servos
+        // ------ Retrieve Continuous Rotation Servos ------ //
         passoverArmLeft = hardwareMap.get(CRServo.class, "passoverArmLeft");
         passoverArmRight = hardwareMap.get(CRServo.class, "passoverArmRight");
 
-        // Sensors
-        //buttonL = hardwareMap.get(TouchSensor.class, "buttonL");
-       // buttonR = hardwareMap.get(TouchSensor.class, "buttonR");
+        // ------ Retrieve Sensors ------ //
         webcam = hardwareMap.get(WebcamName.class, "webcam");
-        colorLeft =hardwareMap.get(ColorSensor.class,"colorL");
-        colorRight =hardwareMap.get(ColorSensor.class,"colorR");
+        colorLeft = hardwareMap.get(ColorSensor.class, "colorL");
+        colorRight = hardwareMap.get(ColorSensor.class, "colorR");
 
         // ------ Set Motor Directions ------ //
         leftFront.setDirection(DcMotorEx.Direction.FORWARD);
@@ -140,17 +152,14 @@ public class HWC {
 
     public void runIntake(double pwr) {
         intakeMotor.setPower(pwr);
-        if (returnColor(colorLeft)=="unknown"){
+        if (returnColor(colorLeft) == "unknown") {
             clawL.setPosition(1);
-        }
-        else if (returnColor(colorRight)=="unknown"){
+        } else if (returnColor(colorRight) == "unknown") {
             clawR.setPosition(1);
-        }
-        else if (returnColor(colorLeft) != "unknown"){
+        } else if (returnColor(colorLeft) != "unknown") {
             clawL.setPosition(.15);
 
-        }
-        else if (returnColor(colorRight) != "unknown"){
+        } else if (returnColor(colorRight) != "unknown") {
             clawR.setPosition(.85);
 
         }
@@ -162,13 +171,18 @@ public class HWC {
 
     public void changeIntakePos(double pos) {
         intakeL.setPosition(pos);
-       // intakeR.setPosition(pos);
+        // intakeR.setPosition(pos);
     }
 
     public void toggleClaw(char servo) {
+        // TODO: Check Servo Positions
         switch (servo) {
-            case 'L': clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1); break;
-            case 'R': clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0); break;
+            case 'L':
+                clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1);
+                break;
+            case 'R':
+                clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0);
+                break;
             case 'C':
                 clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0);
                 clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1);
@@ -186,6 +200,7 @@ public class HWC {
             return 'R';
         } else return '0';
     }*/
+
     public String returnColor(ColorSensor CS) {
         int red = CS.red();
         int green = CS.green();
@@ -194,30 +209,25 @@ public class HWC {
 
         if (red > 200 && green > 200 && blue > 200) {
             color = "white";
-        } else if (210 < red && green >200 & blue < 160) {
-            color = "yellow";}
-
-        else if (green > red+blue){
-            color = "green";}
-        else {
-            color = "unknown";}
+        } else if (210 < red && green > 200 & blue < 160) {
+            color = "yellow";
+        } else if (green > red + blue) {
+            color = "green";
+        } else {
+            color = "unknown";
+        }
 
         return color;
     }
 
-    public void testColorSensor(ColorSensor CS){
-        telemetry.addData("R, G, B", CS.argb());
-    }
+    /*  public void slapDrone(int pos){
+          droneKicker.setPosition(pos);
 
-
-  /*  public void slapDrone(int pos){
-        droneKicker.setPosition(pos);
-
-    }
-    public void aimDrone(int pos){
-        droneAimer.setPosition(pos);
-    }
-*/
+      }
+      public void aimDrone(int pos){
+          droneAimer.setPosition(pos);
+      }
+  */
   /*  public void fullIntake() {
         changeIntakePos(intakePos);
         while (checkIntakeSensors() != 'B') {
@@ -226,20 +236,9 @@ public class HWC {
         toggleClaw('C');
     }
 */
-    public void manualArm(float pwr) {
+    public void slideControl(float pwr) {
         leftPulley.setPower(pwr);
         rightPulley.setPower(pwr);
-    }
-
-    public void betterSleep(int milliseconds) {
-        time.reset();
-
-        while (time.milliseconds() > milliseconds) {
-            //noinspection UnnecessaryContinue
-            continue;
-        }
-
-        telemetry.addData("slept for ", milliseconds);
     }
 
     public void moveArmToDelivery() {
@@ -249,12 +248,19 @@ public class HWC {
         leftPulley.setTargetPosition(armDeliveryPos);
     }
 
-    public void moveWrist(int posL, int posR){
+    public void moveWrist(int posL, int posR) {
         wristL.setPosition(posL);
         wristR.setPosition(posR);
     }
 
     public void movePassover(float pwr) {
         passoverArmRight.setPower(pwr);
+    }
+
+    public void resetEncoders() {
+        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
     }
 }

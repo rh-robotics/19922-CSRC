@@ -17,36 +17,28 @@ public class MaxIsAVictim extends OpenCvPipeline {
     private static final Scalar
             lower_blue_bounds = new Scalar(30, 30, 200, 255),
             upper_blue_bounds = new Scalar(70, 70, 255, 255),
-            lower_red_bounds = new Scalar(100, 0, 0 ,255),
-            upper_red_bounds = new Scalar(255, 80, 80 ,255),
-            lower_none_bounds = new Scalar(70, 100, 80 ,255),
-            upper_none_bounds = new Scalar(100, 255, 200 ,255);
-
-    int  i;
-    public MaxIsAVictim(int iteration) {
-        i  =iteration;
-    }
+            lower_red_bounds = new Scalar(100, 0, 0, 255),
+            upper_red_bounds = new Scalar(255, 80, 80, 255),
+            lower_none_bounds = new Scalar(70, 100, 80, 255),
+            upper_none_bounds = new Scalar(100, 255, 200, 255);
     static int X = 145; //145
     static int Y = 0;
-    // TOPLEFT anchor point for the bounding box
-
-
-    private static  Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(X, Y);
     static int W = 100;//30
-
     // Width and height for the bounding box
     public static int REGION_WIDTH = W;
+    // TOPLEFT anchor point for the bounding box
     static int H = 80;//50
     public static int REGION_HEIGHT = H;
+    private static final Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(X, Y);
     // Color definitions
     private final Scalar
             BLUE = new Scalar(0, 0, 255),
             RED = new Scalar(255, 0, 0),
-            NONE = new Scalar(255,255,255);
+            NONE = new Scalar(255, 255, 255);
     private final Mat bluMat = new Mat();
     private final Mat redMat = new Mat();
     private final Mat noneMat = new Mat();
-
+    int i;
     // Anchor point definitions
     /*Point sleeve_pointA = new Point(
             SLEEVE_TOPLEFT_ANCHOR_POINT.x,
@@ -59,12 +51,14 @@ public class MaxIsAVictim extends OpenCvPipeline {
     // Percent and mat definitions
     private double bluPercent, redPercent, nonePercent;
     private Mat blurredMat = new Mat();
+    public MaxIsAVictim(int iteration) {
+        i = iteration;
+    }
 
     // TODO: Update param. descriptions
 
     /**
      * Constructor for SleeveDetection class
-     *
      */
 
 
@@ -72,21 +66,17 @@ public class MaxIsAVictim extends OpenCvPipeline {
     public Mat processFrame(Mat input) {
 
 
-
-
         // Noise reduction
         Rect sleeveRect;
         Imgproc.blur(input, blurredMat, new Size(5, 5));
-        if (i ==1) {
-             sleeveRect = new Rect(0,0,50,80);
+        if (i == 1) {
+            sleeveRect = new Rect(0, 0, 50, 80);
             blurredMat = blurredMat.submat(sleeveRect);
-        }
-        else if (i == 2){
-             sleeveRect = new Rect(80,0,50,80);
+        } else if (i == 2) {
+            sleeveRect = new Rect(80, 0, 50, 80);
             blurredMat = blurredMat.submat(sleeveRect);
-        }
-        else {
-             sleeveRect = new Rect(160,0,50,80);
+        } else {
+            sleeveRect = new Rect(160, 0, 50, 80);
             blurredMat = blurredMat.submat(sleeveRect);
         }
 
@@ -125,8 +115,7 @@ public class MaxIsAVictim extends OpenCvPipeline {
                     RED,
                     2
             );
-        }
-        else{
+        } else {
             position = 0;
             Imgproc.rectangle(
                     input,

@@ -8,7 +8,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name = "Vision Test ", group = "Auto")
+@Autonomous(name = "Vision Test ", group = "Testing")
 public class CVTest extends LinearOpMode {
     OpenCvCamera camera;
     String webcamName = "Webcam 1";

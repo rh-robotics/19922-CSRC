@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.teleop.enums.MultiplierSelection;
+
 /**
  * Enum representing which speed to change in init_loop()
  */
@@ -13,8 +15,8 @@ import com.qualcomm.robotcore.util.Range;
 /**
  * TeleOp OpMode for simply driving with strafing wheels
  */
-@TeleOp(name = "drive", group = "Iterative OpMode")
-public class DriveTest extends OpMode {
+@TeleOp(name = "Drive Only", group = "Testing")
+public class DriveOnly extends OpMode {
     public DcMotorEx leftFront, rightFront, leftRear, rightRear;
     double turnSpeed = 0.6; // Speed multiplier for turning
     double driveSpeed = 1; // Speed multiplier for driving

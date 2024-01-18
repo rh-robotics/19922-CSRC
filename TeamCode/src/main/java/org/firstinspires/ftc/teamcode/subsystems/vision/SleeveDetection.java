@@ -17,10 +17,10 @@ public class SleeveDetection extends OpenCvPipeline {
     private static final Scalar
             lower_blue_bounds = new Scalar(30, 30, 200, 255),
             upper_blue_bounds = new Scalar(70, 70, 255, 255),
-            lower_red_bounds = new Scalar(100, 0, 0 ,255),
-            upper_red_bounds = new Scalar(255, 80, 80 ,255),
-            lower_none_bounds = new Scalar(0, 0, 0 ,255),
-            upper_none_bounds = new Scalar(255, 255, 255 ,255);
+            lower_red_bounds = new Scalar(100, 0, 0, 255),
+            upper_red_bounds = new Scalar(255, 80, 80, 255),
+            lower_none_bounds = new Scalar(0, 0, 0, 255),
+            upper_none_bounds = new Scalar(255, 255, 255, 255);
 
     static int X = 145; //145
     static int Y = 0;
@@ -36,7 +36,7 @@ public class SleeveDetection extends OpenCvPipeline {
     private final Scalar
             BLUE = new Scalar(0, 0, 255),
             RED = new Scalar(255, 0, 0),
-            NONE = new Scalar(255,255,255);
+            NONE = new Scalar(255, 255, 255);
     private final Mat bluMat = new Mat();
     private final Mat redMat = new Mat();
     private final Mat noneMat = new Mat();
@@ -114,8 +114,7 @@ public class SleeveDetection extends OpenCvPipeline {
                     RED,
                     2
             );
-        }
-        else{
+        } else {
             position = 0;
             Imgproc.rectangle(
                     input,

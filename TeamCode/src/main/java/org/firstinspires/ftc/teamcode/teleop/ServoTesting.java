@@ -18,7 +18,7 @@ enum ServoControl {
 /***
  * TeleOp for simply running the passover servos, will be deleted
  */
-@TeleOp(name = "ServoTesting", group = "Testing")
+@TeleOp(name = "Servo Testing", group = "Testing")
 public class ServoTesting extends OpMode {
     final double SERVO_SPEED = 0.001;
     HWC robot;
