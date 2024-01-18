@@ -166,24 +166,14 @@ public class HWC {
     }
 
     public void toggleClaw(char servo) {
-        if (servo == 'L') {
-            // 1 is open, 0.5 is closed. If clawL is open, close it. Otherwise, open it.
-            if (clawL.getPosition() == 1) {
-                clawL.setPosition(0.15);
-            } else {
-                clawL.setPosition(1);
-            }
-        } else if (servo == 'R') {
-            if (clawR.getPosition() == 0) {
-                clawR.setPosition(0.85);
-            } else {
-                clawR.setPosition(0);
-            }
-        } else if (servo == 'C') {
-            clawR.setPosition(0.85);
-            clawL.setPosition(0.15);
+        switch (servo) {
+            case 'L': clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1); break;
+            case 'R': clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0); break;
+            case 'C':
+                clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0);
+                clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1);
+                break;
         }
-        betterSleep(2000);
     }
 
     /*public char checkIntakeSensors() {

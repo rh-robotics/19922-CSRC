@@ -76,7 +76,6 @@ public class ServoTesting extends OpMode {
                 break;
         }
 
-
         // --------------- Update Which Servo Is Being Controlled --------------- //
         if (gamepad1.left_bumper && gamepad1.a)
             servoControl = ServoControl.PASSOVER_LEFT;

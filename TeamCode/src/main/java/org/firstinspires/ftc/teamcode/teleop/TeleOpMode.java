@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.robot.RobotState;
 import com.qualcomm.robotcore.util.Range;
 
@@ -26,7 +27,13 @@ public class TeleOpMode extends OpMode {
     double turnSpeed = 0.5; // Speed multiplier for turning
     double driveSpeed = 1; // Speed multiplier for driving
     double strafeSpeed = 0.8; // Speed multiplier for strafing
-    MultiplierSelection selection = MultiplierSelection.TURN_SPEED; // String for selecting which speed to change
+    MultiplierSelection selection = MultiplierSelection.TURN_SPEED; // Enum for selecting which speed to change
+
+    // ------ GamePads ------ //
+    Gamepad currentGamepad1 = new Gamepad();
+    Gamepad currentGamepad2 = new Gamepad();
+    Gamepad previousGamepad1 = new Gamepad();
+    Gamepad previousGamepad2 = new Gamepad();
 
     // init() Runs ONCE after the driver hits initialize
     @Override
@@ -46,39 +53,44 @@ public class TeleOpMode extends OpMode {
     // init_loop() - Runs continuously until the driver hits play
     @Override
     public void init_loop() {
+        previousGamepad1.copy(currentGamepad1);
+        previousGamepad2.copy(currentGamepad2);
+        currentGamepad1.copy(gamepad1);
+        currentGamepad2.copy(gamepad2);
+
         // Reset Servos to Position 0
         robot.clawL.setPosition(1);
-        robot.clawR.setPosition(0);
+        robot.clawR.setPosition(1);
 
         // Select which speed to change
-        if (gamepad1.a) {
+        if (currentGamepad1.a && !previousGamepad1.a) {
             selection = MultiplierSelection.TURN_SPEED;
-        } else if (gamepad1.b) {
+        } else if (currentGamepad1.b && !previousGamepad1.b) {
             selection = MultiplierSelection.DRIVE_SPEED;
-        } else if (gamepad1.x) {
+        } else if (currentGamepad1.x && !previousGamepad1.x) {
             selection = MultiplierSelection.STRAFE_SPEED;
         }
 
         // Change the speed multiplier for selection
         switch (selection) {
             case TURN_SPEED:
-                if (gamepad1.dpad_up) {
+                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
                     turnSpeed += 0.1;
-                } else if (gamepad1.dpad_down) {
+                } else if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
                     turnSpeed -= 0.1;
                 }
                 break;
             case DRIVE_SPEED:
-                if (gamepad1.dpad_up) {
+                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
                     driveSpeed += 0.1;
-                } else if (gamepad1.dpad_down) {
+                } else if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
                     driveSpeed -= 0.1;
                 }
                 break;
             case STRAFE_SPEED:
-                if (gamepad1.dpad_up) {
+                if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
                     strafeSpeed += 0.1;
-                } else if (gamepad1.dpad_down) {
+                } else if (currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
                     strafeSpeed -= 0.1;
                 }
                 break;
@@ -111,15 +123,22 @@ public class TeleOpMode extends OpMode {
     // loop() - Runs continuously while the OpMode is active
     @Override
     public void loop() {
+        // ------ GamePad Updates ------ //
+        previousGamepad1.copy(currentGamepad1);
+        previousGamepad2.copy(currentGamepad2);
+        currentGamepad1.copy(gamepad1);
+        currentGamepad2.copy(gamepad2);
+
+        // ------ Power & Controller Values ------ //
         double leftFPower;
         double rightFPower;
         double leftBPower;
         double rightBPower;
-        double drive = -gamepad1.left_stick_x * driveSpeed;
-        double turn = gamepad1.left_stick_y * turnSpeed;
-        double strafe = -gamepad1.right_stick_x * strafeSpeed;
+        double drive = -currentGamepad1.left_stick_x * driveSpeed;
+        double turn = currentGamepad1.left_stick_y * turnSpeed;
+        double strafe = -currentGamepad1.right_stick_x * strafeSpeed;
 
-        // --------------- Calculate drive power --------------- //
+        // ------ Calculate Drive Power ------ //
         if (drive != 0 || turn != 0) {
             state = RobotState.DRIVING;
             leftFPower = Range.clip(drive + turn, -1.0, 1.0);
@@ -141,49 +160,39 @@ public class TeleOpMode extends OpMode {
         }
 
         // ------ Intake Controls ------ //
-        if (gamepad2.right_trigger != 0) {
-            robot.runIntake(gamepad2.right_trigger);
+        if (currentGamepad2.right_trigger != 0) {
+            robot.runIntake(currentGamepad2.right_trigger);
             state = RobotState.INTAKING;
         }
-        if (gamepad2.left_trigger != 0) {
-            robot.runIntake(-gamepad2.left_trigger);
+        if (currentGamepad2.left_trigger != 0) {
+            robot.runIntake(-currentGamepad2.left_trigger);
             state = RobotState.INTAKING;
         }
 
         // ------ Passover Controls ------ //
-        if (gamepad2.right_stick_y != 0) {
-            robot.manualArm(-gamepad2.right_stick_y);
+        if (currentGamepad2.right_stick_y != 0) {
+            robot.manualArm(-currentGamepad2.right_stick_y);
         } else {
             robot.manualArm(0);
         }
 
         // ------ Claw Controls ------ //
-        if (gamepad2.left_bumper) {
+        if (currentGamepad2.left_bumper && !previousGamepad2.left_bumper) {
             robot.toggleClaw('L');
         }
-        if (gamepad2.right_bumper) {
+        if (currentGamepad2.right_bumper && !previousGamepad2.right_bumper) {
             robot.toggleClaw('R');
         }
 
-
-
-        // --------------- Run Drive Motors --------------- //
+        // ------ Run Motors ------ //
         robot.leftFront.setPower(leftFPower);
         robot.leftRear.setPower(leftBPower);
-
-        if (rightFPower != 0){
-            robot.rightFront.setPower(rightFPower +0.1);
-            robot.leftRear.setPower(leftBPower+0.1);
-        }
-        else{
-            robot.rightFront.setPower(rightFPower);
-            robot.leftRear.setPower(leftBPower);
-        }
-
+        robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
-        robot.passoverArmLeft.setPower(-gamepad2.left_stick_y);
-        robot.passoverArmRight.setPower(-gamepad2.left_stick_y);
+        robot.passoverArmLeft.setPower(-currentGamepad2.left_stick_y);
+        robot.passoverArmRight.setPower(-currentGamepad2.left_stick_y);
 
+        // ------ State Machine ------ //
         switch (state) {
             case DRIVING:
                 telemetry.addData("Robot State", "Driving");
@@ -211,7 +220,7 @@ public class TeleOpMode extends OpMode {
                 break;
         }
 
-        // --------------- Telemetry Updates --------------- //
+        // ------ Telemetry Updates ------ //
         telemetry.addData("Status", "Running");
         telemetry.addData("Robot State", state);
         telemetry.addLine();
@@ -229,6 +238,13 @@ public class TeleOpMode extends OpMode {
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
         telemetry.addData("Left Passover Power", robot.passoverArmLeft.getPower());
         telemetry.addData("Right Passover Power", robot.passoverArmRight.getPower());
+        telemetry.addLine();
+        telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
+        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
+        telemetry.addLine();
+        telemetry.addData("Gamepad 2 Left Trigger", currentGamepad2.left_bumper);
+        telemetry.addData("Gamepad 2 Right Trigger", currentGamepad2.right_bumper);
+
         telemetry.update();
     }
 
