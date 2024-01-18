@@ -57,10 +57,10 @@ public class ServoTesting extends OpMode {
     public void loop() {
         switch (servoControl) {
             case PASSOVER_LEFT:
-                servoPower = robot.passoverArmLeft.getPower();
+                servoPower = robot.passoverArmLeft.getPosition();
                 break;
             case PASSOVER_RIGHT:
-                servoPower = robot.passoverArmRight.getPower();
+                servoPower = robot.passoverArmRight.getPosition();
                 break;
             case WRIST_LEFT:
                 servoPosition = robot.wristL.getPosition();
@@ -113,10 +113,10 @@ public class ServoTesting extends OpMode {
         // --------------- Move Servos --------------- //
         switch (servoControl) {
             case PASSOVER_LEFT:
-                robot.passoverArmLeft.setPower(servoPower);
+              //  robot.passoverArmLeft.setPower(servoPower);
                 break;
             case PASSOVER_RIGHT:
-                robot.passoverArmRight.setPower(servoPower);
+              //  robot.passoverArmRight.setPower(servoPower);
                 break;
             case WRIST_LEFT:
                 robot.wristL.setPosition(servoPosition);
@@ -147,8 +147,8 @@ public class ServoTesting extends OpMode {
         telemetry.addData("Servo Target Position", servoPosition);
         telemetry.addData("Servo Target Power", servoPower);
         telemetry.addLine();
-        telemetry.addData("Passover Left Actual Power", robot.passoverArmLeft.getPower());
-        telemetry.addData("Passover Right Actual Power", robot.passoverArmRight.getPower());
+        telemetry.addData("Passover Left Actual Power", robot.passoverArmLeft.getPosition());
+        telemetry.addData("Passover Right Actual Power", robot.passoverArmRight.getPosition());
         telemetry.addData("Wrist Left Actual Position", robot.wristL.getPosition());
         telemetry.addData("Wrist Right Actual Position", robot.wristR.getPosition());
         telemetry.addData("Claw Left Actual Position", robot.clawL.getPosition());

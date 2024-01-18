@@ -28,13 +28,13 @@ public class HWC {
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
 
     // ------ Declare Servos ------ //
-    public Servo intakeL, wristL, wristR, clawR, clawL, droneKicker, droneAimer;
+    public Servo intakeL, wristL, wristR, clawR, clawL,passoverArmLeft, passoverArmRight, droneKicker, droneAimer;
 
     // ------ Declare Sensors ------ //
     public ColorSensor colorLeft, colorRight;
 
     // ------ Declare Continuous Rotation Servos ------ //
-    public CRServo passoverArmLeft, passoverArmRight;
+    //public CRServo passoverArmLeft, passoverArmRight;
 
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
@@ -96,8 +96,8 @@ public class HWC {
         // droneKicker = hardwareMap.get(Servo.class, "droneKick");
 
         // ------ Retrieve Continuous Rotation Servos ------ //
-        passoverArmLeft = hardwareMap.get(CRServo.class, "passoverArmLeft");
-        passoverArmRight = hardwareMap.get(CRServo.class, "passoverArmRight");
+        passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
+        passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
 
         // ------ Retrieve Sensors ------ //
         webcam = hardwareMap.get(WebcamName.class, "webcam");
@@ -110,8 +110,7 @@ public class HWC {
         leftRear.setDirection(DcMotorEx.Direction.FORWARD);
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
         leftPulley.setDirection(DcMotorEx.Direction.REVERSE);
-        passoverArmLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        passoverArmRight.setDirection(DcMotorSimple.Direction.FORWARD);
+
 
         // ------ Set Motor Brake Modes ------ //
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -253,8 +252,9 @@ public class HWC {
         wristR.setPosition(posR);
     }
 
-    public void movePassover(float pwr) {
-        passoverArmRight.setPower(pwr);
+    public void movePassover(int pos1, int pos2) {
+        passoverArmRight.setPosition(pos1);
+        passoverArmLeft.setPosition(pos2);
     }
 
     public void resetEncoders() {

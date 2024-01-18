@@ -174,8 +174,7 @@ public class TwoDriverTeleOp extends OpMode {
         robot.leftRear.setPower(leftBPower);
         robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
-        robot.passoverArmLeft.setPower(-robot.currentGamepad2.left_stick_y);
-        robot.passoverArmRight.setPower(-robot.currentGamepad2.left_stick_y);
+
 
         // ------ State Machine ------ //
         switch (state) {
@@ -221,8 +220,8 @@ public class TwoDriverTeleOp extends OpMode {
         telemetry.addLine();
         telemetry.addData("Claw Left Position", robot.clawL.getPosition());
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
-        telemetry.addData("Left Passover Power", robot.passoverArmLeft.getPower());
-        telemetry.addData("Right Passover Power", robot.passoverArmRight.getPower());
+        telemetry.addData("Left Passover Power", robot.passoverArmLeft.getPosition());
+        telemetry.addData("Right Passover Power", robot.passoverArmRight.getPosition());
         telemetry.addLine();
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
