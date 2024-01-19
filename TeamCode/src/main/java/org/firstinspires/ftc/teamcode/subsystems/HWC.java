@@ -17,8 +17,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.teamcode.subsystems.vision.tensorflowFPA;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
 
 /**
  * Stores and Declares all hardware devices &amp; related methods
@@ -262,5 +264,39 @@ public class HWC {
         rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void betterSleep(int milliseconds){
+        time.reset();
+        while (time.milliseconds() > milliseconds){}
+       // telemetry.addData("slept for ", milliseconds);
+    }
+    public void sleepDrive(int time){
+        leftFront.setPower(0.3);
+        rightFront.setPower(0.3);
+        leftRear.setPower(0.3);
+        rightRear.setPower(0.3);
+        betterSleep(time);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+
+    }
+
+    public int cv(){
+         double pos = 0; //set it to a value depending on locaiton of obkect
+         if (pos > 800){
+             return 0;
+         }
+         else if (pos < 100){
+             return 1;
+         }
+         else if (pos < 400){
+             return 2;
+        }
+         else if (pos < 800){
+             return 3;
+         }
+         else {return 0;}
     }
 }
