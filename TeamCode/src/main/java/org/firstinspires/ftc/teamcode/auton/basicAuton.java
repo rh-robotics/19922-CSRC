@@ -28,7 +28,9 @@ public class basicAuton extends LinearOpMode {
         boolean delivered = false;
         while (!delivered) {
             if (pos == 1) {
-
+            robot.sleepDrive(500);
+            robot.rightRear.setPower(0.2);
+           // robot.leftFront
 
             }
         }

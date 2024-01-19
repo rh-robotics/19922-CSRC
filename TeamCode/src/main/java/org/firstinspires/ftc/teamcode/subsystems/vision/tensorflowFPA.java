@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
@@ -51,12 +52,12 @@ import java.util.List;
  */
 @TeleOp(name = "FPA vision test", group = "Concept")
 public class tensorflowFPA extends LinearOpMode {
-
+  //
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
     private static final String TFOD_MODEL_ASSET = "fpaVision.tflite";
     private static final String[] LABELS = {
-            "blue", "r", "red"
+            "blue","r","red"
     };
 
     /**
@@ -71,7 +72,7 @@ public class tensorflowFPA extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+        HWC robot = new HWC(hardwareMap, telemetry);
         initTfod();
 
         // Wait for the DS start button to be touched.
@@ -136,7 +137,7 @@ public class tensorflowFPA extends LinearOpMode {
 
         // Set the camera (webcam vs. built-in RC phone camera).
         if (USE_WEBCAM) {
-            builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+            builder.setCamera(hardwareMap.get(WebcamName.class, "webcam"));
         } else {
             builder.setCamera(BuiltinCameraDirection.BACK);
         }

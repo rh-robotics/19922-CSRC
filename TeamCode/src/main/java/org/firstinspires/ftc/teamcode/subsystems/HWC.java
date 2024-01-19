@@ -4,6 +4,7 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
+import com.arcrobotics.ftclib.kinematics.Odometry;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,6 +21,7 @@ import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumD
 import org.firstinspires.ftc.teamcode.subsystems.vision.tensorflowFPA;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.openftc.easyopencv.OpenCvInternalCamera;
 
 
 /**
@@ -34,6 +36,7 @@ public class HWC {
 
     // ------ Declare Sensors ------ //
     public ColorSensor colorLeft, colorRight;
+    //public DcMotorEx xWheel, yWheel;
 
     // ------ Declare Continuous Rotation Servos ------ //
     //public CRServo passoverArmLeft, passoverArmRight;
@@ -76,6 +79,10 @@ public class HWC {
 
         // ------ Declare RR Drivetrain ------ //
         drive = new SampleMecanumDrive(hardwareMap);
+
+        // ------- Odemetry ------//
+       // xWheel = hardwareMap.get(DcMotorEx.class, "odoX");
+        //yWheel = hardwareMap.get(DcMotorEx.class,"odoY");
 
         // ------ Retrieve Drive Motors ------ //
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -282,6 +289,28 @@ public class HWC {
         rightRear.setPower(0);
 
     }
+
+//
+public void odoDrive(int distance){
+        leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // y axis
+        rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
+        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
+        while (leftFront.getCurrentPosition() * -1 < distance && rightRear.getCurrentPosition() < distance){
+            leftFront.setPower(0.3);
+            rightFront.setPower(0.3);
+            leftRear.setPower(0.3);
+            rightRear.setPower(0.3);
+        }
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+}
+
+public void odoTurn(int degrees){
+
+}
+
 
     public int cv(){
          double pos = 0; //set it to a value depending on locaiton of obkect
