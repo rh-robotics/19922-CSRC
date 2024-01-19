@@ -53,7 +53,8 @@ public class HWC {
     int intakePos = 5;
     int armDeliveryPos = 6;
     int armRetractedPos = 0;
-    double elbowDeliveryPos = 20;
+    double wristDeliveryPos = 20;
+    double wristIntakePos = 0;
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -175,9 +176,17 @@ public class HWC {
 
     // ------ Function to Move to Delivery Pos. ------ //
     public void moveArmToDelivery() {
-        wrist.setPosition(elbowDeliveryPos);
+        wrist.setPosition(wristDeliveryPos);
         rightPulley.setTargetPosition(armDeliveryPos);
         leftPulley.setTargetPosition(armDeliveryPos);
+    }
+
+    // ------ Function to Move to Intake Pos. ------ //
+    public void moveArmToIntake() {
+        // TODO: Update Position Values
+        wrist.setPosition(wristIntakePos);
+        rightPulley.setTargetPosition(intakePos);
+        leftPulley.setTargetPosition(intakePos);
     }
 
     // ------ Function to Reset Encoders in an Emergency ------ //
