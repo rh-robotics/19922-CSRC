@@ -190,12 +190,6 @@ public class SingleDriverTeleOp extends OpMode {
             robot.slideControl(0);
         }
 
-        // ------ Climb Button ------ //
-        // TODO: Create Climb Method & Test
-        if (robot.currentGamepad2.a && !robot.previousGamepad2.a) {
-//            robot.climb();
-        }
-
         // ------ EMERGENCY RESET ENCODERS ------ //
         if (robot.currentGamepad1.back && !robot.previousGamepad1.back) {
             robot.resetEncoders();
@@ -206,8 +200,11 @@ public class SingleDriverTeleOp extends OpMode {
         robot.leftRear.setPower(leftBPower);
         robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
+
+        // ------ Run Servos ------ //
         robot.passoverArmLeft.setPosition(passoverPosition);
         robot.passoverArmRight.setPosition(passoverPosition);
+        robot.wrist.setPosition(wristPosition);
 
         // ------ State Machine ------ //
         switch (state) {

@@ -121,6 +121,7 @@ public class TwoDriverTeleOp extends OpMode {
         double leftBPower;
         double rightBPower;
         double passoverPosition = robot.passoverArmLeft.getPosition();
+        double wristPosition = robot.wrist.getPosition();
         double drive = -robot.currentGamepad1.left_stick_x * driveSpeed;
         double turn = robot.currentGamepad1.left_stick_y * turnSpeed;
         double strafe = -robot.currentGamepad1.right_stick_x * strafeSpeed;
@@ -162,6 +163,13 @@ public class TwoDriverTeleOp extends OpMode {
             passoverPosition -= 0.05;
         }
 
+        // ------ Wrist Controls ------ //
+        if(robot.currentGamepad2.dpad_up && !robot.previousGamepad2.dpad_up) {
+            wristPosition += 0.1;
+        } else if(robot.currentGamepad2.dpad_down && !robot.previousGamepad2.dpad_down) {
+            wristPosition -= 0.1;
+        }
+
         // ------ Claw Controls ------ //
         if (robot.currentGamepad2.x && !robot.previousGamepad2.x) {
             robot.toggleClaw('L');
@@ -175,8 +183,11 @@ public class TwoDriverTeleOp extends OpMode {
         robot.leftRear.setPower(leftBPower);
         robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
+
+        // ------ Run Servos ------ //
         robot.passoverArmLeft.setPosition(passoverPosition);
         robot.passoverArmRight.setPosition(passoverPosition);
+        robot.wrist.setPosition(wristPosition);
 
         // ------ State Machine ------ //
         switch (state) {
@@ -223,7 +234,10 @@ public class TwoDriverTeleOp extends OpMode {
         telemetry.addData("Claw Left Position", robot.clawL.getPosition());
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
         telemetry.addData("Left Passover Position", robot.passoverArmLeft.getPosition());
-        telemetry.addData("Right Passover Power", robot.passoverArmRight.getPosition());
+        telemetry.addData("Right Passover Position", robot.passoverArmRight.getPosition());
+        telemetry.addData("Passover Target Position", passoverPosition);
+        telemetry.addData("Wrist Position", robot.wrist.getPosition());
+        telemetry.addData("Wrist Target Position", wristPosition);
         telemetry.addLine();
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
