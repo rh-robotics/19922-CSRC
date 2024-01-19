@@ -1,14 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import android.util.Size;
-
 import androidx.annotation.NonNull;
 
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -17,8 +13,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+
+import java.util.Objects;
 
 /**
  * Stores and Declares all hardware devices &amp; related methods
@@ -28,7 +24,7 @@ public class HWC {
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
 
     // ------ Declare Servos ------ //
-    public Servo intakeL, wrist, clawR, clawL, passoverArmLeft, passoverArmRight, droneKicker, droneAimer;
+    public Servo intakeArm, wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
 
     // ------ Declare Sensors ------ //
     public ColorSensor colorLeft, colorRight;
@@ -84,12 +80,10 @@ public class HWC {
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
         // ------ Retrieve Servos ------ //
-        intakeL = hardwareMap.get(Servo.class, "intakeL");
+        intakeArm = hardwareMap.get(Servo.class, "intakeArm");
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
-        wrist = hardwareMap.get(Servo.class, "wristL");
-        // droneAimer = hardwareMap.get(Servo.class, "droneAim");
-        // droneKicker = hardwareMap.get(Servo.class, "droneKick");
+        wrist = hardwareMap.get(Servo.class, "wrist");
         passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
         passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
 
@@ -122,52 +116,23 @@ public class HWC {
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    /**
-     * Initialize the AprilTag processor.
-     */
-    public static void initAprilTag(AprilTagProcessor aprilTag, VisionPortal visionPortal, HWC robot) {
-
-        aprilTag = new AprilTagProcessor.Builder()
-                .setDrawTagOutline(true)
-                //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-                .build();
-
-        // Create the vision portal by using a builder.
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-
-        builder.setCamera(robot.webcam); // Set Camera to webcam
-        builder.setCameraResolution(new Size(640, 480)); // Set Camera Resolution
-        builder.enableLiveView(true); // Enable preview on Robot Controller (Driver Station)
-        builder.addProcessor(aprilTag); // Set and enable the processor
-        visionPortal = builder.build(); // Build the Vision Portal, using the above settings
-    }
-
+    // ------ Function to Run Intake ------ //
+    // Runs intake at given power until color sensor detects a pixel
     public void runIntake(double pwr) {
         intakeMotor.setPower(pwr);
-        if (returnColor(colorLeft) == "unknown") {
+        if (Objects.equals(getColor(colorLeft), "unknown")) {
             clawL.setPosition(1);
-        } else if (returnColor(colorRight) == "unknown") {
+        } else if (Objects.equals(getColor(colorRight), "unknown")) {
             clawR.setPosition(1);
-        } else if (returnColor(colorLeft) != "unknown") {
+        } else if (!Objects.equals(getColor(colorLeft), "unknown")) {
             clawL.setPosition(.15);
-
-        } else if (returnColor(colorRight) != "unknown") {
+        } else if (!Objects.equals(getColor(colorRight), "unknown")) {
             clawR.setPosition(.85);
-
         }
     }
 
-    public void oldIntake(double pwr) {
-        intakeMotor.setPower(pwr);
-    }
-
-    public void changeIntakePos(double pos) {
-        intakeL.setPosition(pos);
-        // intakeR.setPosition(pos);
-    }
-
+    // ------ Function to Toggle Claw (Open/Close) ------ //
     public void toggleClaw(char servo) {
-        // TODO: Check Servo Positions
         switch (servo) {
             case 'L':
                 clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1);
@@ -182,18 +147,8 @@ public class HWC {
         }
     }
 
-    /*public char checkIntakeSensors() {
-        //add new sensor if used
-        if (buttonL.isPressed() && buttonR.isPressed()) {
-            return 'B';
-        } else if (buttonL.isPressed()) {
-            return 'L';
-        } else if (buttonR.isPressed()) {
-            return 'R';
-        } else return '0';
-    }*/
-
-    public String returnColor(ColorSensor CS) {
+    // ------ Function to get Color ------ //
+    public String getColor(ColorSensor CS) {
         int red = CS.red();
         int green = CS.green();
         int blue = CS.blue();
@@ -212,33 +167,20 @@ public class HWC {
         return color;
     }
 
-    /*  public void slapDrone(int pos){
-          droneKicker.setPosition(pos);
-
-      }
-      public void aimDrone(int pos){
-          droneAimer.setPosition(pos);
-      }
-  */
-  /*  public void fullIntake() {
-        changeIntakePos(intakePos);
-        while (checkIntakeSensors() != 'B') {
-            runIntake(1);
-        }
-        toggleClaw('C');
-    }
-*/
-    public void slideControl(float pwr) {
+    // ------ Function to Power Slides ------ //
+    public void powerSlides(float pwr) {
         leftPulley.setPower(pwr);
         rightPulley.setPower(pwr);
     }
 
+    // ------ Function to Move to Delivery Pos. ------ //
     public void moveArmToDelivery() {
         wrist.setPosition(elbowDeliveryPos);
         rightPulley.setTargetPosition(armDeliveryPos);
         leftPulley.setTargetPosition(armDeliveryPos);
     }
 
+    // ------ Function to Reset Encoders in an Emergency ------ //
     public void resetEncoders() {
         leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);

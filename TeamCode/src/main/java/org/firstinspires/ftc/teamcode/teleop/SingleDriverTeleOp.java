@@ -125,7 +125,7 @@ public class SingleDriverTeleOp extends OpMode {
         double passoverPosition = robot.passoverArmLeft.getPosition();
         double wristPosition = robot.wrist.getPosition();
         double drive = -robot.currentGamepad1.left_stick_y * driveSpeed;
-        double turn = (robot.currentGamepad1.left_trigger - robot.currentGamepad1.right_trigger) * turnSpeed;
+        double turn = (robot.currentGamepad1.left_trigger + robot.currentGamepad1.right_trigger) * turnSpeed;
         double strafe = -robot.currentGamepad1.left_stick_x * strafeSpeed;
 
         // ------ Calculate Drive Power ------ //
@@ -150,15 +150,15 @@ public class SingleDriverTeleOp extends OpMode {
 
         // ------ Intake Controls ------ //
         if (robot.currentGamepad1.right_stick_x != 0) {
-            robot.oldIntake(robot.currentGamepad1.right_stick_x);
+            robot.intakeMotor.setPower(robot.currentGamepad1.right_stick_x);
             state = TeleOpState.INTAKING;
         }
 
         // ------ Slide Controls ------ //
         if (robot.currentGamepad1.right_stick_y != 0) {
-            robot.slideControl(-robot.currentGamepad1.right_stick_y);
+            robot.powerSlides(-robot.currentGamepad1.right_stick_y);
         } else {
-            robot.slideControl(0);
+            robot.powerSlides(0);
         }
 
         // ------ Claw Controls ------ //
@@ -177,17 +177,17 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ Wrist Controls ------ //
-        if(robot.currentGamepad2.dpad_up && !robot.previousGamepad2.dpad_up) {
+        if(robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
             wristPosition += 0.1;
-        } else if(robot.currentGamepad2.dpad_down && !robot.previousGamepad2.dpad_down) {
+        } else if(robot.currentGamepad1.dpad_down && !robot.previousGamepad1.dpad_down) {
             wristPosition -= 0.1;
         }
 
         // ------ Slides MANUAL Control ------ //
         if (robot.currentGamepad2.right_stick_y != 0) {
-            robot.slideControl(0);
+            robot.powerSlides(0);
         } else {
-            robot.slideControl(0);
+            robot.powerSlides(0);
         }
 
         // ------ EMERGENCY RESET ENCODERS ------ //
@@ -242,6 +242,8 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.addData("Left Stick X", "Strafing Left / Right");
         telemetry.addData("Left Stick Y", "Driving Forward / Backward");
         telemetry.addData("Left Trigger / Right Trigger", "Turning Left / Right");
+        telemetry.addData("Left Bumper / Right Bumper", "Passover Up / Down");
+        telemetry.addData("D-Pad Up / Down", "Wrist Up / Down");
         telemetry.addData("Right Stick X", "Intake In / Out");
         telemetry.addData("Right Stick Y", "Slides Up / Down");
         telemetry.addData("Button B", "Delivery Position");
@@ -251,6 +253,7 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.addLine();
         telemetry.addData("ALL MANUAL & EMERGENCY CONTROLS ARE ON GAMEPAD 2", "");
         telemetry.addData("Right Stick Y", "Slides Manual Control");
+        telemetry.addData("D-Pad Up / Down", "Wrist Up / Down");
         telemetry.addData("Button A", "Climb [NOT IMPLEMENTED]");
         telemetry.addData("Button B", "Emergency Encoder Reset [USE WITH CAUTION]");
         telemetry.addLine();
