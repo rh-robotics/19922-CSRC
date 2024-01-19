@@ -82,14 +82,16 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ Enabling Testing Mode ------ //
-        if (robot.currentGamepad1.left_bumper && robot.currentGamepad1.right_bumper && !robot.previousGamepad1.left_bumper && !robot.previousGamepad1.right_bumper) {
-            testingMode = true;
+        if ((robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) && (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper)) {
+            testingMode = !testingMode;
+        }
 
+        // ------ Telemetry ------ //
+        if(testingMode) {
             telemetry.addData("TESTING MODE IS ENABLED. CONTROLLER OUTPUTS WILL BE SHOWN.", "");
             telemetry.addLine();
         }
 
-        // ------ Telemetry ------ //
         telemetry.addData("Press A to start changing turn speed", "");
         telemetry.addData("Press B to start changing drive speed", "");
         telemetry.addData("Press X to start changing strafe speed", "");
@@ -120,9 +122,10 @@ public class SingleDriverTeleOp extends OpMode {
         double rightFPower;
         double leftBPower;
         double rightBPower;
-        double armPower;
+        double passoverPosition = robot.passoverArmLeft.getPosition();
+        double wristPosition = robot.wrist.getPosition();
         double drive = -robot.currentGamepad1.left_stick_y * driveSpeed;
-        double turn = (robot.currentGamepad1.right_trigger - robot.currentGamepad1.left_trigger) * turnSpeed;
+        double turn = (robot.currentGamepad1.left_trigger - robot.currentGamepad1.right_trigger) * turnSpeed;
         double strafe = -robot.currentGamepad1.left_stick_x * strafeSpeed;
 
         // ------ Calculate Drive Power ------ //
@@ -167,12 +170,17 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ Passover Controls ------ //
-        // WARNING: DO NOT USE THESE CONTROLS. THE POWER IS NEVER RESET.
-        // TODO: Fix Passover Controls to use servo positions
-        if (robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) {
-            armPower = 0.8;
-        } else if (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) {
-            armPower = -0.8;
+        if(robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) {
+            passoverPosition += 0.1;
+        } else if(robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) {
+            passoverPosition -= 0.1;
+        }
+
+        // ------ Wrist Controls ------ //
+        if(robot.currentGamepad2.dpad_up && !robot.previousGamepad2.dpad_up) {
+            wristPosition += 0.1;
+        } else if(robot.currentGamepad2.dpad_down && !robot.previousGamepad2.dpad_down) {
+            wristPosition -= 0.1;
         }
 
         // ------ Slides MANUAL Control ------ //
@@ -198,8 +206,8 @@ public class SingleDriverTeleOp extends OpMode {
         robot.leftRear.setPower(leftBPower);
         robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
-        robot.passoverArmLeft.setPower(-robot.currentGamepad2.left_stick_y);
-        robot.passoverArmRight.setPower(-robot.currentGamepad2.left_stick_y);
+        robot.passoverArmLeft.setPosition(passoverPosition);
+        robot.passoverArmRight.setPosition(passoverPosition);
 
         // ------ State Machine ------ //
         switch (state) {
@@ -251,8 +259,11 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.addLine();
         telemetry.addData("Claw Left Position", robot.clawL.getPosition());
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
-        telemetry.addData("Left Passover Power", robot.passoverArmLeft.getPower());
-        telemetry.addData("Right Passover Power", robot.passoverArmRight.getPower());
+        telemetry.addData("Left Passover Position", robot.passoverArmLeft.getPosition());
+        telemetry.addData("Right Passover Position", robot.passoverArmRight.getPosition());
+        telemetry.addData("Target Passover Position", passoverPosition);
+        telemetry.addData("Wrist Position", robot.wrist.getPosition());
+        telemetry.addData("Target Wrist Position", wristPosition);
         telemetry.addLine();
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
