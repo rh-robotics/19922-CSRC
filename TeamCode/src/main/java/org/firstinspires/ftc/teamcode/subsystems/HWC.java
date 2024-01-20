@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import androidx.annotation.NonNull;
 
+import com.arcrobotics.ftclib.kinematics.Odometry;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -13,8 +15,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
+import org.firstinspires.ftc.vision.VisionPortal;
+import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
+import org.openftc.easyopencv.OpenCvInternalCamera;
 
-import java.util.Objects;
 
 /**
  * Stores and Declares all hardware devices &amp; related methods
@@ -24,10 +28,14 @@ public class HWC {
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
 
     // ------ Declare Servos ------ //
-    public Servo intakeArm, wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
+    public Servo intakeL, wristL, wristR, clawR, clawL,passoverArmLeft, passoverArmRight, droneKicker, droneAimer;
 
     // ------ Declare Sensors ------ //
     public ColorSensor colorLeft, colorRight;
+    //public DcMotorEx xWheel, yWheel;
+
+    // ------ Declare Continuous Rotation Servos ------ //
+    //public CRServo passoverArmLeft, passoverArmRight;
 
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
@@ -69,6 +77,10 @@ public class HWC {
         // ------ Declare RR Drivetrain ------ //
         drive = new SampleMecanumDrive(hardwareMap);
 
+        // ------- Odemetry ------//
+       // xWheel = hardwareMap.get(DcMotorEx.class, "odoX");
+        //yWheel = hardwareMap.get(DcMotorEx.class,"odoY");
+
         // ------ Retrieve Drive Motors ------ //
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
@@ -84,7 +96,12 @@ public class HWC {
         intakeArm = hardwareMap.get(Servo.class, "intakeArm");
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
-        wrist = hardwareMap.get(Servo.class, "wrist");
+        wristL = hardwareMap.get(Servo.class, "wristL");
+        wristR = hardwareMap.get(Servo.class, "wristR");
+        // droneAimer = hardwareMap.get(Servo.class, "droneAim");
+        // droneKicker = hardwareMap.get(Servo.class, "droneKick");
+
+        // ------ Retrieve Continuous Rotation Servos ------ //
         passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
         passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
 
@@ -99,6 +116,7 @@ public class HWC {
         leftRear.setDirection(DcMotorEx.Direction.FORWARD);
         rightRear.setDirection(DcMotorEx.Direction.FORWARD);
         leftPulley.setDirection(DcMotorEx.Direction.REVERSE);
+
 
         // ------ Set Motor Brake Modes ------ //
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -181,19 +199,76 @@ public class HWC {
         leftPulley.setTargetPosition(armDeliveryPos);
     }
 
-    // ------ Function to Move to Intake Pos. ------ //
-    public void moveArmToIntake() {
-        // TODO: Update Position Values
-        wrist.setPosition(wristIntakePos);
-        rightPulley.setTargetPosition(intakePos);
-        leftPulley.setTargetPosition(intakePos);
+    public void moveWrist(int posL, int posR) {
+        wristL.setPosition(posL);
+        wristR.setPosition(posR);
     }
 
-    // ------ Function to Reset Encoders in an Emergency ------ //
+    public void movePassover(int pos1, int pos2) {
+        passoverArmRight.setPosition(pos1);
+        passoverArmLeft.setPosition(pos2);
+    }
+
     public void resetEncoders() {
         leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+    }
+    public void betterSleep(int milliseconds){
+        time.reset();
+        while (time.milliseconds() > milliseconds){}
+       // telemetry.addData("slept for ", milliseconds);
+    }
+    public void sleepDrive(int time){
+        leftFront.setPower(0.3);
+        rightFront.setPower(0.3);
+        leftRear.setPower(0.3);
+        rightRear.setPower(0.3);
+        betterSleep(time);
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+
+    }
+
+//
+public void odoDrive(int distance){
+        leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // y axis
+        rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
+        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
+        while (leftFront.getCurrentPosition() * -1 < distance && rightRear.getCurrentPosition() < distance){
+            leftFront.setPower(0.3);
+            rightFront.setPower(0.3);
+            leftRear.setPower(0.3);
+            rightRear.setPower(0.3);
+        }
+        leftFront.setPower(0);
+        rightFront.setPower(0);
+        leftRear.setPower(0);
+        rightRear.setPower(0);
+}
+
+public void odoTurn(int degrees){
+
+}
+
+
+    public int cv(){
+         double pos = 0; //set it to a value depending on locaiton of obkect
+         if (pos > 800){
+             return 0;
+         }
+         else if (pos < 100){
+             return 1;
+         }
+         else if (pos < 400){
+             return 2;
+        }
+         else if (pos < 800){
+             return 3;
+         }
+         else {return 0;}
     }
 }
