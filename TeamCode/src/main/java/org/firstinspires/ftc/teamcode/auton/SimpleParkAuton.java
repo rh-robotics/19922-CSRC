@@ -5,14 +5,13 @@ import static java.lang.Thread.sleep;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.auton.enums.AutonState;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 
 /**
  * Main Autonomous OpMode for the robot
  */
 @Autonomous (name = "Sleepy")
-public class sleepAuton extends OpMode {
+public class SimpleParkAuton extends OpMode {
     HWC robot;
     String color = "red";
 
