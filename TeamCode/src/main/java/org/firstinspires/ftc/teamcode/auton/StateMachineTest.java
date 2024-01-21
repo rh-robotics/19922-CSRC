@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.fsm.StateMachine;
 /**
  * Autonomous OpMode to test the FSM subsystem.
  */
-@Autonomous(name = "State machine test", group = "Testing OpModes")
+@Autonomous(name = "State machine test", group = "Testing")
 public class StateMachineTest extends OpMode {
     public static Telemetry pTelemetry;
     public static Gamepad gamepad;

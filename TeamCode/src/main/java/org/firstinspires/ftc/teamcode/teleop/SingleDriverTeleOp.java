@@ -32,7 +32,9 @@ public class SingleDriverTeleOp extends OpMode {
 
         // ------ Reset Servos ------ //
         robot.clawL.setPosition(1);
-        robot.clawR.setPosition(1);
+        robot.clawR.setPosition(0);
+        robot.wrist.setPosition(HWC.wristIntakePos);
+        robot.passoverArmLeft.setPosition(HWC.passoverIntakePos);
 
         // ------ Telemetry ------ //
         telemetry.addData("Status", "Initialized");
@@ -157,9 +159,16 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ Slide Controls ------ //
-        if (robot.currentGamepad1.right_stick_y != 0) {
-            robot.powerSlides(-robot.currentGamepad1.right_stick_y);
-        } else {
+        if (robot.currentGamepad1.right_stick_y > 0.1 || robot.currentGamepad1.right_stick_y < -0.1) {
+            robot.powerSlides(robot.currentGamepad1.right_stick_y);
+        } else if(robot.currentGamepad1.right_stick_y < 0.1 && robot.currentGamepad1.right_stick_y > -0.1) {
+            robot.powerSlides(0);
+        }
+
+        // ------ Slide Controls Gamepad 2 ------ //
+        if (robot.currentGamepad2.right_stick_y > 0.1 || robot.currentGamepad2.right_stick_y < -0.1) {
+            robot.powerSlides(robot.currentGamepad1.right_stick_y);
+        } else if(robot.currentGamepad2.right_stick_y < 0.1 && robot.currentGamepad2.right_stick_y > -0.1) {
             robot.powerSlides(0);
         }
 
@@ -173,32 +182,27 @@ public class SingleDriverTeleOp extends OpMode {
 
         // ------ Passover Controls ------ //
         if (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) {
-            passoverPosition += 0.1;
+            passoverPosition += 0.05;
         } else if (robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) {
-            passoverPosition -= 0.1;
+            passoverPosition -= 0.05;
         }
 
         // ------ Wrist Controls ------ //
         if (robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
-            wristPosition += 0.1;
+            wristPosition += 0.05;
         } else if (robot.currentGamepad1.dpad_down && !robot.previousGamepad1.dpad_down) {
-            wristPosition -= 0.1;
+            wristPosition -= 0.05;
         }
 
         // ------ Position Controls ------ //
         if (testingMode) {
             if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
-                robot.moveArmToDelivery();
+                wristPosition = HWC.wristDeliveryPos;
+                passoverPosition = HWC.passoverDeliveryPos;
             } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
-                robot.moveArmToIntake();
+                wristPosition = HWC.wristIntakePos;
+                passoverPosition = HWC.passoverIntakePos;
             }
-        }
-
-        // ------ Slides MANUAL Control ------ //
-        if (robot.currentGamepad2.right_stick_y != 0) {
-            robot.powerSlides(0);
-        } else {
-            robot.powerSlides(0);
         }
 
         // ------ EMERGENCY RESET ENCODERS ------ //
@@ -269,8 +273,8 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.addData("Button B", "Emergency Encoder Reset [USE WITH CAUTION]");
         telemetry.addLine();
         telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
-        telemetry.addData("Slide Pulley Left Position", robot.leftPulley.getCurrentPosition());
-        telemetry.addData("Slide Pulley Right Position", robot.rightPulley.getCurrentPosition());
+        telemetry.addData("Slide Pulley Left Position", robot.leftPulley.getPower());
+        telemetry.addData("Slide Pulley Right Position", robot.rightPulley.getPower());
         telemetry.addData("Claw Left Position", robot.clawL.getPosition());
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
         telemetry.addData("Left Passover Position", robot.passoverArmLeft.getPosition());
@@ -281,6 +285,10 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.addLine();
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
+        telemetry.addData("Front Left Position", robot.leftFront.getCurrentPosition());
+        telemetry.addData("Back Left Position", robot.leftRear.getCurrentPosition());
+        telemetry.addData("Front Right Position", robot.rightFront.getCurrentPosition());
+        telemetry.addData("Back Right Position", robot.rightRear.getCurrentPosition());
 
         // ------ Testing Mode Telemetry ------ //
         if (testingMode) {

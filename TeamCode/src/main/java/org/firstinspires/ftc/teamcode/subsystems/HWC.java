@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static org.firstinspires.ftc.robotcore.external.tfod.TfodParameters.CurrentGame.LABELS;
+
+import android.util.Size;
+
 import androidx.annotation.NonNull;
 
-import com.arcrobotics.ftclib.kinematics.Odometry;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -13,11 +15,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.openftc.easyopencv.OpenCvInternalCamera;
+import org.firstinspires.ftc.vision.tfod.TfodProcessor;
+
+import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -28,20 +34,27 @@ public class HWC {
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
 
     // ------ Declare Servos ------ //
-    public Servo intakeL, wristL, wristR, clawR, clawL,passoverArmLeft, passoverArmRight, droneKicker, droneAimer;
+    public Servo intakeArm, wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
 
     // ------ Declare Sensors ------ //
     public ColorSensor colorLeft, colorRight;
-    //public DcMotorEx xWheel, yWheel;
-
-    // ------ Declare Continuous Rotation Servos ------ //
-    //public CRServo passoverArmLeft, passoverArmRight;
 
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad currentGamepad2 = new Gamepad();
     public Gamepad previousGamepad1 = new Gamepad();
     public Gamepad previousGamepad2 = new Gamepad();
+
+    // ------ Declare TensorFlow Processor ------ //
+    private TfodProcessor tfod;
+
+    // ------ Computer Vision VisionPortal ------ //
+    private VisionPortal visionPortal;
+
+    // ------ Computer Vision Labels ------ //
+    private static final String[] LABELS = {
+            "blue", "red"
+    };
 
     // ------ Declare Webcam ------ //
     public WebcamName webcam;
@@ -55,14 +68,14 @@ public class HWC {
     // ------ Telemetry ------ //
     Telemetry telemetry;
 
+    public ElapsedTime sleepTime = new ElapsedTime();
     // ------ Position Variables ------ //
     //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
 
-    int intakePos = 5;
-    int armDeliveryPos = 6;
-    int armRetractedPos = 0;
-    double wristDeliveryPos = 20;
-    double wristIntakePos = 0;
+    public static double passoverDeliveryPos = 0.2;
+    public static double passoverIntakePos = 0.8;
+    public static double wristDeliveryPos = 0.2;
+    public static double wristIntakePos = 0.5;
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -78,7 +91,7 @@ public class HWC {
         drive = new SampleMecanumDrive(hardwareMap);
 
         // ------- Odemetry ------//
-       // xWheel = hardwareMap.get(DcMotorEx.class, "odoX");
+        // xWheel = hardwareMap.get(DcMotorEx.class, "odoX");
         //yWheel = hardwareMap.get(DcMotorEx.class,"odoY");
 
         // ------ Retrieve Drive Motors ------ //
@@ -96,10 +109,7 @@ public class HWC {
         intakeArm = hardwareMap.get(Servo.class, "intakeArm");
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
-        wristL = hardwareMap.get(Servo.class, "wristL");
-        wristR = hardwareMap.get(Servo.class, "wristR");
-        // droneAimer = hardwareMap.get(Servo.class, "droneAim");
-        // droneKicker = hardwareMap.get(Servo.class, "droneKick");
+        wrist = hardwareMap.get(Servo.class, "wrist");
 
         // ------ Retrieve Continuous Rotation Servos ------ //
         passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
@@ -123,8 +133,6 @@ public class HWC {
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightPulley.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftPulley.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // ------ Set Motor Modes ------ //
@@ -132,7 +140,10 @@ public class HWC {
         rightFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        leftPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        rightPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     // ------ Function to Run Intake ------ //
@@ -185,60 +196,45 @@ public class HWC {
 
         return color;
     }
+    public void betterSleep(int sleep){
+        sleepTime.reset();
+        while (sleepTime.milliseconds() < sleep){
+            telemetry.addData("sleeping", "true");
+            telemetry.update();}
+        telemetry.addData("sleeping", "slept");
+        telemetry.update();
 
+    }
+    public void sleepDeliver(int time){
+        intakeMotor.setPower(-0.3);
+        betterSleep(time);
+        intakeMotor.setPower(0);
+    }
     // ------ Function to Power Slides ------ //
     public void powerSlides(float pwr) {
         leftPulley.setPower(pwr);
         rightPulley.setPower(pwr);
     }
 
-    // ------ Function to Move to Delivery Pos. ------ //
-    public void moveArmToDelivery() {
-        wrist.setPosition(wristDeliveryPos);
-        rightPulley.setTargetPosition(armDeliveryPos);
-        leftPulley.setTargetPosition(armDeliveryPos);
-    }
-
-    public void moveWrist(int posL, int posR) {
-        wristL.setPosition(posL);
-        wristR.setPosition(posR);
-    }
-
-    public void movePassover(int pos1, int pos2) {
-        passoverArmRight.setPosition(pos1);
-        passoverArmLeft.setPosition(pos2);
-    }
-
+    // ------ Function to Reset Motor Encoder Positions [EMERGENCY ONLY] ------ //
     public void resetEncoders() {
         leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-    }
-    public void betterSleep(int milliseconds){
-        time.reset();
-        while (time.milliseconds() > milliseconds){}
-       // telemetry.addData("slept for ", milliseconds);
-    }
-    public void sleepDrive(int time){
-        leftFront.setPower(0.3);
-        rightFront.setPower(0.3);
-        leftRear.setPower(0.3);
-        rightRear.setPower(0.3);
-        betterSleep(time);
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        leftRear.setPower(0);
-        rightRear.setPower(0);
 
+        leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
-//
-public void odoDrive(int distance){
+    // ------ Function to Drive Given Distance Using Odometry ------ //
+    public void odoDrive(int distance) {
         leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // y axis
         rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
         leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
-        while (leftFront.getCurrentPosition() * -1 < distance && rightRear.getCurrentPosition() < distance){
+        while (leftRear.getCurrentPosition() > distance) {
             leftFront.setPower(0.3);
             rightFront.setPower(0.3);
             leftRear.setPower(0.3);
@@ -248,27 +244,100 @@ public void odoDrive(int distance){
         rightFront.setPower(0);
         leftRear.setPower(0);
         rightRear.setPower(0);
-}
+    }
 
-public void odoTurn(int degrees){
+    // ------ Function to Strafe Given Distance Using Odometry ------ //
+    public void odoStrafeLeft(int distance) {
+        odoDrive(500);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // y axis
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // x axis
+        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
 
-}
+
+                while(leftRear.getCurrentPosition() < distance) {
+            leftFront.setPower(-0.3);
+            rightFront.setPower(0.3);
+            leftRear.setPower(0.3);
+            rightRear.setPower(-0.3);}
+    }
+    public void odoStrafeRight(int distance) {
+        odoDrive(500);
+        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // y axis
+        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // x axis
+        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
 
 
-    public int cv(){
-         double pos = 0; //set it to a value depending on locaiton of obkect
-         if (pos > 800){
-             return 0;
-         }
-         else if (pos < 100){
-             return 1;
-         }
-         else if (pos < 400){
-             return 2;
+        while(Math.abs(leftRear.getCurrentPosition()) < distance) {
+            leftFront.setPower(0.3);
+            rightFront.setPower(-0.3);
+            leftRear.setPower(-0.3);
+            rightRear.setPower(0.3);}
+    }
+
+    public void odoTurnRight(){
+        leftFront.setPower(0.3);
+        rightFront.setPower(-0.3);
+        leftRear.setPower(-0.3);
+        rightRear.setPower(0.3);
+    }
+
+    // ------ Function to Turn Given Degrees Using Odometry ------ //
+    public void odoTurn(int degrees)
+        {
+    }
+
+    public void initTFOD(String TFOD_MODEL_ASSET) {
+
+        // Create the TensorFlow processor by using a builder.
+        tfod = new TfodProcessor.Builder()
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                .setModelLabels(LABELS)
+                .build();
+
+        // Create the vision portal by using a builder.
+        VisionPortal.Builder builder = new VisionPortal.Builder();
+
+        builder.setCamera(webcam);
+
+        builder.setCameraResolution(new Size(640, 480));
+
+        builder.addProcessor(tfod);
+
+        visionPortal = builder.build();
+
+        tfod.setMinResultConfidence(0.75f);
+    }
+
+    private double telemetryTFOD() {
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        telemetry.addData("# Objects Detected", currentRecognitions.size());
+double x = 800;
+        // Step through the list of recognitions and display info for each one.
+        for (Recognition recognition : currentRecognitions) {
+            x = (recognition.getLeft() + recognition.getRight()) / 2;
+            double y = (recognition.getTop() + recognition.getBottom()) / 2;
+
+
+            telemetry.addData("", " ");
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            telemetry.addData("- Position", "%.0f / %.0f", x, y);
+            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }
-         else if (pos < 800){
-             return 3;
-         }
-         else {return 0;}
+        return x;
+    }
+
+    public int cv() {
+        double pos = telemetryTFOD(); //set it to a value depending on locaiton of obkect
+        if (pos > 800) {
+            return 0;
+        } else if (pos < 100 && pos > 0) {
+            return 1;
+        } else if (pos < 400) {
+            return 2;
+        } else if (pos < 800) {
+            return 3;
+        } else {
+            return 0;
+        }
     }
 }

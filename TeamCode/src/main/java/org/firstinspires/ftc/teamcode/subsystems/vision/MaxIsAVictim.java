@@ -23,13 +23,13 @@ public class MaxIsAVictim extends OpenCvPipeline {
             upper_none_bounds = new Scalar(100, 255, 200, 255);
     static int X = 145; //145
     static int Y = 0;
+    private static final Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(X, Y);
     static int W = 100;//30
     // Width and height for the bounding box
     public static int REGION_WIDTH = W;
     // TOPLEFT anchor point for the bounding box
     static int H = 80;//50
     public static int REGION_HEIGHT = H;
-    private static final Point SLEEVE_TOPLEFT_ANCHOR_POINT = new Point(X, Y);
     // Color definitions
     private final Scalar
             BLUE = new Scalar(0, 0, 255),
@@ -51,6 +51,7 @@ public class MaxIsAVictim extends OpenCvPipeline {
     // Percent and mat definitions
     private double bluPercent, redPercent, nonePercent;
     private Mat blurredMat = new Mat();
+
     public MaxIsAVictim(int iteration) {
         i = iteration;
     }
