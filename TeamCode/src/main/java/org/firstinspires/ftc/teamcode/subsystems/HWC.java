@@ -140,7 +140,6 @@ public class HWC {
         rightFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         leftPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -212,8 +211,8 @@ public class HWC {
     }
     // ------ Function to Power Slides ------ //
     public void powerSlides(float pwr) {
-        leftPulley.setPower(pwr);
-        rightPulley.setPower(pwr);
+                                        leftPulley.setPower(pwr);
+//        rightPulley.setPower(pwr);
     }
 
     // ------ Function to Reset Motor Encoder Positions [EMERGENCY ONLY] ------ //

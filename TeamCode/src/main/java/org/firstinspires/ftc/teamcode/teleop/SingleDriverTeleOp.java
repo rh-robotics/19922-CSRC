@@ -205,6 +205,13 @@ public class SingleDriverTeleOp extends OpMode {
             }
         }
 
+        // ------ FULL POWER SLIDES ------ //
+        if (robot.currentGamepad2.a && !robot.previousGamepad2.a) {
+            robot.powerSlides(-1);
+        } else if (robot.currentGamepad2.b && !robot.previousGamepad2.b) {
+            robot.powerSlides(0);
+        }
+
         // ------ EMERGENCY RESET ENCODERS ------ //
         if (robot.currentGamepad1.back && !robot.previousGamepad1.back) {
             robot.resetEncoders();
@@ -273,13 +280,15 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.addData("Button B", "Emergency Encoder Reset [USE WITH CAUTION]");
         telemetry.addLine();
         telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
-        telemetry.addData("Slide Pulley Left Position", robot.leftPulley.getPower());
-        telemetry.addData("Slide Pulley Right Position", robot.rightPulley.getPower());
+        telemetry.addData("Slide Pulley Left Velocity", robot.leftPulley.getVelocity());
+        telemetry.addData("Slide Pulley Right Velocity", robot.rightPulley.getVelocity());
         telemetry.addData("Claw Left Position", robot.clawL.getPosition());
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
         telemetry.addData("Left Passover Position", robot.passoverArmLeft.getPosition());
         telemetry.addData("Right Passover Position", robot.passoverArmRight.getPosition());
         telemetry.addData("Wrist Position", robot.wrist.getPosition());
+        telemetry.addData("Left Pulley Position", robot.leftPulley.getPower());
+        telemetry.addData("Right Pulley Position", robot.rightPulley.getPower());
         telemetry.addData("> Target Wrist Position", wristPosition);
         telemetry.addData("> Target Passover Position", passoverPosition);
         telemetry.addLine();
