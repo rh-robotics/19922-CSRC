@@ -12,7 +12,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 /**
  * Autonomous OpMode to test scanning signal sleeves
  */
-@Autonomous(name = "Signal Sleeve Test", group = "Testing OpModes")
+@Autonomous(name = "Signal Sleeve Test", group = "Testing")
 public class VisionTest extends LinearOpMode {
 
     SleeveDetection sleeveDetection = new SleeveDetection(145, 168, 30, 50);

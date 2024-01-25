@@ -120,6 +120,8 @@ public class TwoDriverTeleOp extends OpMode {
         double rightFPower;
         double leftBPower;
         double rightBPower;
+        double passoverPosition = robot.passoverArmLeft.getPosition();
+        double wristPosition = robot.wrist.getPosition();
         double drive = -robot.currentGamepad1.left_stick_x * driveSpeed;
         double turn = robot.currentGamepad1.left_stick_y * turnSpeed;
         double strafe = -robot.currentGamepad1.right_stick_x * strafeSpeed;
@@ -155,17 +157,24 @@ public class TwoDriverTeleOp extends OpMode {
         }
 
         // ------ Passover Controls ------ //
-        if (robot.currentGamepad2.right_stick_y != 0) {
-            robot.slideControl(-robot.currentGamepad2.right_stick_y);
-        } else {
-            robot.slideControl(0);
+        if (robot.currentGamepad2.left_bumper && !robot.previousGamepad2.left_bumper) {
+            passoverPosition += 0.05;
+        } else if (robot.currentGamepad2.right_bumper && !robot.previousGamepad2.right_bumper) {
+            passoverPosition -= 0.05;
+        }
+
+        // ------ Wrist Controls ------ //
+        if (robot.currentGamepad2.dpad_up && !robot.previousGamepad2.dpad_up) {
+            wristPosition += 0.1;
+        } else if (robot.currentGamepad2.dpad_down && !robot.previousGamepad2.dpad_down) {
+            wristPosition -= 0.1;
         }
 
         // ------ Claw Controls ------ //
-        if (robot.currentGamepad2.left_bumper && !robot.previousGamepad2.left_bumper) {
+        if (robot.currentGamepad2.x && !robot.previousGamepad2.x) {
             robot.toggleClaw('L');
         }
-        if (robot.currentGamepad2.right_bumper && !robot.previousGamepad2.right_bumper) {
+        if (robot.currentGamepad2.y && !robot.previousGamepad2.y) {
             robot.toggleClaw('R');
         }
 
@@ -174,8 +183,11 @@ public class TwoDriverTeleOp extends OpMode {
         robot.leftRear.setPower(leftBPower);
         robot.rightFront.setPower(rightFPower);
         robot.rightRear.setPower(rightBPower);
-        robot.passoverArmLeft.setPower(-robot.currentGamepad2.left_stick_y);
-        robot.passoverArmRight.setPower(-robot.currentGamepad2.left_stick_y);
+
+        // ------ Run Servos ------ //
+        robot.passoverArmLeft.setPosition(passoverPosition);
+        robot.passoverArmRight.setPosition(passoverPosition);
+        robot.wrist.setPosition(wristPosition);
 
         // ------ State Machine ------ //
         switch (state) {
@@ -219,21 +231,24 @@ public class TwoDriverTeleOp extends OpMode {
         telemetry.addData("Gamepad 2 Left Trigger", "Intake Out");
         telemetry.addData("Gamepad 2 Right Trigger", "Intake In");
         telemetry.addLine();
+        telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
+        telemetry.addData("Slide Pulley Left Position", robot.leftPulley.getCurrentPosition());
+        telemetry.addData("Slide Pulley Right Position", robot.rightPulley.getCurrentPosition());
         telemetry.addData("Claw Left Position", robot.clawL.getPosition());
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
-        telemetry.addData("Left Passover Power", robot.passoverArmLeft.getPower());
-        telemetry.addData("Right Passover Power", robot.passoverArmRight.getPower());
+        telemetry.addData("Left Passover Position", robot.passoverArmLeft.getPosition());
+        telemetry.addData("Right Passover Position", robot.passoverArmRight.getPosition());
+        telemetry.addData("Wrist Position", robot.wrist.getPosition());
+        telemetry.addData("> Target Wrist Position", wristPosition);
+        telemetry.addData("> Target Passover Position", passoverPosition);
         telemetry.addLine();
         telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
         telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
-        telemetry.addLine();
-        telemetry.addData("Gamepad 2 Left Trigger", robot.currentGamepad2.left_bumper);
-        telemetry.addData("Gamepad 2 Right Trigger", robot.currentGamepad2.right_bumper);
 
         // ------ Testing Mode Telemetry ------ //
         if (testingMode) {
             telemetry.addLine();
-            telemetry.addData("Gamepad Information", "");
+            telemetry.addData(">", "Gamepad Information");
             telemetry.addData("Gamepad 1 Left Stick X", robot.currentGamepad1.left_stick_x);
             telemetry.addData("Gamepad 1 Left Stick Y", robot.currentGamepad1.left_stick_y);
             telemetry.addData("Gamepad 1 Right Stick X", robot.currentGamepad1.right_stick_x);
@@ -250,6 +265,7 @@ public class TwoDriverTeleOp extends OpMode {
             telemetry.addData("Gamepad 1 B", robot.currentGamepad1.b);
             telemetry.addData("Gamepad 1 X", robot.currentGamepad1.x);
             telemetry.addData("Gamepad 1 Y", robot.currentGamepad1.y);
+            telemetry.addData("Gamepad 1 Back", robot.currentGamepad1.back);
 
             telemetry.addData("Gamepad 2 Left Stick X", robot.currentGamepad2.left_stick_x);
             telemetry.addData("Gamepad 2 Left Stick Y", robot.currentGamepad2.left_stick_y);
@@ -267,6 +283,7 @@ public class TwoDriverTeleOp extends OpMode {
             telemetry.addData("Gamepad 2 B", robot.currentGamepad2.b);
             telemetry.addData("Gamepad 2 X", robot.currentGamepad2.x);
             telemetry.addData("Gamepad 2 Y", robot.currentGamepad2.y);
+            telemetry.addData("Gamepad 2 Back", robot.currentGamepad2.back);
         }
         telemetry.update();
     }

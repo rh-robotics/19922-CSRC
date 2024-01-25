@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Autonomous OpMode to test scanning April Tags
  */
-@Autonomous(name = "April Tag Test", group = "Testing OpModes")
+@Autonomous(name = "April Tag Test", group = "Testing")
 public class AprilTagTest extends LinearOpMode {
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
