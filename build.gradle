@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 /**
  * Top-level build file for ftc_app project.
  *
@@ -9,11 +11,17 @@ buildscript {
         mavenCentral()
         google()
     }
+
     dependencies {
         // Note for FTC Teams: Do not modify this yourself.
         // Note for 19922: You can do whatever, Milo will make sure things don't break.
         classpath 'com.android.tools.build:gradle:8.1.1'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0'
     }
+}
+
+plugins {
+    id("com.google.devtools.ksp") version "1.8.0-1.0.9"
 }
 
 // This is now required because aapt2 has to be downloaded from the
@@ -22,6 +30,12 @@ allprojects {
     repositories {
         mavenCentral()
         google()
+    }
+
+    tasks.withType(KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = JavaVersion.VERSION_1_8.toString()
+        }
     }
 }
 

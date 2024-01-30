@@ -18,9 +18,10 @@
 import java.util.regex.Pattern
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.google.devtools.ksp'
 
 android {
-
     compileSdkVersion 29
 
     signingConfigs {
@@ -113,6 +114,7 @@ android {
         jni.srcDirs = []
         jniLibs.srcDir rootProject.file('libs')
     }
+
     ndkVersion '21.3.6528147'
 }
 

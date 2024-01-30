@@ -54,6 +54,7 @@ android {
             }
         }
     }
+
     androidResources {
         noCompress 'tflite'
     }
@@ -64,17 +65,10 @@ dependencies {
     annotationProcessor files('lib/OpModeAnnotationProcessor.jar')
 
     umlDoclet 'nl.talsmasoftware:umldoclet:2.1.0'
-    implementation 'com.acmerobotics.roadrunner:core:1.0.0-beta3'
-    implementation 'com.acmerobotics.roadrunner:actions:1.0.0-beta3'
-    implementation 'com.acmerobotics.dashboard:dashboard:0.4.12'
-    implementation 'org.openftc:easyopencv:1.7.0'
-    implementation 'org.openftc:apriltag:2.0.0'
-    implementation 'org.apache.commons:commons-math3:3.6.1'
-    implementation 'org.ftclib.ftclib:core:2.0.1'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.7'
+    implementation 'com.acmerobotics.roadrunner:core:0.5.5'
 
     // TODO: Remove me!
-    annotationProcessor files('/Users/milo/Developer/sovereign/symproc/sovereign/build/libs/sovereign-jvm.jar')
+    ksp 'sovereign.symproc:sovereign:unspecified'
     implementation files('/Users/milo/Developer/sovereign/android/sovereign/build/outputs/aar/sovereign-debug.aar')
     implementation files('/Users/milo/Developer/sovereign/common/common/build/outputs/aar/common-debug.aar')
 }

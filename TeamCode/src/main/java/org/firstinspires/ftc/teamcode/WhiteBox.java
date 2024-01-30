@@ -23,30 +23,24 @@ import java.util.concurrent.ThreadLocalRandom;
  * system are indeed used.
  */
 @MakeAvailable(type = OpModeType.AUTON)
-public class WhiteBox extends BasicComponent.Concrete {
-    private Drivetrain drivetrain;
+public class WhiteBox extends BasicComponent {
+    // private Drivetrain drivetrain;
     private Arm arm;
 
     public WhiteBox(@NonNull OpModeProvider belonging, @Nullable Component parent) {
-        super(belonging, parent, "Kit", new Region(
-                new Point(new Measurement.Inches(0.0),
-                        new Measurement.Inches(0.0),
-                        new Measurement.Inches(0.0)),
-                new Point(new Measurement.Inches(1.0),
-                        new Measurement.Inches(1.0),
-                        new Measurement.Inches(1.0))));
+        super(belonging, parent, "WhiteBox");
     }
 
     @Override
     public void init() {
-        drivetrain = new Drivetrain(this, getBelonging(), this);
+        //drivetrain = new Drivetrain(this, getBelonging(), this);
         arm = new Arm(getBelonging(), this);
-        components.addAll(Arrays.asList(drivetrain, arm));
+        components.addAll(Arrays.asList(arm)); //drivetrain, arm));
     }
 
     @Override
     public void start() {
-        drivetrain.goToPoint(new Point(new Measurement.Centimeters(0.0), new Measurement.Centimeters(0.0)));
+        //drivetrain.goToPoint(new Point(new Measurement.Centimeters(0.0), new Measurement.Centimeters(0.0)));
     }
 
     @Override
@@ -55,7 +49,7 @@ public class WhiteBox extends BasicComponent.Concrete {
 
         if (arm.isAtTarget()) {
             telemetry.addLine("Arm target reached, setting new random position.");
-            arm.setExtensionTarget(ThreadLocalRandom.current().nextInt(0, 101));
+            arm.setExtensionTarget(ThreadLocalRandom.current().nextInt(300, 5000 + 1));
         }
     }
 }
