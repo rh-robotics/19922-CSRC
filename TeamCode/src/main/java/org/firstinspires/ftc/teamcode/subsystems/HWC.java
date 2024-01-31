@@ -164,10 +164,10 @@ public class HWC {
     public void toggleClaw(char servo) {
         switch (servo) {
             case 'L':
-                clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1);
+                clawL.setPosition(clawL.getPosition() == 1 ? 0.50 : 1);
                 break;
             case 'R':
-                clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0);
+                clawR.setPosition(clawR.getPosition() == 0 ? 0.50 : 0);
                 break;
             case 'C':
                 clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0);
@@ -211,8 +211,8 @@ public class HWC {
     }
     // ------ Function to Power Slides ------ //
     public void powerSlides(float pwr) {
-                                        leftPulley.setPower(pwr);
-//        rightPulley.setPower(pwr);
+        leftPulley.setPower(pwr);
+        rightPulley.setPower(pwr);
     }
 
     // ------ Function to Reset Motor Encoder Positions [EMERGENCY ONLY] ------ //
