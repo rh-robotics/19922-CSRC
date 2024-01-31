@@ -150,14 +150,20 @@ public class HWC {
     // pixel
     public void runIntake(double pwr) {
         intakeMotor.setPower(pwr);
-        if (intakeDetection(colorLeft) == 1) {
+        if (intakeDetection(colorLeft) == 0 && intakeDetection(colorRight) == 0){
             clawL.setPosition(1);
-            intakeMotor.setPower(0);
-        } else if (intakeDetection(colorRight) == 1){
             clawR.setPosition(1);
             intakeMotor.setPower(0);
+        }
+       else  if (intakeDetection(colorLeft) == 1) {
+            clawL.setPosition(1);
+
+        } else if (intakeDetection(colorRight) == 0){
+            clawR.setPosition(1);
+
 
         }
+
     }
 
     // ------ Function to Toggle Claw (Open/Close) ------ //
