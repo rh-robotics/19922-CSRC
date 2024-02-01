@@ -146,18 +146,24 @@ public class HWC {
     }
 
     // ------ Function to Run Intake ------ //
-    // Runs intake at given power until color sensor detects a pixel
+    // Runs intake at given power until color sensor detects a
+    // pixel
     public void runIntake(double pwr) {
         intakeMotor.setPower(pwr);
-        if (Objects.equals(getColor(colorLeft), "unknown")) {
+        if (intakeDetection(colorLeft) == 0 && intakeDetection(colorRight) == 0){
             clawL.setPosition(1);
-        } else if (Objects.equals(getColor(colorRight), "unknown")) {
             clawR.setPosition(1);
-        } else if (!Objects.equals(getColor(colorLeft), "unknown")) {
-            clawL.setPosition(.15);
-        } else if (!Objects.equals(getColor(colorRight), "unknown")) {
-            clawR.setPosition(.85);
+            intakeMotor.setPower(0);
         }
+       else  if (intakeDetection(colorLeft) == 1) {
+            clawL.setPosition(1);
+
+        } else if (intakeDetection(colorRight) == 0){
+            clawR.setPosition(1);
+
+
+        }
+
     }
 
     // ------ Function to Toggle Claw (Open/Close) ------ //
@@ -175,6 +181,7 @@ public class HWC {
                 break;
         }
     }
+
 
     // ------ Function to get Color ------ //
     public String getColor(ColorSensor CS) {
@@ -195,6 +202,14 @@ public class HWC {
 
         return color;
     }
+
+    public int intakeDetection(ColorSensor CS){
+        if (CS.argb() == 0){
+            return 1;
+        }
+        else return 0;
+    }
+
     public void betterSleep(int sleep){
         sleepTime.reset();
         while (sleepTime.milliseconds() < sleep){
@@ -212,7 +227,7 @@ public class HWC {
     // ------ Function to Power Slides ------ //
     public void powerSlides(float pwr) {
                                         leftPulley.setPower(pwr);
-//        rightPulley.setPower(pwr);
+                                        rightPulley.setPower(pwr);
     }
 
     // ------ Function to Reset Motor Encoder Positions [EMERGENCY ONLY] ------ //
