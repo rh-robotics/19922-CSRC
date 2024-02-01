@@ -131,7 +131,9 @@ public class SleeveDetection extends OpenCvPipeline {
         return input;
     }
 
-    /** Returns an enum being the current position where the robot will park */
+    /**
+     * Returns an enum being the current position where the robot will park
+     */
     public int getPosition() {
         return position;
     }

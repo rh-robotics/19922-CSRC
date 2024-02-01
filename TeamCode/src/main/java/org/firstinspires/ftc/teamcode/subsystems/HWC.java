@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.robotcore.external.tfod.TfodParameters.CurrentGame.LABELS;
-
 import android.util.Size;
 
 import androidx.annotation.NonNull;
@@ -15,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
@@ -23,59 +20,46 @@ import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
-import java.util.Objects;
 
 
 /**
  * Stores and Declares all hardware devices &amp; related methods
  */
 public class HWC {
+    // ------ Computer Vision Labels ------ //
+    private static final String[] LABELS = {
+            "blue", "red"
+    };
+    public static double passoverDeliveryPos = 0.2;
+    public static double passoverIntakePos = 0.8;
+    public static double wristDeliveryPos = 0.2;
+    public static double wristIntakePos = 0.5;
     // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
-
     // ------ Declare Servos ------ //
     public Servo intakeArm, wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
-
     // ------ Declare Sensors ------ //
     public ColorSensor colorLeft, colorRight;
-
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad currentGamepad2 = new Gamepad();
     public Gamepad previousGamepad1 = new Gamepad();
     public Gamepad previousGamepad2 = new Gamepad();
-
-    // ------ Declare TensorFlow Processor ------ //
-    private TfodProcessor tfod;
-
-    // ------ Computer Vision VisionPortal ------ //
-    private VisionPortal visionPortal;
-
-    // ------ Computer Vision Labels ------ //
-    private static final String[] LABELS = {
-            "blue", "red"
-    };
-
     // ------ Declare Webcam ------ //
     public WebcamName webcam;
-
     // ------ Declare Roadrunner Drive ------ //
     public SampleMecanumDrive drive;
-
     // ------ ElapsedTime Variable ------ //
     public ElapsedTime time = new ElapsedTime();
-
-    // ------ Telemetry ------ //
-    Telemetry telemetry;
-
-    public ElapsedTime sleepTime = new ElapsedTime();
     // ------ Position Variables ------ //
     //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
-
-    public static double passoverDeliveryPos = 0.2;
-    public static double passoverIntakePos = 0.8;
-    public static double wristDeliveryPos = 0.2;
-    public static double wristIntakePos = 0.5;
+    public ElapsedTime sleepTime = new ElapsedTime();
+    // ------ Telemetry ------ //
+    Telemetry telemetry;
+    // ------ Declare TensorFlow Processor ------ //
+    private TfodProcessor tfod;
+    // ------ Computer Vision VisionPortal ------ //
+    private VisionPortal visionPortal;
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -150,15 +134,14 @@ public class HWC {
     // pixel
     public void runIntake(double pwr) {
         intakeMotor.setPower(pwr);
-        if (intakeDetection(colorLeft) == 0 && intakeDetection(colorRight) == 0){
+        if (intakeDetection(colorLeft) == 0 && intakeDetection(colorRight) == 0) {
             clawL.setPosition(1);
             clawR.setPosition(1);
             intakeMotor.setPower(0);
-        }
-       else  if (intakeDetection(colorLeft) == 1) {
+        } else if (intakeDetection(colorLeft) == 1) {
             clawL.setPosition(1);
 
-        } else if (intakeDetection(colorRight) == 0){
+        } else if (intakeDetection(colorRight) == 0) {
             clawR.setPosition(1);
 
 
@@ -170,10 +153,10 @@ public class HWC {
     public void toggleClaw(char servo) {
         switch (servo) {
             case 'L':
-                clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1);
+                clawL.setPosition(clawL.getPosition() == 1 ? 0.50 : 1);
                 break;
             case 'R':
-                clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0);
+                clawR.setPosition(clawR.getPosition() == 0 ? 0.50 : 0);
                 break;
             case 'C':
                 clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0);
@@ -203,31 +186,33 @@ public class HWC {
         return color;
     }
 
-    public int intakeDetection(ColorSensor CS){
-        if (CS.argb() == 0){
+    public int intakeDetection(ColorSensor CS) {
+        if (CS.argb() == 0) {
             return 1;
-        }
-        else return 0;
+        } else return 0;
     }
 
-    public void betterSleep(int sleep){
+    public void betterSleep(int sleep) {
         sleepTime.reset();
-        while (sleepTime.milliseconds() < sleep){
+        while (sleepTime.milliseconds() < sleep) {
             telemetry.addData("sleeping", "true");
-            telemetry.update();}
+            telemetry.update();
+        }
         telemetry.addData("sleeping", "slept");
         telemetry.update();
 
     }
-    public void sleepDeliver(int time){
+
+    public void sleepDeliver(int time) {
         intakeMotor.setPower(-0.3);
         betterSleep(time);
         intakeMotor.setPower(0);
     }
+
     // ------ Function to Power Slides ------ //
     public void powerSlides(float pwr) {
-                                        leftPulley.setPower(pwr);
-                                        rightPulley.setPower(pwr);
+        leftPulley.setPower(pwr);
+        rightPulley.setPower(pwr);
     }
 
     // ------ Function to Reset Motor Encoder Positions [EMERGENCY ONLY] ------ //
@@ -268,12 +253,14 @@ public class HWC {
         leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
 
 
-                while(leftRear.getCurrentPosition() < distance) {
+        while (leftRear.getCurrentPosition() < distance) {
             leftFront.setPower(-0.3);
             rightFront.setPower(0.3);
             leftRear.setPower(0.3);
-            rightRear.setPower(-0.3);}
+            rightRear.setPower(-0.3);
+        }
     }
+
     public void odoStrafeRight(int distance) {
         odoDrive(500);
         leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // y axis
@@ -281,14 +268,15 @@ public class HWC {
         leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
 
 
-        while(Math.abs(leftRear.getCurrentPosition()) < distance) {
+        while (Math.abs(leftRear.getCurrentPosition()) < distance) {
             leftFront.setPower(0.3);
             rightFront.setPower(-0.3);
             leftRear.setPower(-0.3);
-            rightRear.setPower(0.3);}
+            rightRear.setPower(0.3);
+        }
     }
 
-    public void odoTurnRight(){
+    public void odoTurnRight() {
         leftFront.setPower(0.3);
         rightFront.setPower(-0.3);
         leftRear.setPower(-0.3);
@@ -296,8 +284,7 @@ public class HWC {
     }
 
     // ------ Function to Turn Given Degrees Using Odometry ------ //
-    public void odoTurn(int degrees)
-        {
+    public void odoTurn(int degrees) {
     }
 
     public void initTFOD(String TFOD_MODEL_ASSET) {
@@ -325,7 +312,7 @@ public class HWC {
     private double telemetryTFOD() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
-double x = 800;
+        double x = 800;
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
             x = (recognition.getLeft() + recognition.getRight()) / 2;

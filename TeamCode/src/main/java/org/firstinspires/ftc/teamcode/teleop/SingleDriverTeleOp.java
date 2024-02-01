@@ -158,20 +158,6 @@ public class SingleDriverTeleOp extends OpMode {
             robot.intakeMotor.setPower(0);
         }
 
-        // ------ Slide Controls ------ //
-        if (robot.currentGamepad1.right_stick_y > 0.1 || robot.currentGamepad1.right_stick_y < -0.1) {
-            robot.powerSlides(robot.currentGamepad1.right_stick_y);
-        } else if(robot.currentGamepad1.right_stick_y < 0.1 && robot.currentGamepad1.right_stick_y > -0.1) {
-            robot.powerSlides(0);
-        }
-
-        // ------ Slide Controls Gamepad 2 ------ //
-        if (robot.currentGamepad2.right_stick_y > 0.1 || robot.currentGamepad2.right_stick_y < -0.1) {
-            robot.powerSlides(robot.currentGamepad1.right_stick_y);
-        } else if(robot.currentGamepad2.right_stick_y < 0.1 && robot.currentGamepad2.right_stick_y > -0.1) {
-            robot.powerSlides(0);
-        }
-
         // ------ Claw Controls ------ //
         if (robot.currentGamepad1.x && !robot.previousGamepad1.x) {
             robot.toggleClaw('L');
@@ -195,24 +181,15 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ Position Controls ------ //
-        if (testingMode) {
-            if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
-                wristPosition = HWC.wristDeliveryPos;
-                passoverPosition = HWC.passoverDeliveryPos;
-            } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
-                wristPosition = HWC.wristIntakePos;
-                passoverPosition = HWC.passoverIntakePos;
-            }
+        if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
+            wristPosition = HWC.wristDeliveryPos;
+            passoverPosition = HWC.passoverDeliveryPos;
+        } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
+            wristPosition = HWC.wristIntakePos;
+            passoverPosition = HWC.passoverIntakePos;
         }
 
-        // ------ FULL POWER SLIDES ------ //
-        if (robot.currentGamepad2.a && !robot.previousGamepad2.a) {
-            robot.powerSlides(-1);
-        } else if (robot.currentGamepad2.b && !robot.previousGamepad2.b) {
-            robot.powerSlides(0);
-        }
-
-        // ------ EMERGENCY RESET ENCODERS ------ //
+        // ------ (GAMEPAD2) EMERGENCY RESET ENCODERS ------ //
         if (robot.currentGamepad1.back && !robot.previousGamepad1.back) {
             robot.resetEncoders();
         }
@@ -227,6 +204,7 @@ public class SingleDriverTeleOp extends OpMode {
         robot.passoverArmLeft.setPosition(passoverPosition);
 //        robot.passoverArmRight.setPosition(passoverPosition);
         robot.wrist.setPosition(wristPosition);
+        robot.powerSlides(-robot.currentGamepad1.right_stick_y);
 
         // ------ State Machine ------ //
         switch (state) {

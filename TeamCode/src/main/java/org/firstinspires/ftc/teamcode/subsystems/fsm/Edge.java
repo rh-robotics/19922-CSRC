@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems.fsm;
 
-/** An edge in the state machine graph. */
+/**
+ * An edge in the state machine graph.
+ */
 public class Edge<T> {
     /**
      * The state to transition to.

@@ -9,7 +9,9 @@ import java.lang.annotation.Target;
  * A state, belonging to an abstract state machine.
  */
 public interface State {
-    /** The edges of the current state. */
+    /**
+     * The edges of the current state.
+     */
     Edge<?>[] getEdges();
 
     /**
@@ -41,13 +43,19 @@ public interface State {
      * How to use the state; initial, transitional, or terminating.
      */
     enum Role {
-        /** This is the first state to jump to. */
+        /**
+         * This is the first state to jump to.
+         */
         INITIAL,
 
-        /** This state is nothing special in the eyes of the controller. */
+        /**
+         * This state is nothing special in the eyes of the controller.
+         */
         TRANSITIONAL,
 
-        /** Once this state is run once, the state machine dies. */
+        /**
+         * Once this state is run once, the state machine dies.
+         */
         TERMINATING
     }
 
@@ -57,10 +65,14 @@ public interface State {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     @interface Meta {
-        /** The color to use when graphing with GraphViz DOT. */
+        /**
+         * The color to use when graphing with GraphViz DOT.
+         */
         String color() default "#000000";
 
-        /** How to use the state. */
+        /**
+         * How to use the state.
+         */
         Role role() default Role.TRANSITIONAL;
     }
 }
