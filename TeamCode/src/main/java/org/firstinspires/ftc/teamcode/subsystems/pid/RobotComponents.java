@@ -4,16 +4,17 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
-/** Initialize a motor as a RobotComponent with its values for PID functionality and extra features */
+/**
+ * Initialize a motor as a RobotComponent with its values for PID functionality and extra features
+ */
 public class RobotComponents {
-    private DcMotorEx motor;
-    private CRServo servo;
-    private AnalogInput analogInput;
     private final double ticks_per_degree;
     private final double F;
     private final PIDController controller;
+    private DcMotorEx motor;
+    private CRServo servo;
+    private AnalogInput analogInput;
     private double target;
 
     /**
@@ -54,12 +55,16 @@ public class RobotComponents {
         controller = new PIDController(p, i, d);
     }
 
-    /** Get the number of encoder ticks per degree */
+    /**
+     * Get the number of encoder ticks per degree
+     */
     public double getTicksPerDegree() {
         return ticks_per_degree;
     }
 
-    /** Get the current encoder target */
+    /**
+     * Get the current encoder target
+     */
     public double getTarget() {
         return target;
     }

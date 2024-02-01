@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.auton;
 
-import static java.lang.Thread.sleep;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -10,7 +8,7 @@ import org.firstinspires.ftc.teamcode.subsystems.HWC;
 /**
  * Main Autonomous OpMode for the robot
  */
-@Autonomous (name = "Sleepy")
+@Autonomous(name = "Sleepy")
 public class SimpleParkAuton extends OpMode {
     HWC robot;
     String color = "red";
@@ -36,8 +34,11 @@ public class SimpleParkAuton extends OpMode {
     @Override
     public void init_loop() {
         if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
-            if (color.equals("red")) { color = "blue"; }
-            else if (color.equals("blue")) { color = "red"; }
+            if (color.equals("red")) {
+                color = "blue";
+            } else if (color.equals("blue")) {
+                color = "red";
+            }
         }
 
         telemetry.addData("Status", "Initialized");
@@ -49,7 +50,7 @@ public class SimpleParkAuton extends OpMode {
     public void start() {
         robot.betterSleep(10000);
 
-        if(color.equals("red")) {
+        if (color.equals("red")) {
             robot.leftFront.setPower(-2);
             robot.leftRear.setPower(2);
             robot.rightFront.setPower(-2);
