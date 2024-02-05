@@ -23,33 +23,44 @@ import java.util.concurrent.ThreadLocalRandom;
  * system are indeed used.
  */
 @MakeAvailable(type = OpModeType.AUTON)
-public class WhiteBox extends BasicComponent {
-    // private Drivetrain drivetrain;
-    private Arm arm;
+public class WhiteBox extends BasicComponent.Concrete {
+    private Drivetrain drivetrain;
+    //private Arm arm;
+    private int cnt = 0;
 
     public WhiteBox(@NonNull OpModeProvider belonging, @Nullable Component parent) {
-        super(belonging, parent, "WhiteBox");
+        super(belonging, parent, "WhiteBox", new Region(new Point(new Measurement.Centimeters(0), new Measurement.Centimeters(0), new Measurement.Centimeters(0)), new Point(new Measurement.Centimeters(1), new Measurement.Centimeters(1), new Measurement.Centimeters(1))));
     }
 
     @Override
     public void init() {
-        //drivetrain = new Drivetrain(this, getBelonging(), this);
-        arm = new Arm(getBelonging(), this);
-        components.addAll(Arrays.asList(arm)); //drivetrain, arm));
+        drivetrain = new Drivetrain(this, getBelonging(), this);
+        // arm = new Arm(getBelonging(), this);
+        components.addAll(Arrays.asList(drivetrain)); //, arm));
     }
 
     @Override
     public void start() {
-        //drivetrain.goToPoint(new Point(new Measurement.Centimeters(0.0), new Measurement.Centimeters(0.0)));
+
     }
 
     @Override
     public void loop() {
         telemetry.addData("Current Time", getTime());
 
-        if (arm.isAtTarget()) {
+        /* if (arm.isAtTarget()) {
             telemetry.addLine("Arm target reached, setting new random position.");
-            arm.setExtensionTarget(ThreadLocalRandom.current().nextInt(300, 5000 + 1));
+            arm.setExtensionTarget(ThreadLocalRandom.current().nextInt(800, 3900 + 1));
+        } */
+
+        if (!drivetrain.isBusy() && cnt != 0) {
+            stop();
         }
+
+        if (!drivetrain.isBusy()) {
+            drivetrain.goToPoint(new Point(new Measurement.Centimeters(0.0), new Measurement.Centimeters(0.0)));
+        }
+
+        cnt = 1;
     }
 }
