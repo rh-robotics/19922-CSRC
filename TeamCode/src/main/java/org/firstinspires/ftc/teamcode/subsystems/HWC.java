@@ -187,9 +187,7 @@ public class HWC {
     }
 
     public int intakeDetection(ColorSensor CS) {
-        if (CS.argb() == 0) {
-            return 1;
-        } else return 0;
+        return (CS.argb() == 0) ? 1 : 0;
     }
 
     public void betterSleep(int sleep) {
@@ -200,7 +198,6 @@ public class HWC {
         }
         telemetry.addData("sleeping", "slept");
         telemetry.update();
-
     }
 
     public void sleepDeliver(int time) {
@@ -318,7 +315,6 @@ public class HWC {
             x = (recognition.getLeft() + recognition.getRight()) / 2;
             double y = (recognition.getTop() + recognition.getBottom()) / 2;
 
-
             telemetry.addData("", " ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
@@ -327,18 +323,28 @@ public class HWC {
         return x;
     }
 
-    public int cv() {
-        double pos = telemetryTFOD(); //set it to a value depending on locaiton of obkect
-        if (pos > 800) {
-            return 0;
-        } else if (pos < 100 && pos > 0) {
-            return 1;
-        } else if (pos < 400) {
-            return 2;
-        } else if (pos < 800) {
-            return 3;
-        } else {
-            return 0;
-        }
+    public boolean isTeamElementDetectedBow() {
+        return telemetryTFOD() < 800;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        // For each motor and servo, return a string containing their name and power/current position.
+        return "HWC {" +
+                "\n\tleftFront = " + leftFront.getPower() +
+                "\n\trightFront = " + rightFront.getPower() +
+                "\n\tleftRear = " + leftRear.getPower() +
+                "\n\trightRear = " + rightRear.getPower() +
+                "\n\trightPulley = " + rightPulley.getPower() +
+                "\n\tleftPulley = " + leftPulley.getPower() +
+                "\n\tintakeMotor = " + intakeMotor.getPower() +
+                "\n\tintakeArm = " + intakeArm.getPosition() +
+                "\n\twrist = " + wrist.getPosition() +
+                "\n\tclawR = " + clawR.getPosition() +
+                "\n\tclawL = " + clawL.getPosition() +
+                "\n\tpassoverArmLeft = " + passoverArmLeft.getPosition() +
+                "\n\tpassoverArmRight = " + passoverArmRight.getPosition() +
+                '}';
     }
 }
