@@ -28,6 +28,7 @@ public class AutonomousV1 extends OpMode {
     private ElementLocation elementLocation;
     private String activeTrajectory = "";
     private boolean testingMode = false;
+    private boolean firstRun = true;
     private int stateIndex = 0;
 
     // ------ Trajectories ------ //
@@ -41,7 +42,7 @@ public class AutonomousV1 extends OpMode {
     private Trajectory toBackboardRight;
 
     // ------ Starting Position ------ //
-    private Pose2d startPose = new Pose2d(11.84, -60.75, Math.toRadians(90.00));
+    private final Pose2d START_POSE = new Pose2d(11.84, -60.75, Math.toRadians(90.00));
 
     @Override
     public void init() {
@@ -56,11 +57,11 @@ public class AutonomousV1 extends OpMode {
         robot.initTFOD("fpaVision.tflite");
 
         // ------ Set Robot Start Pose ------ //
-        robot.drive.setPoseEstimate(startPose);
+        robot.drive.setPoseEstimate(START_POSE);
 
         // ------ Declare Trajectories ------ //
         // Driving to Initial Detection Location
-        toDetectInitial = robot.drive.trajectoryBuilder(startPose)
+        toDetectInitial = robot.drive.trajectoryBuilder(START_POSE)
                 .lineTo(new Vector2d(11.67, -44.39))
                 .build();
 
@@ -220,13 +221,15 @@ public class AutonomousV1 extends OpMode {
         activeTrajectory = "toDetectInitial";
 
         // ------ Follow Trajectory ------ //
-        if(!robot.drive.isBusy()) {
+        if(firstRun) {
             robot.drive.followTrajectoryAsync(toDetectInitial);
+            firstRun = false;
         }
 
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
             state = State.DETECTING_INITIAL;
+            firstRun = true;
         }
     }
 
@@ -254,13 +257,15 @@ public class AutonomousV1 extends OpMode {
         activeTrajectory = "toDetectSecond";
 
         // ------ Follow Trajectory ------ //
-        if(!robot.drive.isBusy()) {
+        if(firstRun) {
             robot.drive.followTrajectoryAsync(toDetectSecond);
+            firstRun = false;
         }
 
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
             state = State.DETECTING_SECOND;
+            firstRun = true;
         }
     }
 
@@ -288,13 +293,15 @@ public class AutonomousV1 extends OpMode {
         activeTrajectory = "toLastResort";
 
         // ------ Follow Trajectory ------ //
-        if(!robot.drive.isBusy()) {
+        if(firstRun) {
             robot.drive.followTrajectoryAsync(toLastResort);
+            firstRun = false;
         }
 
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
             state = State.DEPOSITING_PURPLE_PIXEL;
+            firstRun = true;
         }
     }
 
@@ -312,7 +319,8 @@ public class AutonomousV1 extends OpMode {
     // Drive to Backboard
     private void drivingToBackboard() {
         // ------ Select Trajectory ------ //
-        if(!robot.drive.isBusy()) {
+        if(firstRun) {
+            firstRun = false;
             if (elementLocation == ElementLocation.CENTER) {
                 activeTrajectory = "toBackboardFromInitial";
                 robot.drive.followTrajectoryAsync(toBackboardFromInitial);
@@ -328,13 +336,15 @@ public class AutonomousV1 extends OpMode {
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
             state = State.MOVING_AT_BACKBOARD;
+            firstRun = true;
         }
     }
 
     // Move at Backboard
     private void movingAtBackboard() {
         // ------ Select Trajectory ------ //
-        if(!robot.drive.isBusy()) {
+        if(firstRun) {
+            firstRun = false;
             if (elementLocation == ElementLocation.RIGHT) {
                 activeTrajectory = "toBackboardRight";
                 robot.drive.followTrajectoryAsync(toBackboardRight);
@@ -347,6 +357,7 @@ public class AutonomousV1 extends OpMode {
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
             state = State.DEPOSITING_YELLOW_PIXEL;
+            firstRun = true;
         }
     }
 
