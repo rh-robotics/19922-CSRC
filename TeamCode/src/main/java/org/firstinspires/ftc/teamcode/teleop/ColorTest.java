@@ -19,7 +19,7 @@ public class ColorTest extends OpMode {
         telemetry.update();
 
         // ------ Initialize Robot Hardware ------ //
-        robot = new HWC(hardwareMap, telemetry);
+        robot = new HWC(hardwareMap, telemetry, false);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.update();
 
         // ------ Initialize Robot Hardware ------ //
-        robot = new HWC(hardwareMap, telemetry);
+        robot = new HWC(hardwareMap, telemetry, false);
 
         // ------ Reset Servos ------ //
         robot.clawL.setPosition(1);

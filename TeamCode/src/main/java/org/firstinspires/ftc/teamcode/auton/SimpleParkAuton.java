@@ -20,7 +20,7 @@ public class SimpleParkAuton extends OpMode {
         telemetry.update();
 
         // ------ Initialize Robot Hardware ------ //
-        robot = new HWC(hardwareMap, telemetry);
+        robot = new HWC(hardwareMap, telemetry, false);
 
         // ------ Reset Servos ------ //
         robot.clawL.setPosition(1);
@@ -48,14 +48,14 @@ public class SimpleParkAuton extends OpMode {
 
     @Override
     public void start() {
-        robot.betterSleep(10000);
+        robot.elapsedTimeSleep(10000);
 
         if (color.equals("red")) {
             robot.leftFront.setPower(-2);
             robot.leftRear.setPower(2);
             robot.rightFront.setPower(-2);
             robot.rightRear.setPower(2);
-            robot.betterSleep(1500);
+            robot.elapsedTimeSleep(1500);
             robot.leftFront.setPower(0);
             robot.leftRear.setPower(0);
             robot.rightFront.setPower(0);
@@ -65,7 +65,7 @@ public class SimpleParkAuton extends OpMode {
             robot.leftRear.setPower(-2);
             robot.rightFront.setPower(2);
             robot.rightRear.setPower(-2);
-            robot.betterSleep(1500);
+            robot.elapsedTimeSleep(1500);
             robot.leftFront.setPower(0);
             robot.leftRear.setPower(0);
             robot.rightFront.setPower(0);

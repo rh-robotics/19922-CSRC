@@ -67,22 +67,20 @@ public class HWC {
      * @param hardwareMap HardwareMap - Used to retrieve hardware devices
      * @param telemetry   Telemetry - Used to add telemetry to driver hub
      */
-    public HWC(@NonNull HardwareMap hardwareMap, Telemetry telemetry) {
+    public HWC(@NonNull HardwareMap hardwareMap, Telemetry telemetry, boolean roadrunner) {
         // ------ Telemetry ------ //
         this.telemetry = telemetry;
 
-        // ------ Declare RR Drivetrain ------ //
-        drive = new SampleMecanumDrive(hardwareMap);
-
-        // ------- Odemetry ------//
-        // xWheel = hardwareMap.get(DcMotorEx.class, "odoX");
-        //yWheel = hardwareMap.get(DcMotorEx.class,"odoY");
-
-        // ------ Retrieve Drive Motors ------ //
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        if (roadrunner) {
+            // ------ Declare RR Drivetrain ------ //
+            drive = new SampleMecanumDrive(hardwareMap);
+        } else {
+            // ------ Retrieve Drive Motors ------ //
+            leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+            rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+            leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
+            rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        }
 
         // ------ Retrieve Other Motors ------ //
         rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
@@ -130,8 +128,7 @@ public class HWC {
     }
 
     // ------ Function to Run Intake ------ //
-    // Runs intake at given power until color sensor detects a
-    // pixel
+    // Runs intake at given power until color sensor detects a pixel
     public void runIntake(double pwr) {
         intakeMotor.setPower(pwr);
         if (intakeDetection(colorLeft) == 0 && intakeDetection(colorRight) == 0) {
@@ -143,8 +140,6 @@ public class HWC {
 
         } else if (intakeDetection(colorRight) == 0) {
             clawR.setPosition(1);
-
-
         }
 
     }
@@ -190,20 +185,15 @@ public class HWC {
         return (CS.argb() == 0) ? 1 : 0;
     }
 
-    public void betterSleep(int sleep) {
+    // ------ Function that Allows For Sleeping in OpModes ------ //
+    public void elapsedTimeSleep(int milliseconds) {
         sleepTime.reset();
-        while (sleepTime.milliseconds() < sleep) {
+        while (sleepTime.milliseconds() < milliseconds) {
             telemetry.addData("sleeping", "true");
             telemetry.update();
         }
         telemetry.addData("sleeping", "slept");
         telemetry.update();
-    }
-
-    public void sleepDeliver(int time) {
-        intakeMotor.setPower(-0.3);
-        betterSleep(time);
-        intakeMotor.setPower(0);
     }
 
     // ------ Function to Power Slides ------ //
@@ -225,65 +215,7 @@ public class HWC {
         rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
-    // ------ Function to Drive Given Distance Using Odometry ------ //
-    public void odoDrive(int distance) {
-        leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // y axis
-        rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
-        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
-        while (leftRear.getCurrentPosition() > distance) {
-            leftFront.setPower(0.3);
-            rightFront.setPower(0.3);
-            leftRear.setPower(0.3);
-            rightRear.setPower(0.3);
-        }
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        leftRear.setPower(0);
-        rightRear.setPower(0);
-    }
-
-    // ------ Function to Strafe Given Distance Using Odometry ------ //
-    public void odoStrafeLeft(int distance) {
-        odoDrive(500);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // y axis
-        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // x axis
-        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
-
-
-        while (leftRear.getCurrentPosition() < distance) {
-            leftFront.setPower(-0.3);
-            rightFront.setPower(0.3);
-            leftRear.setPower(0.3);
-            rightRear.setPower(-0.3);
-        }
-    }
-
-    public void odoStrafeRight(int distance) {
-        odoDrive(500);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // y axis
-        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // x axis
-        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
-
-
-        while (Math.abs(leftRear.getCurrentPosition()) < distance) {
-            leftFront.setPower(0.3);
-            rightFront.setPower(-0.3);
-            leftRear.setPower(-0.3);
-            rightRear.setPower(0.3);
-        }
-    }
-
-    public void odoTurnRight() {
-        leftFront.setPower(0.3);
-        rightFront.setPower(-0.3);
-        leftRear.setPower(-0.3);
-        rightRear.setPower(0.3);
-    }
-
-    // ------ Function to Turn Given Degrees Using Odometry ------ //
-    public void odoTurn(int degrees) {
-    }
-
+    // ------ Function to Initialize TensorFlow Object Detection ------ //
     public void initTFOD(String TFOD_MODEL_ASSET) {
 
         // Create the TensorFlow processor by using a builder.
@@ -306,6 +238,7 @@ public class HWC {
         tfod.setMinResultConfidence(0.75f);
     }
 
+    // ------ Function to add Telemetry for TensorFlow Object Detection ------ //
     private double telemetryTFOD() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
@@ -323,7 +256,8 @@ public class HWC {
         return x;
     }
 
-    public boolean isTeamElementDetectedBow() {
+    // ------ Function to Detect Team Element with TensorFlow Object Detection ------ //
+    public boolean detectElement() {
         return telemetryTFOD() < 800;
     }
 
