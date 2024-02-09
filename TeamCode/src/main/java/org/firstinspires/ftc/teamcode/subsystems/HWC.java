@@ -332,6 +332,7 @@ public class HWC {
     public String toString() {
         // For each motor and servo, return a string containing their name and power/current position.
         return "HWC {" +
+                "\n\tbusy = " + drive.isBusy() +
                 "\n\tleftFront = " + leftFront.getPower() +
                 "\n\trightFront = " + rightFront.getPower() +
                 "\n\tleftRear = " + leftRear.getPower() +
@@ -345,6 +346,6 @@ public class HWC {
                 "\n\tclawL = " + clawL.getPosition() +
                 "\n\tpassoverArmLeft = " + passoverArmLeft.getPosition() +
                 "\n\tpassoverArmRight = " + passoverArmRight.getPosition() +
-                '}';
+                "\n}";
     }
 }

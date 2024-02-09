@@ -2,16 +2,16 @@ package org.firstinspires.ftc.teamcode.auton;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
-import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
 
 @Autonomous(name = "AutonomousV1")
 public class AutonomousV1 extends OpMode {
     private enum State {
-        DRIVING_TO_DETECT_INITIAL, DRIVING_TO_DETECT_SECOND, DEPOSITING_PURPLE_PIXEL, DRIVING_TO_BACKBOARD, DEPOSITING_YELLOW_PIXEL,
+        DRIVING_TO_DETECT_INITIAL, DRIVING_TO_DETECT_SECOND, DEPOSITING_PURPLE_PIXEL, DRIVING_TO_BACKBOARD, DEPOSITING_YELLOW_PIXEL, STOP
     }
 
     private enum TeamElementLocation {
@@ -24,14 +24,21 @@ public class AutonomousV1 extends OpMode {
 
     // ------ Variables ------ //
     private TeamElementLocation teamElementLocation;
+    private State[] toSelect = new State[]{State.DRIVING_TO_DETECT_INITIAL, State.DRIVING_TO_DETECT_SECOND, State.DEPOSITING_PURPLE_PIXEL, State.DRIVING_TO_BACKBOARD, State.DEPOSITING_YELLOW_PIXEL, State.STOP};
+    private State selected;
     private State state = State.DRIVING_TO_DETECT_INITIAL;
     private HWC robot;
+    private boolean novel = true;
+    private boolean go = false;
+    private int toSelectIndex = 0;
 
     // ------ Trajectories ------ //
-    private TrajectorySequence drivingToInitialDetectionTrajectory;
-    private TrajectorySequence drivingToSecondDetectionTrajectory;
-    private TrajectorySequence drivingToLastResortTrajectory;
-    private TrajectorySequence drivingToBackboardTrajectory;
+    public Trajectory activeTrajectory;
+    private Trajectory drivingToInitialDetectionTrajectory;
+    private Trajectory drivingToSecondDetectionTrajectory;
+    private Trajectory drivingToLastResortTrajectory;
+    private Trajectory drivingToBackboardTrajectory;
+    private Pose2d startPose = new Pose2d(11.84, -60.75, Math.toRadians(90.00));
 
     @Override
     public void init() {
@@ -43,8 +50,9 @@ public class AutonomousV1 extends OpMode {
         robot = new HWC(hardwareMap, telemetry);
 
         // ------ Get Trajectories All Good ------ //
-        drivingToInitialDetectionTrajectory = robot.drive.trajectorySequenceBuilder(new Pose2d(11.84, -60.75, Math.toRadians(90.00))).UNSTABLE_addTemporalMarkerOffset(0.68, () -> {
-        }).splineTo(new Vector2d(11.67, -44.39), Math.toRadians(90.79)).build();
+        robot.drive.setPoseEstimate(startPose);
+        telemetry.addData("Pose", robot.drive.getPoseEstimate()); // REMOVEME
+        drivingToInitialDetectionTrajectory = robot.drive.trajectoryBuilder(startPose).lineTo(new Vector2d(11.67, -44.39)).build();
 
         // ------ CV ------ //
         robot.initTFOD("fpaVision.tflite");
@@ -68,6 +76,30 @@ public class AutonomousV1 extends OpMode {
 
     @Override
     public void loop() {
+        // ------ GamePad Updates ------ //
+        robot.previousGamepad1.copy(robot.currentGamepad1);
+        robot.previousGamepad2.copy(robot.currentGamepad2);
+        robot.currentGamepad1.copy(gamepad1);
+        robot.currentGamepad2.copy(gamepad2);
+
+
+        State prevState = state;
+
+        if (!go) {
+            telemetry.addData("Selected State", state + " (" + toSelectIndex + ")");
+
+            if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
+                state = toSelect[toSelectIndex++];
+            }
+
+            if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
+                selected = state;
+                go = true;
+            }
+
+            return;
+        }
+
         switch (state) {
             case DRIVING_TO_DETECT_INITIAL:
                 driveToDetectInitial();
@@ -84,15 +116,36 @@ public class AutonomousV1 extends OpMode {
             case DEPOSITING_YELLOW_PIXEL:
                 depositYellowPixel();
                 break;
+            case STOP:
+                stop();
         }
+
+        robot.drive.update();
+        novel = state != prevState;
 
         telemetry.addData("Status", state);
         telemetry.addData("Pose", robot.drive.getPoseEstimate());
+        telemetry.addData("Team Element Location", teamElementLocation);
+        telemetry.addData("Novelity", novel);
         telemetry.addData("Hardware", robot);
+
+        if (activeTrajectory != null) {
+            telemetry.addData("Trajectory", activeTrajectory);
+        }
+
+        if (teamElementLocation != null) {
+            telemetry.addData("Deferred Pixel", teamElementLocation.isDeferred());
+        }
+
+        if (state != selected) {
+            stop();
+        }
+
+        telemetry.update();
     }
 
     public void driveToDetectInitial() {
-        robot.drive.followTrajectorySequence(drivingToInitialDetectionTrajectory);
+        if (followTrajectory(drivingToInitialDetectionTrajectory)) return;
 
         if (robot.isTeamElementDetectedBow()) {
             teamElementLocation = TeamElementLocation.CENTER;
@@ -103,8 +156,8 @@ public class AutonomousV1 extends OpMode {
     }
 
     public void driveToDetectSecond() {
-        drivingToSecondDetectionTrajectory = robot.drive.trajectorySequenceBuilder(drivingToInitialDetectionTrajectory.end()).lineTo(new Vector2d(23.77, -43.88)).build();
-        robot.drive.followTrajectorySequence(drivingToSecondDetectionTrajectory);
+        drivingToSecondDetectionTrajectory = robot.drive.trajectoryBuilder(drivingToInitialDetectionTrajectory.end()).lineTo(new Vector2d(23.77, -43.88)).build();
+        if (followTrajectory(drivingToSecondDetectionTrajectory)) return;
 
         if (robot.isTeamElementDetectedBow()) {
             teamElementLocation = TeamElementLocation.RIGHT;
@@ -117,27 +170,29 @@ public class AutonomousV1 extends OpMode {
 
     public void depositPurplePixel() {
         if (teamElementLocation.isDeferred()) {
-            drivingToLastResortTrajectory = robot.drive.trajectorySequenceBuilder(robot.drive.getPoseEstimate()).splineTo(new Vector2d(3.83, -34.00), Math.toRadians(154.82)).build();
-            robot.drive.followTrajectorySequence(drivingToLastResortTrajectory);
+            drivingToLastResortTrajectory = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate()).splineTo(new Vector2d(3.83, -34.00), Math.toRadians(154.82)).build();
+            if (followTrajectory(drivingToLastResortTrajectory)) return;
         }
 
-        // TODO: Run the intake backwards to vomit out the purple pixel.
         robot.intakeMotor.setPower(-0.5);
         robot.betterSleep(1500);
+        robot.intakeMotor.setPower(0);
 
         state = State.DRIVING_TO_BACKBOARD;
     }
 
     public void driveToBackboard() {
         if (drivingToBackboardTrajectory == null) {
-            drivingToBackboardTrajectory = robot.drive.trajectorySequenceBuilder(robot.drive.getPoseEstimate()).splineTo(new Vector2d(50.87, -36.89), Math.toRadians(9.69)).build();
+            drivingToBackboardTrajectory = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate()).splineTo(new Vector2d(50.87, -36.89), Math.toRadians(9.69)).build();
         }
 
-        robot.drive.followTrajectorySequence(drivingToBackboardTrajectory);
+        if (followTrajectory(drivingToBackboardTrajectory)) return;
+
+        state = State.DEPOSITING_YELLOW_PIXEL;
     }
 
     public void moveToYellowPixelDepositLocation() {
-        TrajectorySequence trajectorySequence;
+        Trajectory trajectorySequence;
 
         switch (teamElementLocation) {
             default:
@@ -145,14 +200,14 @@ public class AutonomousV1 extends OpMode {
             case CENTER:
                 return;
             case LEFT:
-                trajectorySequence = robot.drive.trajectorySequenceBuilder(robot.drive.getPoseEstimate()).strafeLeft(5.0).build();
+                trajectorySequence = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate()).strafeLeft(5.0).build();
                 break;
             case RIGHT:
-                trajectorySequence = robot.drive.trajectorySequenceBuilder(robot.drive.getPoseEstimate()).strafeRight(5.0).build();
+                trajectorySequence = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate()).strafeRight(5.0).build();
                 break;
         }
 
-        robot.drive.followTrajectorySequence(trajectorySequence);
+        if (followTrajectory(trajectorySequence)) return;
         teamElementLocation = TeamElementLocation.CENTER;
     }
 
@@ -164,6 +219,18 @@ public class AutonomousV1 extends OpMode {
 
         if (robot.passoverArmLeft.getPosition() == HWC.passoverDeliveryPos) {
             robot.toggleClaw('L');
+            state = State.STOP;
         }
+    }
+
+    public boolean followTrajectory(Trajectory trajectory) {
+        if (novel) {
+            robot.drive.followTrajectoryAsync(trajectory);
+            activeTrajectory = trajectory;
+            novel = false;
+            return true;
+        }
+
+        return robot.drive.isBusy();
     }
 }
