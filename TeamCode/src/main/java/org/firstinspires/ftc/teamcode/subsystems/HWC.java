@@ -27,9 +27,7 @@ import java.util.List;
  */
 public class HWC {
     // ------ Computer Vision Labels ------ //
-    private static final String[] LABELS = {
-            "blue", "red"
-    };
+    private static final String[] LABELS = {"blue", "red"};
     public static double passoverDeliveryPos = 0.2;
     public static double passoverIntakePos = 0.8;
     public static double wristDeliveryPos = 0.2;
@@ -55,11 +53,12 @@ public class HWC {
     //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
     public ElapsedTime sleepTime = new ElapsedTime();
     // ------ Telemetry ------ //
-    Telemetry telemetry;
+    private Telemetry telemetry;
     // ------ Declare TensorFlow Processor ------ //
     private TfodProcessor tfod;
     // ------ Computer Vision VisionPortal ------ //
     private VisionPortal visionPortal;
+    private boolean roadrunner;
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -68,8 +67,8 @@ public class HWC {
      * @param telemetry   Telemetry - Used to add telemetry to driver hub
      */
     public HWC(@NonNull HardwareMap hardwareMap, Telemetry telemetry, boolean roadrunner) {
-        // ------ Telemetry ------ //
         this.telemetry = telemetry;
+        this.roadrunner = roadrunner;
 
         if (roadrunner) {
             // ------ Declare RR Drivetrain ------ //
@@ -103,25 +102,34 @@ public class HWC {
         colorRight = hardwareMap.get(ColorSensor.class, "colorR");
 
         // ------ Set Motor Directions ------ //
-        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFront.setDirection(DcMotorEx.Direction.FORWARD);
-        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
-        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        if (!roadrunner) {
+            leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+            rightFront.setDirection(DcMotorEx.Direction.FORWARD);
+            leftRear.setDirection(DcMotorEx.Direction.FORWARD);
+            rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        }
+
         leftPulley.setDirection(DcMotorEx.Direction.REVERSE);
 
 
         // ------ Set Motor Brake Modes ------ //
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        if (!roadrunner) {
+            leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // ------ Set Motor Modes ------ //
-        leftFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        rightFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        leftRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        rightRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        if (!roadrunner) {
+            leftFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            rightFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            leftRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            rightRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        }
+
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         leftPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -219,10 +227,7 @@ public class HWC {
     public void initTFOD(String TFOD_MODEL_ASSET) {
 
         // Create the TensorFlow processor by using a builder.
-        tfod = new TfodProcessor.Builder()
-                .setModelAssetName(TFOD_MODEL_ASSET)
-                .setModelLabels(LABELS)
-                .build();
+        tfod = new TfodProcessor.Builder().setModelAssetName(TFOD_MODEL_ASSET).setModelLabels(LABELS).build();
 
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -264,22 +269,16 @@ public class HWC {
     @NonNull
     @Override
     public String toString() {
-        // For each motor and servo, return a string containing their name and power/current position.
-        return "HWC {" +
-                "\n\tbusy = " + drive.isBusy() +
-                "\n\tleftFront = " + leftFront.getPower() +
-                "\n\trightFront = " + rightFront.getPower() +
-                "\n\tleftRear = " + leftRear.getPower() +
-                "\n\trightRear = " + rightRear.getPower() +
-                "\n\trightPulley = " + rightPulley.getPower() +
-                "\n\tleftPulley = " + leftPulley.getPower() +
-                "\n\tintakeMotor = " + intakeMotor.getPower() +
-                "\n\tintakeArm = " + intakeArm.getPosition() +
-                "\n\twrist = " + wrist.getPosition() +
-                "\n\tclawR = " + clawR.getPosition() +
-                "\n\tclawL = " + clawL.getPosition() +
-                "\n\tpassoverArmLeft = " + passoverArmLeft.getPosition() +
-                "\n\tpassoverArmRight = " + passoverArmRight.getPosition() +
-                "\n}";
+        StringBuilder builder = new StringBuilder("HWC {");
+
+        if (roadrunner) {
+            builder.append("\n\tbusy = ").append(drive.isBusy());
+        } else {
+            builder.append("\n\tleftFront = ").append(leftFront.getPower()).append("\n\trightFront = ").append(rightFront.getPower()).append("\n\tleftRear = ").append(leftRear.getPower()).append("\n\trightRear = ").append(rightRear.getPower());
+        }
+
+        builder.append("\n\trightPulley = ").append(rightPulley.getPower()).append("\n\tleftPulley = ").append(leftPulley.getPower()).append("\n\tintakeMotor = ").append(intakeMotor.getPower()).append("\n\tintakeArm = ").append(intakeArm.getPosition()).append("\n\twrist = ").append(wrist.getPosition()).append("\n\tclawR = ").append(clawR.getPosition()).append("\n\tclawL = ").append(clawL.getPosition()).append("\n\tpassoverArmLeft = ").append(passoverArmLeft.getPosition()).append("\n\tpassoverArmRight = ").append(passoverArmRight.getPosition()).append("\n}");
+
+        return builder.toString();
     }
 }
