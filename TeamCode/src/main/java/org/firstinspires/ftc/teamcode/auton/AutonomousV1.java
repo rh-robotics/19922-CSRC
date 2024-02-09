@@ -22,9 +22,13 @@ public class AutonomousV1 extends OpMode {
 
     // ------ Declare Others ------ //
     private HWC robot;
+    private State[] stateSelectionList = new State[]{State.DRIVING_TO_DETECT_INITIAL, State.DRIVING_TO_DETECT_SECOND, State.DEPOSITING_PURPLE_PIXEL, State.DRIVING_TO_BACKBOARD, State.DEPOSITING_YELLOW_PIXEL, State.STOP};
+
     private State state = State.DRIVING_TO_DETECT_INITIAL;
     private ElementLocation elementLocation;
     private String activeTrajectory = "";
+    private boolean testingMode = false;
+    private int stateIndex = 0;
 
     // ------ Trajectories ------ //
     private Trajectory toDetectInitial;
@@ -104,6 +108,48 @@ public class AutonomousV1 extends OpMode {
         telemetry.addData(">", "Yellow Pixel on Left Side");
         telemetry.addData(">", "Purple Pixel in intake");
         telemetry.update();
+    }
+
+    @Override
+    public void init_loop() {
+        // ------ GamePad Updates ------ //
+        robot.previousGamepad1.copy(robot.currentGamepad1);
+        robot.previousGamepad2.copy(robot.currentGamepad2);
+        robot.currentGamepad1.copy(gamepad1);
+        robot.currentGamepad2.copy(gamepad2);
+
+        // ------ Enabling Testing Mode ------ //
+        if ((robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) && (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper)) {
+            testingMode = !testingMode;
+        }
+
+        if (testingMode) {
+            if (robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
+                stateIndex++;
+                if (stateIndex >= stateSelectionList.length) {
+                    stateIndex = 0;
+                }
+            } else if (robot.currentGamepad1.dpad_down && !robot.previousGamepad1.dpad_down) {
+                stateIndex--;
+                if (stateIndex < 0) {
+                    stateIndex = stateSelectionList.length - 1;
+                }
+
+            }
+            state = stateSelectionList[stateIndex];
+        }
+
+        // ------ Telemetry ------ //
+        if(testingMode) {
+            telemetry.addData(">", "TESTING MODE ENABLED");
+            telemetry.addData("Selected State", state);
+            telemetry.addLine("-----------------------------");
+        } else {
+            telemetry.addData(">", "Yellow Pixel on Left Side");
+            telemetry.addData(">", "Purple Pixel in intake");
+            telemetry.addData("Status", "Init Loop");
+            telemetry.update();
+        }
     }
 
     @Override
