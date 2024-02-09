@@ -220,7 +220,9 @@ public class AutonomousV1 extends OpMode {
         activeTrajectory = "toDetectInitial";
 
         // ------ Follow Trajectory ------ //
-        robot.drive.followTrajectoryAsync(toDetectInitial);
+        if(!robot.drive.isBusy()) {
+            robot.drive.followTrajectoryAsync(toDetectInitial);
+        }
 
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
@@ -252,7 +254,9 @@ public class AutonomousV1 extends OpMode {
         activeTrajectory = "toDetectSecond";
 
         // ------ Follow Trajectory ------ //
-        robot.drive.followTrajectoryAsync(toDetectSecond);
+        if(!robot.drive.isBusy()) {
+            robot.drive.followTrajectoryAsync(toDetectSecond);
+        }
 
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
@@ -284,7 +288,9 @@ public class AutonomousV1 extends OpMode {
         activeTrajectory = "toLastResort";
 
         // ------ Follow Trajectory ------ //
-        robot.drive.followTrajectoryAsync(toLastResort);
+        if(!robot.drive.isBusy()) {
+            robot.drive.followTrajectoryAsync(toLastResort);
+        }
 
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
@@ -306,15 +312,17 @@ public class AutonomousV1 extends OpMode {
     // Drive to Backboard
     private void drivingToBackboard() {
         // ------ Select Trajectory ------ //
-        if (elementLocation == ElementLocation.CENTER) {
-            activeTrajectory = "toBackboardFromInitial";
-            robot.drive.followTrajectoryAsync(toBackboardFromInitial);
-        } else if (elementLocation == ElementLocation.RIGHT) {
-            activeTrajectory = "toBackboardFromSecond";
-            robot.drive.followTrajectoryAsync(toBackboardFromSecond);
-        } else {
-            activeTrajectory = "toBackboardFromLastResort";
-            robot.drive.followTrajectoryAsync(toBackboardFromLastResort);
+        if(!robot.drive.isBusy()) {
+            if (elementLocation == ElementLocation.CENTER) {
+                activeTrajectory = "toBackboardFromInitial";
+                robot.drive.followTrajectoryAsync(toBackboardFromInitial);
+            } else if (elementLocation == ElementLocation.RIGHT) {
+                activeTrajectory = "toBackboardFromSecond";
+                robot.drive.followTrajectoryAsync(toBackboardFromSecond);
+            } else {
+                activeTrajectory = "toBackboardFromLastResort";
+                robot.drive.followTrajectoryAsync(toBackboardFromLastResort);
+            }
         }
 
         // ------ Set Next State ------ //
@@ -326,12 +334,14 @@ public class AutonomousV1 extends OpMode {
     // Move at Backboard
     private void movingAtBackboard() {
         // ------ Select Trajectory ------ //
-        if (elementLocation == ElementLocation.RIGHT) {
-            activeTrajectory = "toBackboardRight";
-            robot.drive.followTrajectoryAsync(toBackboardRight);
-        } else if (elementLocation == ElementLocation.LEFT) {
-            activeTrajectory = "toBackboardLeft";
-            robot.drive.followTrajectoryAsync(toBackboardLeft);
+        if(!robot.drive.isBusy()) {
+            if (elementLocation == ElementLocation.RIGHT) {
+                activeTrajectory = "toBackboardRight";
+                robot.drive.followTrajectoryAsync(toBackboardRight);
+            } else if (elementLocation == ElementLocation.LEFT) {
+                activeTrajectory = "toBackboardLeft";
+                robot.drive.followTrajectoryAsync(toBackboardLeft);
+            }
         }
 
         // ------ Set Next State ------ //
