@@ -62,7 +62,7 @@ public class AutonomousV1 extends OpMode {
         // ------ Declare Trajectories ------ //
         // Driving to Initial Detection Location
         toDetectInitial = robot.drive.trajectoryBuilder(START_POSE)
-                .lineTo(new Vector2d(11.67, -44.39))
+                .splineTo(new Vector2d(11.67, -44.39), Math.toRadians(90.00))
                 .build();
 
         // Driving to Second Detection Location
