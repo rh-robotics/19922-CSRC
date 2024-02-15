@@ -235,19 +235,28 @@ public class AutonomousV1 extends OpMode {
 
     // Detect Initial Location
     private void detectingInitial() {
+        // ------ Reset WaitTime First Run ------ //
+        if(firstRun) {
+            robot.time.reset();
+            firstRun = false;
+        }
+
         // ------ Detect Element ------ //
-        // TODO: This will probably cause issues. We likely need to wait a bit while detecting
-        if (robot.detectElement()) {
-            elementLocation = ElementLocation.CENTER;
-        } else {
-            elementLocation = ElementLocation.UNKNOWN;
+        if (robot.time.seconds() <= 2) {
+            if (robot.detectElement()) {
+                elementLocation = ElementLocation.CENTER;
+            } else {
+                elementLocation = ElementLocation.UNKNOWN;
+            }
         }
 
         // ------ Set Next State ------ //
         if (elementLocation == ElementLocation.CENTER) {
             state = State.DRIVING_TO_BACKBOARD;
+            firstRun = true;
         } else {
             state = State.DRIVING_TO_DETECT_SECOND;
+            firstRun = true;
         }
     }
 
@@ -271,19 +280,28 @@ public class AutonomousV1 extends OpMode {
 
     // Detect Second Location
     private void detectingSecond() {
+        // ------ Reset WaitTime First Run ------ //
+        if(firstRun) {
+            robot.time.reset();
+            firstRun = false;
+        }
+
         // ------ Detect Element ------ //
-        // TODO: This will probably cause issues. We likely need to wait a bit while detecting
-        if (robot.detectElement()) {
-            elementLocation = ElementLocation.RIGHT;
-        } else {
-            elementLocation = ElementLocation.LEFT;
+        if (robot.time.seconds() <= 2) {
+            if (robot.detectElement()) {
+                elementLocation = ElementLocation.RIGHT;
+            } else {
+                elementLocation = ElementLocation.LEFT;
+            }
         }
 
         // ------ Set Next State ------ //
         if (elementLocation == ElementLocation.RIGHT) {
             state = State.DRIVING_TO_BACKBOARD;
+            firstRun = true;
         } else {
             state = State.DRIVING_TO_LAST_RESORT;
+            firstRun = true;
         }
     }
 
