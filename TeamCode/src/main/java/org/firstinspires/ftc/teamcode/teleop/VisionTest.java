@@ -4,12 +4,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.subsystems.vision.PixelCameraTest;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name = "Vision Test ", group = "Testing")
-public class CVTest extends LinearOpMode {
+@Autonomous(name = "Vision Test", group = "Testing")
+public class VisionTest extends LinearOpMode {
     OpenCvCamera camera;
     String webcamName = "Webcam 1";
 
