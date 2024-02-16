@@ -293,7 +293,7 @@ public class SingleDriverTeleOp extends OpMode {
             telemetry.addData("Gamepad 2 Left Bumper", robot.currentGamepad2.left_bumper);
             telemetry.addData("Gamepad 2 Right Bumper", robot.currentGamepad2.right_bumper);
             telemetry.addData("Gamepad 2 D-Pad Up", robot.currentGamepad2.dpad_up);
-            telemetry.addData("Gamepadxf 2 D-Pad Down", robot.currentGamepad2.dpad_down);
+            telemetry.addData("Gamepad 2 D-Pad Down", robot.currentGamepad2.dpad_down);
             telemetry.addData("Gamepad 2 D-Pad Left", robot.currentGamepad2.dpad_left);
             telemetry.addData("Gamepad 2 D-Pad Right", robot.currentGamepad2.dpad_right);
             telemetry.addData("Gamepad 2 A", robot.currentGamepad2.a);
