@@ -6,20 +6,23 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.teamcode.teleop.enums.MultiplierSelection;
-import org.firstinspires.ftc.teamcode.teleop.enums.TeleOpState;
 
 /**
  * TeleOp OpMode for simply driving with strafing wheels
  */
 @TeleOp(name = "Single Driver", group = "Primary OpModes")
 public class SingleDriverTeleOp extends OpMode {
-    HWC robot;
-    TeleOpState state = TeleOpState.RESTING;
-    MultiplierSelection selection = MultiplierSelection.TURN_SPEED;
-    boolean testingMode = false;
-    double turnSpeed = 0.5; // Speed multiplier for turning
-    double driveSpeed = 1; // Speed multiplier for driving
-    double strafeSpeed = 0.8; // Speed multiplier for strafing
+    // ------ Intake State Enum ------ //
+    private enum IntakeState {INTAKE, OFF, OUTTAKE}
+
+    // ------ Declare Others ------ //
+    private HWC robot;
+    private MultiplierSelection selection = MultiplierSelection.TURN_SPEED;
+    private IntakeState intakeState = IntakeState.OFF;
+    private boolean testingMode = false;
+    private double turnSpeed = 0.5; // Speed multiplier for turning
+    private double driveSpeed = 1; // Speed multiplier for driving
+    private double strafeSpeed = 0.8; // Speed multiplier for strafing
 
     @Override
     public void init() {
@@ -132,13 +135,11 @@ public class SingleDriverTeleOp extends OpMode {
 
         // ------ Calculate Drive Power ------ //
         if (drive != 0 || turn != 0) {
-            state = TeleOpState.DRIVING;
             leftFPower = Range.clip(drive + turn, -1.0, 1.0);
             rightFPower = Range.clip(drive - turn, -1.0, 1.0);
             leftBPower = Range.clip(drive + turn, -1.0, 1.0);
             rightBPower = Range.clip(drive - turn, -1.0, 1.0);
         } else if (strafe != 0) {
-            state = TeleOpState.DRIVING;
             leftFPower = strafe;
             rightFPower = strafe;
             leftBPower = -strafe;
@@ -150,15 +151,7 @@ public class SingleDriverTeleOp extends OpMode {
             rightBPower = 0;
         }
 
-        // ------ Intake Controls ------ //
-        if (robot.currentGamepad1.right_stick_x != 0) {
-            robot.intakeMotor.setPower(robot.currentGamepad1.right_stick_x);
-            state = TeleOpState.INTAKING;
-        } else {
-            robot.intakeMotor.setPower(0);
-        }
-
-        // ------ Claw Controls ------ //
+        // ------ (GAMEPAD 1) Claw Controls ------ //
         if (robot.currentGamepad1.x && !robot.previousGamepad1.x) {
             robot.toggleClaw('L');
         }
@@ -166,21 +159,25 @@ public class SingleDriverTeleOp extends OpMode {
             robot.toggleClaw('R');
         }
 
-        // ------ Passover Controls ------ //
+        // ------ (GAMEPAD 1) Intake Toggle Controls ------ //
         if (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) {
-            passoverPosition += 0.05;
-        } else if (robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) {
-            passoverPosition -= 0.05;
+            intakeState = IntakeState.INTAKE;
+        }
+        if (robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) {
+            intakeState = IntakeState.OUTTAKE;
+        }
+        if ((robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) && (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper)) {
+            intakeState = IntakeState.OFF;
         }
 
-        // ------ Wrist Controls ------ //
+        // ------ (GAMEPAD 1) MANUAL Wrist Controls ------ //
         if (robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
             wristPosition += 0.05;
         } else if (robot.currentGamepad1.dpad_down && !robot.previousGamepad1.dpad_down) {
             wristPosition -= 0.05;
         }
 
-        // ------ Position Controls ------ //
+        // ------ (GAMEPAD 1) Position Controls ------ //
         if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
             wristPosition = HWC.wristDeliveryPos;
             passoverPosition = HWC.passoverDeliveryPos;
@@ -189,10 +186,18 @@ public class SingleDriverTeleOp extends OpMode {
             passoverPosition = HWC.passoverIntakePos;
         }
 
-        // ------ (GAMEPAD2) EMERGENCY RESET ENCODERS ------ //
-        if (robot.currentGamepad1.back && !robot.previousGamepad1.back) {
-            robot.resetEncoders();
+        // ------ (GAMEPAD 1) Slide Controls ------ //
+        robot.powerSlides(-robot.currentGamepad1.right_stick_y);
+
+        // ------ (GAMEPAD 2) MANUAL Passover Controls ------ //
+        if (robot.currentGamepad2.right_bumper && !robot.previousGamepad2.right_bumper) {
+            passoverPosition += 0.05;
+        } else if (robot.currentGamepad2.left_bumper && !robot.previousGamepad2.left_bumper) {
+            passoverPosition -= 0.05;
         }
+
+        // ------ (GAMEPAD 2) MANUAL Intake Controls ------ //
+        robot.intakeMotor.setPower(robot.currentGamepad1.right_stick_x);
 
         // ------ Run Motors ------ //
         robot.leftFront.setPower(leftFPower);
@@ -204,58 +209,38 @@ public class SingleDriverTeleOp extends OpMode {
         robot.passoverArmLeft.setPosition(passoverPosition);
 //        robot.passoverArmRight.setPosition(passoverPosition);
         robot.wrist.setPosition(wristPosition);
-        robot.powerSlides(-robot.currentGamepad1.right_stick_y);
 
-        // ------ State Machine ------ //
-        switch (state) {
-            case DRIVING:
-                telemetry.addData("Robot State", "Driving");
+        // -------- Check Intake State & Run Intake ------ //
+        switch(intakeState) {
+            case INTAKE:
+                robot.intakeMotor.setPower(1);
                 break;
-
-            case DELIVERING:
-                telemetry.addData("Robot State", "Delivering");
+            case OFF:
+                robot.intakeMotor.setPower(0);
                 break;
-
-            case INTAKING:
-                telemetry.addData("Robot State", "Intake");
-                break;
-
-            case RESTING:
-                telemetry.addData("Robot State", "Resting");
-                break;
-
-            case UNKNOWN:
-                telemetry.addData("Robot State", "UNKNOWN");
-                break;
-
-            default:
-                telemetry.addData("Robot State", "UNKNOWN");
-                state = TeleOpState.UNKNOWN;
+            case OUTTAKE:
+                robot.intakeMotor.setPower(-1);
                 break;
         }
 
         // ------ Telemetry Updates ------ //
         telemetry.addData("Status", "Running");
-        telemetry.addData("Robot State", state);
+        telemetry.addData("Intake State", intakeState);
         telemetry.addLine();
         telemetry.addData(">", "ALL PRIMARY CONTROLS ARE ON GAMEPAD 1");
         telemetry.addData("Left Stick X", "Strafing Left / Right");
         telemetry.addData("Left Stick Y", "Driving Forward / Backward");
         telemetry.addData("Left Trigger / Right Trigger", "Turning Left / Right");
-        telemetry.addData("Left Bumper / Right Bumper", "Passover Up / Down");
+        telemetry.addData("Left Bumper", "Outtake");
+        telemetry.addData("Right Bumper", "Intake");
+        telemetry.addData("Both Bumpers", "Intake OFF");
         telemetry.addData("D-Pad Up / Down", "Wrist Up / Down");
         telemetry.addData("Right Stick X", "Intake In / Out");
         telemetry.addData("Right Stick Y", "Slides Up / Down");
-        telemetry.addData("Button B", "Delivery Position [TESTING MODE ONLY]");
-        telemetry.addData("Button A", "Intake Position [TESTING MODE ONLY]");
+        telemetry.addData("Button B", "Delivery Position");
+        telemetry.addData("Button A", "Intake Position");
         telemetry.addData("Button X", "Toggle Left Claw");
         telemetry.addData("Button Y", "Toggle Right Claw");
-        telemetry.addLine();
-        telemetry.addData(">", "ALL MANUAL & EMERGENCY CONTROLS ARE ON GAMEPAD 2");
-        telemetry.addData("Right Stick Y", "Slides Manual Control");
-        telemetry.addData("D-Pad Up / Down", "Wrist Up / Down");
-        telemetry.addData("Button A", "Climb [NOT IMPLEMENTED]");
-        telemetry.addData("Button B", "Emergency Encoder Reset [USE WITH CAUTION]");
         telemetry.addLine();
         telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
         telemetry.addData("Slide Pulley Left Velocity", robot.leftPulley.getVelocity());
