@@ -267,12 +267,13 @@ public class AutonomousV1 extends OpMode {
 
         // ------ Follow Trajectory ------ //
         if(firstRun) {
+            robot.time.reset();
             robot.drive.followTrajectoryAsync(toDetectSecond);
             firstRun = false;
         }
 
         // ------ Set Next State ------ //
-        if (!robot.drive.isBusy()) {
+        if (!robot.drive.isBusy() && !(robot.time.seconds() < 3)) {
             state = State.DETECTING_SECOND;
             firstRun = true;
         }
