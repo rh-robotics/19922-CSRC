@@ -197,7 +197,7 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ (GAMEPAD 2) MANUAL Intake Controls ------ //
-        robot.intakeMotor.setPower(robot.currentGamepad1.right_stick_x);
+        robot.intakeMotor.setPower(robot.currentGamepad2.right_stick_x);
 
         // ------ Run Motors ------ //
         robot.leftFront.setPower(leftFPower);
