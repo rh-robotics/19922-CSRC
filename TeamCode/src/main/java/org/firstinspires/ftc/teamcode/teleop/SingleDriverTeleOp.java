@@ -213,13 +213,13 @@ public class SingleDriverTeleOp extends OpMode {
         // -------- Check Intake State & Run Intake ------ //
         switch(intakeState) {
             case INTAKE:
-                robot.intakeMotor.setPower(1);
+                robot.intakeMotor.setPower(-1);
                 break;
             case OFF:
                 robot.intakeMotor.setPower(0);
                 break;
             case OUTTAKE:
-                robot.intakeMotor.setPower(-1);
+                robot.intakeMotor.setPower(1);
                 break;
         }
 
