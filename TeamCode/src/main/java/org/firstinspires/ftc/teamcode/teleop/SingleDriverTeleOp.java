@@ -161,15 +161,15 @@ public class SingleDriverTeleOp extends OpMode {
 
         // ------ (GAMEPAD 1) Intake Toggle Controls ------ //
         if (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) {
-            intakeState = IntakeState.INTAKE;
-        }
-        if (robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) {
-            intakeState = IntakeState.OUTTAKE;
-        }
-        if ((robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) && (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper)) {
-            intakeState = IntakeState.OFF;
+            if (intakeState == IntakeState.INTAKE || intakeState == IntakeState.OUTTAKE) { intakeState = IntakeState.OFF; }
+            else if (intakeState == IntakeState.OFF) { intakeState = IntakeState.INTAKE; }
         }
 
+        if (robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) {
+            if (intakeState == IntakeState.INTAKE || intakeState == IntakeState.OUTTAKE) {
+                intakeState = IntakeState.OFF;
+            } else if (intakeState == IntakeState.OFF) { intakeState = IntakeState.OUTTAKE; }
+        }
         // ------ (GAMEPAD 1) MANUAL Wrist Controls ------ //
         if (robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
             wristPosition += 0.05;
@@ -196,9 +196,6 @@ public class SingleDriverTeleOp extends OpMode {
             passoverPosition -= 0.05;
         }
 
-        // ------ (GAMEPAD 2) MANUAL Intake Controls ------ //
-        robot.intakeMotor.setPower(robot.currentGamepad2.right_stick_x);
-
         // ------ Run Motors ------ //
         robot.leftFront.setPower(leftFPower);
         robot.leftRear.setPower(leftBPower);
@@ -216,7 +213,7 @@ public class SingleDriverTeleOp extends OpMode {
                 robot.intakeMotor.setPower(-1);
                 break;
             case OFF:
-                robot.intakeMotor.setPower(0);
+                robot.intakeMotor.setPower(robot.currentGamepad2.right_stick_x);
                 break;
             case OUTTAKE:
                 robot.intakeMotor.setPower(1);
