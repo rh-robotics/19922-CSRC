@@ -4,6 +4,8 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -35,14 +37,19 @@ public class HWC {
     public static double passoverDeliveryPos = 0.2;
     public static double passoverIntakePos = 0.8;
     public static double wristDeliveryPos = 0.2;
-
     public static double wristIntakePos = 0.6;
 
     // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
 
     // ------ Declare Servos ------ //
-    public Servo wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
+    public Servo wrist, clawR, clawL;
+
+    // ------ Declare CRServos ------ //
+    public CRServo passoverArmLeft, passoverArmRight;
+
+    // ------ Declare Passover Encoders ------ //
+    public AnalogInput passoverEncoderLeft, passoverEncoderRight;
 
     // ------ Declare Sensors ------ //
     public ColorRangeSensor colorLeft, colorRight;
@@ -102,8 +109,12 @@ public class HWC {
         wrist = hardwareMap.get(Servo.class, "wrist");
 
         // ------ Retrieve Continuous Rotation Servos ------ //
-        passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
-        passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
+        passoverArmLeft = hardwareMap.get(CRServo.class, "passoverArmLeft");
+        passoverArmRight = hardwareMap.get(CRServo.class, "passoverArmRight");
+
+        // ------ Retrieve Passover CRServo Encoders ------ //
+        passoverEncoderLeft = hardwareMap.get(AnalogInput.class, "passoverEncoderLeft");
+        passoverEncoderRight = hardwareMap.get(AnalogInput.class, "passoverEncoderRight");
 
         // ------ Retrieve Sensors ------ //
         webcam = hardwareMap.get(WebcamName.class, "webcam");

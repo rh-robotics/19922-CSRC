@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
@@ -17,7 +18,7 @@ public class ServoPIDTuning extends OpMode {
     // ------ Declare PID Variables ------ //
     public static double p = 0, i = 0, d = 0, f = 0;
     public static int target = 0;
-    private int servoPos = 0;
+    private double servoPos = 0;
     private double pid = 0;
     private double ff = 0;
 
@@ -25,6 +26,7 @@ public class ServoPIDTuning extends OpMode {
     private PIDController controller;
     private HWC kit;
     private CRServo servo;
+    private AnalogInput encoder;
     private final Servo[] servoSelectionList = new Servo[]{ Servo.PASSOVER_R, Servo.PASSOVER_L };
     private int servoSelectionIndex = 0;
     // TODO: Update with correct ticks amount of ticks for motor
@@ -60,9 +62,11 @@ public class ServoPIDTuning extends OpMode {
         switch(servoSelectionList[servoSelectionIndex]) {
             case PASSOVER_L:
                 servo = kit.passoverArmLeft;
+                encoder = kit.passoverEncoderLeft;
                 break;
             case PASSOVER_R:
-                servo = kit.rightPulley;
+                servo = kit.passoverArmRight;
+                encoder = kit.passoverEncoderRight;
                 break;
         }
 
@@ -70,7 +74,7 @@ public class ServoPIDTuning extends OpMode {
         controller.setPID(p, i ,d);
 
         // ------ Get Motor Position ------ //
-        servoPos = analogInput.getVoltage() / 3.3 * 360;
+        servoPos = encoder.getVoltage() / 3.3 * 360;
 
         // ------ Calculate PID ------ //
         pid = controller.calculate(servoPos, target);

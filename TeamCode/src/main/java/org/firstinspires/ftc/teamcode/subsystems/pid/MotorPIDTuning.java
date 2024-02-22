@@ -19,7 +19,7 @@ public class MotorPIDTuning extends OpMode {
     // ------ Declare PID Variables ------ //
     public static double p = 0, i = 0, d = 0, f = 0;
     public static int target = 0;
-    private int motorPos = 0;
+    private double motorPos = 0;
     private double pid = 0;
     private double ff = 0;
 
