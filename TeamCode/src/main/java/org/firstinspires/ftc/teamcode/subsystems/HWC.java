@@ -21,7 +21,6 @@ import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-
 /**
  * Stores and Declares all hardware devices &amp; related methods
  */
@@ -30,34 +29,44 @@ public class HWC {
     private static final String[] LABELS = {
             "blue", "red"
     };
+
+    // ------ Declare Servo Positions ------ //
     public static double passoverDeliveryPos = 0.2;
     public static double passoverIntakePos = 0.8;
     public static double wristDeliveryPos = 0.2;
     public static double wristIntakePos = 0.5;
+
     // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
+
     // ------ Declare Servos ------ //
     public Servo intakeArm, wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
+
     // ------ Declare Sensors ------ //
     public ColorSensor colorLeft, colorRight;
+
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad currentGamepad2 = new Gamepad();
     public Gamepad previousGamepad1 = new Gamepad();
     public Gamepad previousGamepad2 = new Gamepad();
+
     // ------ Declare Webcam ------ //
     public WebcamName webcam;
+
     // ------ Declare Roadrunner Drive ------ //
     public SampleMecanumDrive drive;
-    // ------ ElapsedTime Variable ------ //
+
+    // ------ ElapsedTime Variables ------ //
     public ElapsedTime time = new ElapsedTime();
-    // ------ Position Variables ------ //
-    //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
     public ElapsedTime sleepTime = new ElapsedTime();
+
     // ------ Telemetry ------ //
     Telemetry telemetry;
+
     // ------ Declare TensorFlow Processor ------ //
     private TfodProcessor tfod;
+
     // ------ Computer Vision VisionPortal ------ //
     private VisionPortal visionPortal;
 
@@ -73,10 +82,6 @@ public class HWC {
 
         // ------ Declare RR Drivetrain ------ //
         drive = new SampleMecanumDrive(hardwareMap);
-
-        // ------- Odemetry ------//
-        // xWheel = hardwareMap.get(DcMotorEx.class, "odoX");
-        //yWheel = hardwareMap.get(DcMotorEx.class,"odoY");
 
         // ------ Retrieve Drive Motors ------ //
         leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
