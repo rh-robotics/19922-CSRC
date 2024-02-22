@@ -4,6 +4,7 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -37,9 +38,9 @@ public class HWC {
     // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
     // ------ Declare Servos ------ //
-    public Servo intakeArm, wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
+    public Servo wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
     // ------ Declare Sensors ------ //
-    public ColorSensor colorLeft, colorRight;
+    public ColorRangeSensor colorLeft, colorRight;
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad currentGamepad2 = new Gamepad();
@@ -90,7 +91,6 @@ public class HWC {
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
         // ------ Retrieve Servos ------ //
-        intakeArm = hardwareMap.get(Servo.class, "intakeArm");
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
         wrist = hardwareMap.get(Servo.class, "wrist");
@@ -101,8 +101,8 @@ public class HWC {
 
         // ------ Retrieve Sensors ------ //
         webcam = hardwareMap.get(WebcamName.class, "webcam");
-        colorLeft = hardwareMap.get(ColorSensor.class, "colorL");
-        colorRight = hardwareMap.get(ColorSensor.class, "colorR");
+        colorLeft = hardwareMap.get(ColorRangeSensor.class, "colorL");
+        colorRight = hardwareMap.get(ColorRangeSensor.class, "colorR");
 
         // ------ Set Motor Directions ------ //
         leftFront.setDirection(DcMotorEx.Direction.FORWARD);
@@ -159,8 +159,8 @@ public class HWC {
                 clawR.setPosition(clawR.getPosition() == 0 ? 0.50 : 0);
                 break;
             case 'C':
-                clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0);
-                clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1);
+                clawR.setPosition(clawR.getPosition() == 0 ? 0.5 : 0);
+                clawL.setPosition(clawL.getPosition() == 1 ? 0.5 : 1);
                 break;
         }
     }
