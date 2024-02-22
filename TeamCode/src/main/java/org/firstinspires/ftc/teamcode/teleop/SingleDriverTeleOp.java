@@ -193,7 +193,7 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ (GAMEPAD 1) Slide Controls ------ //
-        robot.powerSlides(-robot.currentGamepad1.right_stick_y);
+        robot.powerSlides(robot.currentGamepad1.right_stick_y);
 
         // ------ (GAMEPAD 2) MANUAL Passover Controls ------ //
         if (robot.currentGamepad2.right_bumper && !robot.previousGamepad2.right_bumper) {
@@ -210,7 +210,7 @@ public class SingleDriverTeleOp extends OpMode {
 
         // ------ Run Servos ------ //
         robot.passoverArmLeft.setPosition(passoverPosition);
-//        robot.passoverArmRight.setPosition(passoverPosition);
+        robot.passoverArmRight.setPosition(passoverPosition);
         robot.wrist.setPosition(wristPosition);
 
         // -------- Check Intake State & Run Intake ------ //
