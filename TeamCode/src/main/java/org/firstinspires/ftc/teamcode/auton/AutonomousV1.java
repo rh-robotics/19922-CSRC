@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.auton;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -54,6 +56,9 @@ public class AutonomousV1 extends OpMode {
 
         // ------ Initialize Robot Hardware ------ //
         robot = new HWC(hardwareMap, telemetry, true);
+
+        // ------ Start FTC Dashboard Telemetry ------ //
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         // ------ Start Tensorflow ------ //
         robot.initTFOD("fpaVision.tflite");
