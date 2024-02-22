@@ -125,7 +125,7 @@ public class AutonomousV1 extends OpMode {
         } else {
             telemetry.addData(">", "Yellow Pixel on Left Side");
             telemetry.addData(">", "Purple Pixel in intake");
-            telemetry.addData("Selected Alliance Color [DOES NOTHING CURRENTLY]", allianceColor);
+            telemetry.addData("Selected Alliance Color", allianceColor);
             telemetry.addData("Status", "Init Loop");
             telemetry.update();
         }
