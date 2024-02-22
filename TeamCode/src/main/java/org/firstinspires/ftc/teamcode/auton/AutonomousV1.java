@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.HWC;
 public class AutonomousV1 extends OpMode {
     // ------ State Enum ------ //
     private enum State {
-        DRIVING_TO_DETECT_INITIAL, DETECTING_INITIAL, DRIVING_TO_DETECT_SECOND, DETECTING_SECOND, DRIVING_TO_LAST_RESORT, DEPOSITING_PURPLE_PIXEL, DRIVING_TO_BACKBOARD, MOVING_AT_BACKBOARD, DEPOSITING_YELLOW_PIXEL, STOP
+        DRIVING_TO_DETECT_INITIAL, DETECTING_INITIAL, DRIVING_TO_DETECT_SECOND, DETECTING_SECOND, DRIVING_TO_LAST_RESORT, DEPOSITING_PURPLE_PIXEL, DRIVING_TO_BACKBOARD, MOVING_AT_BACKBOARD, DEPOSITING_YELLOW_PIXEL, PARK, STOP
     }
 
     // ------ Element Location Enum ------ //
@@ -22,7 +22,7 @@ public class AutonomousV1 extends OpMode {
 
     // ------ Declare Others ------ //
     private HWC robot;
-    private final State[] stateSelectionList = new State[]{State.DRIVING_TO_DETECT_INITIAL, State.DRIVING_TO_DETECT_SECOND, State.DEPOSITING_PURPLE_PIXEL, State.DRIVING_TO_BACKBOARD, State.DEPOSITING_YELLOW_PIXEL, State.STOP};
+    private final State[] stateSelectionList = new State[]{State.DRIVING_TO_DETECT_INITIAL, State.DRIVING_TO_DETECT_SECOND, State.DEPOSITING_PURPLE_PIXEL, State.DRIVING_TO_BACKBOARD, State.DEPOSITING_YELLOW_PIXEL, State.PARK, State.STOP};
     private State state = State.DRIVING_TO_DETECT_INITIAL;
     private ElementLocation elementLocation;
     private String activeTrajectory = "";
@@ -39,6 +39,9 @@ public class AutonomousV1 extends OpMode {
     private Trajectory toBackboardFromLastResort;
     private Trajectory toBackboardLeft;
     private Trajectory toBackboardRight;
+    private Trajectory toParkFromBackboardRight;
+    private Trajectory toParkFromBackBoardCenter;
+    private Trajectory toParkFromBackboardLeft;
 
     // ------ Starting Position ------ //
     private final Pose2d START_POSE = new Pose2d(12, -60, Math.toRadians(90.00));
@@ -97,6 +100,21 @@ public class AutonomousV1 extends OpMode {
         // Right Side Score
         toBackboardRight = robot.drive.trajectoryBuilder(new Pose2d(50.87, -36.89, Math.toRadians(9.69)))
                 .strafeRight(10) // TODO: Review Distance
+                .build();
+
+        // Park from Backboard Right
+        toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardRight.end())
+                .strafeRight(10) // TODO: Review Distance
+                .build();
+
+        // Park from Backboard Center
+        toParkFromBackBoardCenter = robot.drive.trajectoryBuilder(toBackboardFromInitial.end())
+                .strafeRight(15) // TODO: Review Distance
+                .build();
+
+        // Park from Backboard Left
+        toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardLeft.end())
+                .strafeRight(20) // TODO: Review Distance
                 .build();
 
         // ------ Reset Servos ------ //
@@ -195,6 +213,8 @@ public class AutonomousV1 extends OpMode {
             case DEPOSITING_YELLOW_PIXEL:
                 depositingYellowPixel();
                 break;
+            case PARK:
+                drivingToPark();
             case STOP:
                 stop();
                 break;
@@ -241,7 +261,7 @@ public class AutonomousV1 extends OpMode {
         }
 
         // ------ Detect Element ------ //
-        if (robot.time.seconds() <= 2) {
+        if (robot.time.seconds() <= 3) {
             if (robot.detectElement()) {
                 elementLocation = ElementLocation.CENTER;
             } else {
@@ -266,13 +286,12 @@ public class AutonomousV1 extends OpMode {
 
         // ------ Follow Trajectory ------ //
         if(firstRun) {
-            robot.time.reset();
             robot.drive.followTrajectoryAsync(toDetectSecond);
             firstRun = false;
         }
 
         // ------ Set Next State ------ //
-        if (!robot.drive.isBusy() && !(robot.time.seconds() < 3)) {
+        if (!robot.drive.isBusy()) {
             state = State.DETECTING_SECOND;
             firstRun = true;
         }
@@ -287,7 +306,7 @@ public class AutonomousV1 extends OpMode {
         }
 
         // ------ Detect Element ------ //
-        if (robot.time.seconds() <= 2) {
+        if (robot.time.seconds() <= 3) {
             if (robot.detectElement()) {
                 elementLocation = ElementLocation.RIGHT;
             } else {
@@ -399,6 +418,30 @@ public class AutonomousV1 extends OpMode {
         robot.wrist.setPosition(HWC.wristIntakePos);
 
         // ------ Set Next State ------ //
-        state = State.STOP;
+        state = State.PARK;
+    }
+
+    // Drive to Park
+    private void drivingToPark() {
+        // ------ Select Trajectory ------ //
+        if(firstRun) {
+            firstRun = false;
+            if (elementLocation == ElementLocation.RIGHT) {
+                activeTrajectory = "toParkFromBackboardRight";
+                robot.drive.followTrajectoryAsync(toParkFromBackboardRight);
+            } else if (elementLocation == ElementLocation.LEFT) {
+                activeTrajectory = "toParkFromBackboardLeft";
+                robot.drive.followTrajectoryAsync(toParkFromBackboardLeft);
+            } else {
+                activeTrajectory = "toParkFromBackboardCenter";
+                robot.drive.followTrajectoryAsync(toParkFromBackBoardCenter);
+            }
+        }
+
+        // ------ Set Next State ------ //
+        if (!robot.drive.isBusy()) {
+            state = State.STOP;
+            firstRun = true;
+        }
     }
 }
