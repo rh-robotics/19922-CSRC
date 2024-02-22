@@ -129,26 +129,6 @@ public class HWC {
         rightPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    // ------ Function to Run Intake ------ //
-    // Runs intake at given power until color sensor detects a
-    // pixel
-    public void runIntake(double pwr) {
-        intakeMotor.setPower(pwr);
-        if (intakeDetection(colorLeft) == 0 && intakeDetection(colorRight) == 0) {
-            clawL.setPosition(1);
-            clawR.setPosition(1);
-            intakeMotor.setPower(0);
-        } else if (intakeDetection(colorLeft) == 1) {
-            clawL.setPosition(1);
-
-        } else if (intakeDetection(colorRight) == 0) {
-            clawR.setPosition(1);
-
-
-        }
-
-    }
-
     // ------ Function to Toggle Claw (Open/Close) ------ //
     public void toggleClaw(char servo) {
         switch (servo) {
@@ -163,33 +143,6 @@ public class HWC {
                 clawL.setPosition(clawL.getPosition() == 1 ? 0.5 : 1);
                 break;
         }
-    }
-
-
-    // ------ Function to get Color ------ //
-    public String getColor(ColorSensor CS) {
-        int red = CS.red();
-        int green = CS.green();
-        int blue = CS.blue();
-        String color;
-
-        if (red > 200 && green > 200 && blue > 200) {
-            color = "white";
-        } else if (210 < red && green > 200 & blue < 160) {
-            color = "yellow";
-        } else if (green > red + blue) {
-            color = "green";
-        } else {
-            color = "unknown";
-        }
-
-        return color;
-    }
-
-    public int intakeDetection(ColorSensor CS) {
-        if (CS.argb() == 0) {
-            return 1;
-        } else return 0;
     }
 
     public void betterSleep(int sleep) {
@@ -226,65 +179,6 @@ public class HWC {
         rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-    }
-
-    // ------ Function to Drive Given Distance Using Odometry ------ //
-    public void odoDrive(int distance) {
-        leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // y axis
-        rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
-        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
-        while (leftRear.getCurrentPosition() > distance) {
-            leftFront.setPower(0.3);
-            rightFront.setPower(0.3);
-            leftRear.setPower(0.3);
-            rightRear.setPower(0.3);
-        }
-        leftFront.setPower(0);
-        rightFront.setPower(0);
-        leftRear.setPower(0);
-        rightRear.setPower(0);
-    }
-
-    // ------ Function to Strafe Given Distance Using Odometry ------ //
-    public void odoStrafeLeft(int distance) {
-        odoDrive(500);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // y axis
-        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // x axis
-        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
-
-
-        while (leftRear.getCurrentPosition() < distance) {
-            leftFront.setPower(-0.3);
-            rightFront.setPower(0.3);
-            leftRear.setPower(0.3);
-            rightRear.setPower(-0.3);
-        }
-    }
-
-    public void odoStrafeRight(int distance) {
-        odoDrive(500);
-        leftRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // y axis
-        rightRear.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // x axis
-        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER); // x axis
-
-
-        while (Math.abs(leftRear.getCurrentPosition()) < distance) {
-            leftFront.setPower(0.3);
-            rightFront.setPower(-0.3);
-            leftRear.setPower(-0.3);
-            rightRear.setPower(0.3);
-        }
-    }
-
-    public void odoTurnRight() {
-        leftFront.setPower(0.3);
-        rightFront.setPower(-0.3);
-        leftRear.setPower(-0.3);
-        rightRear.setPower(0.3);
-    }
-
-    // ------ Function to Turn Given Degrees Using Odometry ------ //
-    public void odoTurn(int degrees) {
     }
 
     public void initTFOD(String TFOD_MODEL_ASSET) {
