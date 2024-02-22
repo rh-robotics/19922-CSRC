@@ -43,13 +43,7 @@ public class HWC {
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
 
     // ------ Declare Servos ------ //
-    public Servo wrist, clawR, clawL;
-
-    // ------ Declare CRServos ------ //
-    public CRServo passoverArmLeft, passoverArmRight;
-
-    // ------ Declare Passover Encoders ------ //
-    public AnalogInput passoverEncoderLeft, passoverEncoderRight;
+    public Servo wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
 
     // ------ Declare Sensors ------ //
     public ColorRangeSensor colorLeft, colorRight;
@@ -107,14 +101,8 @@ public class HWC {
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
         wrist = hardwareMap.get(Servo.class, "wrist");
-
-        // ------ Retrieve Continuous Rotation Servos ------ //
-        passoverArmLeft = hardwareMap.get(CRServo.class, "passoverArmLeft");
-        passoverArmRight = hardwareMap.get(CRServo.class, "passoverArmRight");
-
-        // ------ Retrieve Passover CRServo Encoders ------ //
-        passoverEncoderLeft = hardwareMap.get(AnalogInput.class, "passoverEncoderLeft");
-        passoverEncoderRight = hardwareMap.get(AnalogInput.class, "passoverEncoderRight");
+        passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
+        passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
 
         // ------ Retrieve Sensors ------ //
         webcam = hardwareMap.get(WebcamName.class, "webcam");
