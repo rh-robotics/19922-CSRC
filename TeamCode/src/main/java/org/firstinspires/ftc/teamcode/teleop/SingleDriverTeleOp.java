@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.teamcode.teleop.enums.MultiplierSelection;
 
@@ -161,14 +162,19 @@ public class SingleDriverTeleOp extends OpMode {
 
         // ------ (GAMEPAD 1) Intake Toggle Controls ------ //
         if (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) {
-            if (intakeState == IntakeState.INTAKE || intakeState == IntakeState.OUTTAKE) { intakeState = IntakeState.OFF; }
-            else if (intakeState == IntakeState.OFF) { intakeState = IntakeState.INTAKE; }
+            if (intakeState == IntakeState.INTAKE || intakeState == IntakeState.OUTTAKE) {
+                intakeState = IntakeState.OFF;
+            } else if (intakeState == IntakeState.OFF) {
+                intakeState = IntakeState.INTAKE;
+            }
         }
 
         if (robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) {
             if (intakeState == IntakeState.INTAKE || intakeState == IntakeState.OUTTAKE) {
                 intakeState = IntakeState.OFF;
-            } else if (intakeState == IntakeState.OFF) { intakeState = IntakeState.OUTTAKE; }
+            } else if (intakeState == IntakeState.OFF) {
+                intakeState = IntakeState.OUTTAKE;
+            }
         }
         // ------ (GAMEPAD 1) MANUAL Wrist Controls ------ //
         if (robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
@@ -208,15 +214,35 @@ public class SingleDriverTeleOp extends OpMode {
         robot.wrist.setPosition(wristPosition);
 
         // -------- Check Intake State & Run Intake ------ //
-        switch(intakeState) {
+        switch (intakeState) {
             case INTAKE:
+                // Set Power
                 robot.intakeMotor.setPower(-1);
+
+                // Close Claws when Pixel Detected
+                if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1) {
+                    robot.clawL.setPosition(0.5);
+                }
+
+                if (robot.colorRight.getDistance(DistanceUnit.CM) <= 1) {
+                    robot.clawR.setPosition(0.5);
+                }
+
+                // If both Pixels are Detected, Stop Intake
+                if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1) {
+                    intakeState = IntakeState.OFF;
+                }
+
                 break;
             case OFF:
+                // Give Manual Control to Gamepad 2
                 robot.intakeMotor.setPower(robot.currentGamepad2.right_stick_x);
+
                 break;
             case OUTTAKE:
+                // Set Power
                 robot.intakeMotor.setPower(1);
+
                 break;
         }
 

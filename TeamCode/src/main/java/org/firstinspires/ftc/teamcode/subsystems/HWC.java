@@ -4,6 +4,7 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
+import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -35,9 +36,9 @@ public class HWC {
     // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
     // ------ Declare Servos ------ //
-    public Servo intakeArm, wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
+    public Servo wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
     // ------ Declare Sensors ------ //
-    public ColorSensor colorLeft, colorRight;
+    public ColorRangeSensor colorLeft, colorRight;
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad currentGamepad2 = new Gamepad();
@@ -87,7 +88,6 @@ public class HWC {
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
         // ------ Retrieve Servos ------ //
-        intakeArm = hardwareMap.get(Servo.class, "intakeArm");
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
         wrist = hardwareMap.get(Servo.class, "wrist");
@@ -98,8 +98,8 @@ public class HWC {
 
         // ------ Retrieve Sensors ------ //
         webcam = hardwareMap.get(WebcamName.class, "webcam");
-        colorLeft = hardwareMap.get(ColorSensor.class, "colorL");
-        colorRight = hardwareMap.get(ColorSensor.class, "colorR");
+        colorLeft = hardwareMap.get(ColorRangeSensor.class, "colorL");
+        colorRight = hardwareMap.get(ColorRangeSensor.class, "colorR");
 
         // ------ Set Motor Directions ------ //
         if (!roadrunner) {
@@ -135,23 +135,6 @@ public class HWC {
         rightPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    // ------ Function to Run Intake ------ //
-    // Runs intake at given power until color sensor detects a pixel
-    public void runIntake(double pwr) {
-        intakeMotor.setPower(pwr);
-        if (intakeDetection(colorLeft) == 0 && intakeDetection(colorRight) == 0) {
-            clawL.setPosition(1);
-            clawR.setPosition(1);
-            intakeMotor.setPower(0);
-        } else if (intakeDetection(colorLeft) == 1) {
-            clawL.setPosition(1);
-
-        } else if (intakeDetection(colorRight) == 0) {
-            clawR.setPosition(1);
-        }
-
-    }
-
     // ------ Function to Toggle Claw (Open/Close) ------ //
     public void toggleClaw(char servo) {
         switch (servo) {
@@ -162,35 +145,10 @@ public class HWC {
                 clawR.setPosition(clawR.getPosition() == 0 ? 0.50 : 0);
                 break;
             case 'C':
-                clawR.setPosition(clawR.getPosition() == 0 ? 0.85 : 0);
-                clawL.setPosition(clawL.getPosition() == 1 ? 0.15 : 1);
+                clawR.setPosition(clawR.getPosition() == 0 ? 0.5 : 0);
+                clawL.setPosition(clawL.getPosition() == 1 ? 0.5 : 1);
                 break;
         }
-    }
-
-
-    // ------ Function to get Color ------ //
-    public String getColor(ColorSensor CS) {
-        int red = CS.red();
-        int green = CS.green();
-        int blue = CS.blue();
-        String color;
-
-        if (red > 200 && green > 200 && blue > 200) {
-            color = "white";
-        } else if (210 < red && green > 200 & blue < 160) {
-            color = "yellow";
-        } else if (green > red + blue) {
-            color = "green";
-        } else {
-            color = "unknown";
-        }
-
-        return color;
-    }
-
-    public int intakeDetection(ColorSensor CS) {
-        return (CS.argb() == 0) ? 1 : 0;
     }
 
     // ------ Function that Allows For Sleeping in OpModes ------ //
@@ -208,19 +166,6 @@ public class HWC {
     public void powerSlides(float pwr) {
         leftPulley.setPower(pwr);
         rightPulley.setPower(pwr);
-    }
-
-    // ------ Function to Reset Motor Encoder Positions [EMERGENCY ONLY] ------ //
-    public void resetEncoders() {
-        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
     }
 
     // ------ Function to Initialize TensorFlow Object Detection ------ //
@@ -277,7 +222,7 @@ public class HWC {
             builder.append("\n\tleftFront = ").append(leftFront.getPower()).append("\n\trightFront = ").append(rightFront.getPower()).append("\n\tleftRear = ").append(leftRear.getPower()).append("\n\trightRear = ").append(rightRear.getPower());
         }
 
-        builder.append("\n\trightPulley = ").append(rightPulley.getPower()).append("\n\tleftPulley = ").append(leftPulley.getPower()).append("\n\tintakeMotor = ").append(intakeMotor.getPower()).append("\n\tintakeArm = ").append(intakeArm.getPosition()).append("\n\twrist = ").append(wrist.getPosition()).append("\n\tclawR = ").append(clawR.getPosition()).append("\n\tclawL = ").append(clawL.getPosition()).append("\n\tpassoverArmLeft = ").append(passoverArmLeft.getPosition()).append("\n\tpassoverArmRight = ").append(passoverArmRight.getPosition()).append("\n}");
+        builder.append("\n\trightPulley = ").append(rightPulley.getPower()).append("\n\tleftPulley = ").append(leftPulley.getPower()).append("\n\tintakeMotor = ").append(intakeMotor.getPower()).append("\n\twrist = ").append(wrist.getPosition()).append("\n\tclawR = ").append(clawR.getPosition()).append("\n\tclawL = ").append(clawL.getPosition()).append("\n\tpassoverArmLeft = ").append(passoverArmLeft.getPosition()).append("\n\tpassoverArmRight = ").append(passoverArmRight.getPosition()).append("\n}");
 
         return builder.toString();
     }
