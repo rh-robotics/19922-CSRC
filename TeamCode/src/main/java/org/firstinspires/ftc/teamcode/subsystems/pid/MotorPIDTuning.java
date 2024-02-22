@@ -28,8 +28,7 @@ public class MotorPIDTuning extends OpMode {
     private HWC kit;
     private DcMotorEx motor;
     private Motor motorSelection = Motor.SLIDE_L;
-    // TODO: Update with correct ticks amount of ticks for motor
-    private final double TICKS_IN_DEGREES = 435.5 / 360; // Ticks Per Degree = Ticks Per Rotation / 360
+    private final double TICKS_IN_DEGREES = 751.8 / 360; // Ticks Per Degree = Ticks Per Rotation / 360
 
     @Override
     public void init() {
