@@ -27,8 +27,7 @@ public class ServoPIDTuning extends OpMode {
     private HWC kit;
     private CRServo servo;
     private AnalogInput encoder;
-    private final Servo[] servoSelectionList = new Servo[]{ Servo.PASSOVER_R, Servo.PASSOVER_L };
-    private int servoSelectionIndex = 0;
+    private Servo servoSelection = Servo.PASSOVER_L;
     // TODO: Update with correct ticks amount of ticks for motor
     private final double TICKS_IN_DEGREES = 435.5 / 360; // Ticks Per Degree = Ticks Per Rotation / 360
 
@@ -54,12 +53,14 @@ public class ServoPIDTuning extends OpMode {
 
         // ------ Update Motor Index ------ //
         if(kit.currentGamepad1.a && !kit.previousGamepad1.a) {
-            servoSelectionIndex++;
+            // Switch Motor
+            servoSelection = (servoSelection == Servo.PASSOVER_L) ? Servo.PASSOVER_R : Servo.PASSOVER_L;
+
             p = 0; i = 0; d = 0; f = 0;
         }
 
         // ------ Update Motor Value ------ //
-        switch(servoSelectionList[servoSelectionIndex]) {
+        switch(servoSelection) {
             case PASSOVER_L:
                 servo = kit.passoverArmLeft;
                 encoder = kit.passoverEncoderLeft;
@@ -86,7 +87,7 @@ public class ServoPIDTuning extends OpMode {
         servo.setPower(pid + ff);
 
         // ------ Telemetry ------ //
-        telemetry.addData("Motor", servoSelectionList[servoSelectionIndex]);
+        telemetry.addData("Servo", servoSelection);
         telemetry.addData("Motor Position", servoPos);
         telemetry.addData("Motor Target", target);
         telemetry.addData("Motor Power", servo.getPower());

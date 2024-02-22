@@ -27,8 +27,7 @@ public class MotorPIDTuning extends OpMode {
     private PIDController controller;
     private HWC kit;
     private DcMotorEx motor;
-    private final Motor[] motorSelectionList = new Motor[]{ Motor.SLIDE_L, Motor.SLIDE_R };
-    private int motorSelectionIndex = 0;
+    private Motor motorSelection = Motor.SLIDE_L;
     // TODO: Update with correct ticks amount of ticks for motor
     private final double TICKS_IN_DEGREES = 435.5 / 360; // Ticks Per Degree = Ticks Per Rotation / 360
 
@@ -54,12 +53,15 @@ public class MotorPIDTuning extends OpMode {
 
         // ------ Update Motor Index ------ //
         if(kit.currentGamepad1.a && !kit.previousGamepad1.a) {
-            motorSelectionIndex++;
+            // Switch Motor
+            motorSelection = (motorSelection == Motor.SLIDE_L) ? Motor.SLIDE_R : Motor.SLIDE_L;
+
+            // Reset PID Values
             p = 0; i = 0; d = 0; f = 0;
         }
 
         // ------ Update Motor Value ------ //
-        switch(motorSelectionList[motorSelectionIndex]) {
+        switch(motorSelection) {
             case SLIDE_L:
                 motor = kit.leftPulley;
                 break;
@@ -84,7 +86,7 @@ public class MotorPIDTuning extends OpMode {
         motor.setPower(pid + ff);
 
         // ------ Telemetry ------ //
-        telemetry.addData("Motor", motorSelectionList[motorSelectionIndex]);
+        telemetry.addData("Motor", motorSelection);
         telemetry.addData("Motor Position", motorPos);
         telemetry.addData("Motor Target", target);
         telemetry.addData("Motor Power", motor.getPower());
