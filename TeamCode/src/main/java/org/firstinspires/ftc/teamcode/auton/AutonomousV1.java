@@ -22,8 +22,7 @@ public class AutonomousV1 extends OpMode {
 
     // ------ Declare Others ------ //
     private HWC robot;
-    private State[] stateSelectionList = new State[]{State.DRIVING_TO_DETECT_INITIAL, State.DRIVING_TO_DETECT_SECOND, State.DEPOSITING_PURPLE_PIXEL, State.DRIVING_TO_BACKBOARD, State.DEPOSITING_YELLOW_PIXEL, State.STOP};
-
+    private final State[] stateSelectionList = new State[]{State.DRIVING_TO_DETECT_INITIAL, State.DRIVING_TO_DETECT_SECOND, State.DEPOSITING_PURPLE_PIXEL, State.DRIVING_TO_BACKBOARD, State.DEPOSITING_YELLOW_PIXEL, State.STOP};
     private State state = State.DRIVING_TO_DETECT_INITIAL;
     private ElementLocation elementLocation;
     private String activeTrajectory = "";
@@ -42,7 +41,7 @@ public class AutonomousV1 extends OpMode {
     private Trajectory toBackboardRight;
 
     // ------ Starting Position ------ //
-    private final Pose2d START_POSE = new Pose2d(11.84, -60.75, Math.toRadians(90.00));
+    private final Pose2d START_POSE = new Pose2d(12, -60, Math.toRadians(90.00));
 
     @Override
     public void init() {
@@ -62,32 +61,32 @@ public class AutonomousV1 extends OpMode {
         // ------ Declare Trajectories ------ //
         // Driving to Initial Detection Location
         toDetectInitial = robot.drive.trajectoryBuilder(START_POSE)
-                .splineTo(new Vector2d(11.67, -44.39), Math.toRadians(90.00))
+                .lineTo(new Vector2d(12.0, -42))
                 .build();
 
         // Driving to Second Detection Location
         toDetectSecond = robot.drive.trajectoryBuilder(toDetectInitial.end())
-                .lineTo(new Vector2d(23.77, -43.88))
+                .strafeTo(new Vector2d(23, -42))
                 .build();
 
         // Driving to Last Resort
         toLastResort = robot.drive.trajectoryBuilder(toDetectSecond.end())
-                .lineTo(new Vector2d(11.67, -44.39))
+                .lineToLinearHeading(new Pose2d(7, -38, Math.toRadians(135)))
                 .build();
 
         // Driving to Backboard from Initial Detection Location
         toBackboardFromInitial = robot.drive.trajectoryBuilder(toDetectInitial.end())
-                .splineTo(new Vector2d(50.87, -36.89), Math.toRadians(9.69))
+                .lineToLinearHeading(new Pose2d(43, -35, Math.toRadians(180)))
                 .build();
 
         // Driving to Backboard from Second Detection Location
         toBackboardFromSecond = robot.drive.trajectoryBuilder(toDetectSecond.end())
-                .splineTo(new Vector2d(50.87, -36.89), Math.toRadians(9.69))
+                .lineToLinearHeading(new Pose2d(43, -35, Math.toRadians(180)))
                 .build();
 
         // Driving to Backboard from Last Resort
         toBackboardFromLastResort = robot.drive.trajectoryBuilder(toLastResort.end())
-                .splineTo(new Vector2d(50.87, -36.89), Math.toRadians(9.69))
+                .lineToLinearHeading(new Pose2d(43, -35, Math.toRadians(180)))
                 .build();
 
         // Left Side Score
