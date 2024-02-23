@@ -157,42 +157,42 @@ public class AutonomousV1 extends OpMode {
 
                 // Driving to Backboard from Initial Detection Location
                 toBackboardFromInitial = robot.drive.trajectoryBuilder(toDetectInitial.end())
-                        .lineToLinearHeading(new Pose2d(50, -35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
                         .build();
 
                 // Driving to Backboard from Second Detection Location
                 toBackboardFromSecond = robot.drive.trajectoryBuilder(toDetectSecond.end())
-                        .lineToLinearHeading(new Pose2d(50, -35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
                         .build();
 
                 // Driving to Backboard from Last Resort
                 toBackboardFromLastResort = robot.drive.trajectoryBuilder(toLastResort.end())
-                        .lineToLinearHeading(new Pose2d(50, -35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
                         .build();
 
                 // Left Side Score
                 toBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
-                        .strafeLeft(10) // TODO: Review Distance
+                        .strafeLeft(5)
                         .build();
 
                 // Right Side Score
                 toBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
-                        .strafeRight(10) // TODO: Review Distance
+                        .strafeRight(5)
                         .build();
 
                 // Park from Backboard Right
                 toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardRight.end())
-                        .strafeRight(10) // TODO: Review Distance
+                        .strafeRight(8)
                         .build();
 
                 // Park from Backboard Center
                 toParkFromBackBoardCenter = robot.drive.trajectoryBuilder(toBackboardFromInitial.end())
-                        .strafeRight(15) // TODO: Review Distance
+                        .strafeRight(13)
                         .build();
 
                 // Park from Backboard Left
                 toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardLeft.end())
-                        .strafeRight(20) // TODO: Review Distance
+                        .strafeRight(20)
                         .build();
 
                 break;
