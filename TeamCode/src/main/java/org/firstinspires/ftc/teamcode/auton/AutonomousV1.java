@@ -172,27 +172,27 @@ public class AutonomousV1 extends OpMode {
 
                 // Left Side Score
                 toBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
-                        .strafeLeft(5)
+                        .strafeLeft(8)
                         .build();
 
                 // Right Side Score
                 toBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
-                        .strafeRight(5)
+                        .strafeRight(9)
                         .build();
 
                 // Park from Backboard Right
                 toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardRight.end())
-                        .strafeRight(8)
+                        .strafeLeft(8)
                         .build();
 
                 // Park from Backboard Center
                 toParkFromBackBoardCenter = robot.drive.trajectoryBuilder(toBackboardFromInitial.end())
-                        .strafeRight(13)
+                        .strafeLeft(13)
                         .build();
 
                 // Park from Backboard Left
                 toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardLeft.end())
-                        .strafeRight(20)
+                        .strafeLeft(20)
                         .build();
 
                 break;
@@ -215,17 +215,17 @@ public class AutonomousV1 extends OpMode {
 
                 // Driving to Backboard from Initial Detection Location
                 toBackboardFromInitial = robot.drive.trajectoryBuilder(toDetectInitial.end())
-                        .lineToLinearHeading(new Pose2d(50, 35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, 35, Math.toRadians(180)))
                         .build();
 
                 // Driving to Backboard from Second Detection Location
                 toBackboardFromSecond = robot.drive.trajectoryBuilder(toDetectSecond.end())
-                        .lineToLinearHeading(new Pose2d(50, 35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, 35, Math.toRadians(180)))
                         .build();
 
                 // Driving to Backboard from Last Resort
                 toBackboardFromLastResort = robot.drive.trajectoryBuilder(toLastResort.end())
-                        .lineToLinearHeading(new Pose2d(50, 35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, 35, Math.toRadians(180)))
                         .build();
 
                 // Left Side Score
@@ -430,7 +430,7 @@ public class AutonomousV1 extends OpMode {
     // Deposit Purple Pixel
     private void depositingPurplePixel() {
         // ------ Run Intake Motor Backwards for 1.5 Seconds ------ //
-        robot.intakeMotor.setPower(0.8);
+        robot.intakeMotor.setPower(1);
         robot.elapsedTimeSleep(1500);
         robot.intakeMotor.setPower(0);
 
