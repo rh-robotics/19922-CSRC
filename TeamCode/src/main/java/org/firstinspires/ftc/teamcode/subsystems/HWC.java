@@ -46,7 +46,7 @@ public class HWC {
     public static double passoverDeliveryPos = 0.2;
     public static double passoverIntakePos = 0.8;
     public static double wristDeliveryPos = 0.2;
-    public static double wristIntakePos = 0.85;
+    public static double wristIntakePos = 0.8;
 
     // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
