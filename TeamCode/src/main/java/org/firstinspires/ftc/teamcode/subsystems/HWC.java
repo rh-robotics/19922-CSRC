@@ -34,6 +34,11 @@ public class HWC {
             "blue", "red"
     };
 
+    // ------ Computer Vision Location Enum ------ //
+    public enum Location {
+        LEFT, CENTER, RIGHT
+    }
+
     // ------ Declare Slide Positions ------ //
     public static int[] slidePositions = { 0, -964, -2110, -3460};
 
@@ -214,26 +219,24 @@ public class HWC {
     }
 
     // ------ Function to add Telemetry for TensorFlow Object Detection ------ //
-    private double telemetryTFOD() {
+    public Location detectElement() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
-        double x = 800;
-        // Step through the list of recognitions and display info for each one.
+        double x = 1000, y;
+
         for (Recognition recognition : currentRecognitions) {
             x = (recognition.getLeft() + recognition.getRight()) / 2;
-            double y = (recognition.getTop() + recognition.getBottom()) / 2;
+            y = (recognition.getTop() + recognition.getBottom()) / 2;
 
             telemetry.addData("", " ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }
-        return x;
-    }
 
-    // ------ Function to Detect Team Element with TensorFlow Object Detection ------ //
-    public boolean detectElement() {
-        return telemetryTFOD() < 800;
+        if (x < 400) { return Location.CENTER; }
+        else if (x > 400 && x < 800) { return Location.RIGHT; }
+        else { return Location.LEFT; }
     }
 
     @NonNull
