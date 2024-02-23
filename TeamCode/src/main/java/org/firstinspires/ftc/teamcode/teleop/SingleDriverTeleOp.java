@@ -230,7 +230,7 @@ public class SingleDriverTeleOp extends OpMode {
 
         // ------ Run Servos ------ //
         robot.passoverArmLeft.setPosition(passoverPosition);
-//        robot.passoverArmRight.setPosition(passoverPosition);
+        robot.passoverArmRight.setPosition(passoverPosition);
         robot.wrist.setPosition(wristPosition);
 
         // ------ Set Slides to Move Using PID ------ //
