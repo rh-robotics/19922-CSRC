@@ -22,10 +22,16 @@ public class AutonomousV1 extends OpMode {
         LEFT, CENTER, RIGHT, UNKNOWN
     }
 
+    // ------ Alliance Color Enum ------ //
+    private enum AllianceColor {
+        RED, BLUE
+    }
+
     // ------ Declare Others ------ //
     private HWC robot;
     private final State[] stateSelectionList = new State[]{State.DRIVING_TO_DETECT_INITIAL, State.DRIVING_TO_DETECT_SECOND, State.DEPOSITING_PURPLE_PIXEL, State.DRIVING_TO_BACKBOARD, State.DEPOSITING_YELLOW_PIXEL, State.PARK, State.STOP};
     private State state = State.DRIVING_TO_DETECT_INITIAL;
+    private AllianceColor allianceColor = AllianceColor.RED;
     private ElementLocation elementLocation;
     private String activeTrajectory = "";
     private boolean testingMode = false;
@@ -66,62 +72,6 @@ public class AutonomousV1 extends OpMode {
         // ------ Set Robot Start Pose ------ //
         robot.drive.setPoseEstimate(START_POSE);
 
-        // ------ Declare Trajectories ------ //
-        // Driving to Initial Detection Location
-        toDetectInitial = robot.drive.trajectoryBuilder(START_POSE)
-                .lineTo(new Vector2d(12.0, -42))
-                .build();
-
-        // Driving to Second Detection Location
-        toDetectSecond = robot.drive.trajectoryBuilder(toDetectInitial.end())
-                .strafeTo(new Vector2d(23, -47))
-                .build();
-
-        // Driving to Last Resort
-        toLastResort = robot.drive.trajectoryBuilder(toDetectSecond.end())
-                .lineToLinearHeading(new Pose2d(18  , -34, Math.toRadians(135)))
-                .build();
-
-        // Driving to Backboard from Initial Detection Location
-        toBackboardFromInitial = robot.drive.trajectoryBuilder(toDetectInitial.end())
-                .lineToLinearHeading(new Pose2d(56, -35, Math.toRadians(180)))
-                .build();
-
-        // Driving to Backboard from Second Detection Location
-        toBackboardFromSecond = robot.drive.trajectoryBuilder(toDetectSecond.end())
-                .lineToLinearHeading(new Pose2d(56, -35, Math.toRadians(180)))
-                .build();
-
-        // Driving to Backboard from Last Resort
-        toBackboardFromLastResort = robot.drive.trajectoryBuilder(toLastResort.end())
-                .lineToLinearHeading(new Pose2d(56, -35, Math.toRadians(180)))
-                .build();
-
-        // Left Side Score
-        toBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
-                .strafeLeft(10) // TODO: Review Distance
-                .build();
-
-        // Right Side Score
-        toBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
-                .strafeRight(10) // TODO: Review Distance
-                .build();
-
-        // Park from Backboard Right
-        toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardRight.end())
-                .strafeRight(10) // TODO: Review Distance
-                .build();
-
-        // Park from Backboard Center
-        toParkFromBackBoardCenter = robot.drive.trajectoryBuilder(toBackboardFromInitial.end())
-                .strafeRight(15) // TODO: Review Distance
-                .build();
-
-        // Park from Backboard Left
-        toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardLeft.end())
-                .strafeRight(20) // TODO: Review Distance
-                .build();
-
         // ------ Reset Servos ------ //
         robot.clawL.setPosition(1);
         robot.clawR.setPosition(0);
@@ -140,6 +90,11 @@ public class AutonomousV1 extends OpMode {
         robot.previousGamepad2.copy(robot.currentGamepad2);
         robot.currentGamepad1.copy(gamepad1);
         robot.currentGamepad2.copy(gamepad2);
+
+        // ------ Alliance Color Selection ------ //
+        if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
+            allianceColor = allianceColor.equals(AllianceColor.RED) ? AllianceColor.BLUE : AllianceColor.RED;
+        }
 
         // ------ Enabling Testing Mode ------ //
         if ((robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) && (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper)) {
@@ -170,6 +125,7 @@ public class AutonomousV1 extends OpMode {
         } else {
             telemetry.addData(">", "Yellow Pixel on Left Side");
             telemetry.addData(">", "Purple Pixel in intake");
+            telemetry.addData("Selected Alliance Color [DOES NOTHING CURRENTLY]", allianceColor);
             telemetry.addData("Status", "Init Loop");
             telemetry.update();
         }
@@ -179,6 +135,126 @@ public class AutonomousV1 extends OpMode {
     public void start() {
         // ------ Close Claw for Yellow Pixel ------ //
         robot.toggleClaw('L');
+
+        // ------ Set Trajectories based on Alliance Color ------ //
+        switch(allianceColor) {
+            case RED:
+                // ------ Declare Trajectories ------ //
+                // Driving to Initial Detection Location
+                toDetectInitial = robot.drive.trajectoryBuilder(START_POSE)
+                        .lineTo(new Vector2d(12.0, -42))
+                        .build();
+
+                // Driving to Second Detection Location
+                toDetectSecond = robot.drive.trajectoryBuilder(toDetectInitial.end())
+                        .strafeTo(new Vector2d(23, -47))
+                        .build();
+
+                // Driving to Last Resort
+                toLastResort = robot.drive.trajectoryBuilder(toDetectSecond.end())
+                        .lineToLinearHeading(new Pose2d(7, -38, Math.toRadians(135)))
+                        .build();
+
+                // Driving to Backboard from Initial Detection Location
+                toBackboardFromInitial = robot.drive.trajectoryBuilder(toDetectInitial.end())
+                        .lineToLinearHeading(new Pose2d(50, -35, Math.toRadians(180)))
+                        .build();
+
+                // Driving to Backboard from Second Detection Location
+                toBackboardFromSecond = robot.drive.trajectoryBuilder(toDetectSecond.end())
+                        .lineToLinearHeading(new Pose2d(50, -35, Math.toRadians(180)))
+                        .build();
+
+                // Driving to Backboard from Last Resort
+                toBackboardFromLastResort = robot.drive.trajectoryBuilder(toLastResort.end())
+                        .lineToLinearHeading(new Pose2d(50, -35, Math.toRadians(180)))
+                        .build();
+
+                // Left Side Score
+                toBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
+                        .strafeLeft(10) // TODO: Review Distance
+                        .build();
+
+                // Right Side Score
+                toBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
+                        .strafeRight(10) // TODO: Review Distance
+                        .build();
+
+                // Park from Backboard Right
+                toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardRight.end())
+                        .strafeRight(10) // TODO: Review Distance
+                        .build();
+
+                // Park from Backboard Center
+                toParkFromBackBoardCenter = robot.drive.trajectoryBuilder(toBackboardFromInitial.end())
+                        .strafeRight(15) // TODO: Review Distance
+                        .build();
+
+                // Park from Backboard Left
+                toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardLeft.end())
+                        .strafeRight(20) // TODO: Review Distance
+                        .build();
+
+                break;
+            case BLUE:
+                // ------ Declare Trajectories ------ //
+                // Driving to Initial Detection Location
+                toDetectInitial = robot.drive.trajectoryBuilder(START_POSE)
+                        .lineTo(new Vector2d(12.0, 42))
+                        .build();
+
+                // Driving to Second Detection Location
+                toDetectSecond = robot.drive.trajectoryBuilder(toDetectInitial.end())
+                        .strafeTo(new Vector2d(23, 47))
+                        .build();
+
+                // Driving to Last Resort
+                toLastResort = robot.drive.trajectoryBuilder(toDetectSecond.end())
+                        .lineToLinearHeading(new Pose2d(7, 38, Math.toRadians(225)))
+                        .build();
+
+                // Driving to Backboard from Initial Detection Location
+                toBackboardFromInitial = robot.drive.trajectoryBuilder(toDetectInitial.end())
+                        .lineToLinearHeading(new Pose2d(50, 35, Math.toRadians(180)))
+                        .build();
+
+                // Driving to Backboard from Second Detection Location
+                toBackboardFromSecond = robot.drive.trajectoryBuilder(toDetectSecond.end())
+                        .lineToLinearHeading(new Pose2d(50, 35, Math.toRadians(180)))
+                        .build();
+
+                // Driving to Backboard from Last Resort
+                toBackboardFromLastResort = robot.drive.trajectoryBuilder(toLastResort.end())
+                        .lineToLinearHeading(new Pose2d(50, 35, Math.toRadians(180)))
+                        .build();
+
+                // Left Side Score
+                toBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
+                        .strafeLeft(10) // TODO: Review Distance
+                        .build();
+
+                // Right Side Score
+                toBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromLastResort.end())
+                        .strafeRight(10) // TODO: Review Distance
+                        .build();
+
+                // Park from Backboard Right
+                toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardRight.end())
+                        .strafeLeft(10) // TODO: Review Distance
+                        .build();
+
+                // Park from Backboard Center
+                toParkFromBackBoardCenter = robot.drive.trajectoryBuilder(toBackboardFromInitial.end())
+                        .strafeLeft(15) // TODO: Review Distance
+                        .build();
+
+                // Park from Backboard Left
+                toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardLeft.end())
+                        .strafeLeft(20) // TODO: Review Distance
+                        .build();
+
+                break;
+        }
     }
 
     @Override
@@ -224,6 +300,10 @@ public class AutonomousV1 extends OpMode {
                 stop();
                 break;
         }
+
+        // ------ Move Slides Using PID ------ //
+        robot.pulleyLComponent.moveUsingPID();
+        robot.pulleyRComponent.moveUsingPID();
 
         // ------ Move Robot ------ //
         robot.drive.update();
@@ -350,7 +430,7 @@ public class AutonomousV1 extends OpMode {
     // Deposit Purple Pixel
     private void depositingPurplePixel() {
         // ------ Run Intake Motor Backwards for 1.5 Seconds ------ //
-        robot.intakeMotor.setPower(-0.5);
+        robot.intakeMotor.setPower(0.8);
         robot.elapsedTimeSleep(1500);
         robot.intakeMotor.setPower(0);
 
@@ -405,23 +485,20 @@ public class AutonomousV1 extends OpMode {
 
     // Deposit Yellow Pixel
     private void depositingYellowPixel() {
-        // ------ Move Passover & Wrist ------ //
-        robot.passoverArmLeft.setPosition(HWC.passoverDeliveryPos);
-        robot.passoverArmRight.setPosition(HWC.passoverDeliveryPos);
-        robot.wrist.setPosition(HWC.wristDeliveryPos);
+        // ------ Move Slides, Passover & Wrist ------ //
+        deliver();
 
         // ------ Wait for Passover to Move ------ //
-        robot.elapsedTimeSleep(500);
+        robot.elapsedTimeSleep(1000);
 
         // ------ Open Claw ------ //
         robot.toggleClaw('L');
 
         // ------ Wait for Claw to Open ------ //
-        robot.elapsedTimeSleep(500);
+        robot.elapsedTimeSleep(1000);
 
-        // ------ Move Passover & Wrist ------ //
-        robot.passoverArmLeft.setPosition(HWC.passoverIntakePos);
-        robot.wrist.setPosition(HWC.wristIntakePos);
+        // ------ Move Slides, Passover & Wrist ------ //
+        intake();
 
         // ------ Set Next State ------ //
         state = State.PARK;
@@ -449,5 +526,23 @@ public class AutonomousV1 extends OpMode {
             state = State.STOP;
             firstRun = true;
         }
+    }
+
+    // Method to move to Delivery Position
+    private void deliver() {
+        robot.passoverArmLeft.setPosition(HWC.passoverDeliveryPos);
+        robot.passoverArmRight.setPosition(HWC.passoverDeliveryPos);
+        robot.wrist.setPosition(HWC.wristDeliveryPos);
+        robot.pulleyLComponent.setTarget(HWC.slidePositions[1]);
+        robot.pulleyRComponent.setTarget(HWC.slidePositions[1]);
+    }
+
+    // Method to move to Intake Position
+    private void intake() {
+        robot.passoverArmLeft.setPosition(HWC.passoverIntakePos);
+        robot.passoverArmRight.setPosition(HWC.passoverIntakePos);
+        robot.wrist.setPosition(HWC.wristIntakePos);
+        robot.pulleyLComponent.setTarget(HWC.slidePositions[0]);
+        robot.pulleyRComponent.setTarget(HWC.slidePositions[0]);
     }
 }

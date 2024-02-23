@@ -32,7 +32,7 @@ public class MotorPIDTuning extends OpMode {
     @Override
     public void init() {
         // ------ Initialize Hardware ------ //
-        kit = new HWC(hardwareMap, telemetry);
+        kit = new HWC(hardwareMap, telemetry, false);
 
         slideLeft = kit.leftPulley;
         slideRight = kit.rightPulley;

@@ -177,6 +177,9 @@ public class HWC {
     public void elapsedTimeSleep(int milliseconds) {
         sleepTime.reset();
         while (sleepTime.milliseconds() < milliseconds) {
+            pulleyLComponent.moveUsingPID();
+            pulleyRComponent.moveUsingPID();
+
             telemetry.addData("sleeping", "true");
             telemetry.update();
         }
