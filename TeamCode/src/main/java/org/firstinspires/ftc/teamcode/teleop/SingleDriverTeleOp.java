@@ -184,8 +184,8 @@ public class SingleDriverTeleOp extends OpMode {
             slideHeight++;
 
             // If value is above 2, don't increase
-            if (slideHeight > 2) {
-                slideHeight = 2;
+            if (slideHeight > 3) {
+                slideHeight = 3;
             }
         }
 
