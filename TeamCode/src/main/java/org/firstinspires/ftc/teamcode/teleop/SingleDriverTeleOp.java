@@ -24,7 +24,11 @@ public class SingleDriverTeleOp extends OpMode {
     private double turnSpeed = 0.5; // Speed multiplier for turning
     private double driveSpeed = 1; // Speed multiplier for driving
     private double strafeSpeed = 0.8; // Speed multiplier for strafing
+
+    // ------ Other Variables ------ //
     private int slideHeight = 0;
+    private double passoverPosition = HWC.passoverIntakePos;
+    private double wristPosition = HWC.wristIntakePos;
 
     @Override
     public void init() {
@@ -129,11 +133,11 @@ public class SingleDriverTeleOp extends OpMode {
         double rightFPower;
         double leftBPower;
         double rightBPower;
-        double passoverPosition = robot.passoverArmLeft.getPosition();
-        double wristPosition = robot.wrist.getPosition();
         double turn = robot.currentGamepad1.left_stick_y * driveSpeed;
         double drive = (robot.currentGamepad1.left_trigger - robot.currentGamepad1.right_trigger) * turnSpeed;
         double strafe = -robot.currentGamepad1.left_stick_x * strafeSpeed;
+        passoverPosition = robot.passoverArmLeft.getPosition();
+        wristPosition = robot.wrist.getPosition();
 
         // ------ Calculate Drive Power ------ //
         if (drive != 0 || turn != 0) {
@@ -201,11 +205,9 @@ public class SingleDriverTeleOp extends OpMode {
 
         // ------ (GAMEPAD 1) Position Controls ------ //
         if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
-            wristPosition = HWC.wristDeliveryPos;
-            passoverPosition = HWC.passoverDeliveryPos;
+            deliveryPosition();
         } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
-            wristPosition = HWC.wristIntakePos;
-            passoverPosition = HWC.passoverIntakePos;
+            intakePosition();
         }
 
         // ------ (GAMEPAD 2) MANUAL Passover Controls ------ //
@@ -370,5 +372,17 @@ public class SingleDriverTeleOp extends OpMode {
             telemetry.addData("Gamepad 2 Back", robot.currentGamepad2.back);
         }
         telemetry.update();
+    }
+
+    private void deliveryPosition() {
+        wristPosition = HWC.wristDeliveryPos;
+        passoverPosition = HWC.passoverDeliveryPos;
+        slideHeight = 1;
+    }
+
+    private void intakePosition() {
+        wristPosition = HWC.wristIntakePos;
+        passoverPosition = HWC.passoverIntakePos;
+        slideHeight = 0;
     }
 }
