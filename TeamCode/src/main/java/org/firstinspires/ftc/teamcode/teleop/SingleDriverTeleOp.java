@@ -273,10 +273,20 @@ public class SingleDriverTeleOp extends OpMode {
         // ------ Set Slide Positions ------ //
         switch(slideHeight) {
             case 0:
+                robot.pulleyLComponent.setTarget(HWC.slidePositions[0]);
+                robot.pulleyRComponent.setTarget(HWC.slidePositions[0]);
                 break;
             case 1:
+                robot.pulleyLComponent.setTarget(HWC.slidePositions[1]);
+                robot.pulleyRComponent.setTarget(HWC.slidePositions[1]);
                 break;
             case 2:
+                robot.pulleyLComponent.setTarget(HWC.slidePositions[2]);
+                robot.pulleyRComponent.setTarget(HWC.slidePositions[2]);
+                break;
+            case 3:
+                robot.pulleyLComponent.setTarget(HWC.slidePositions[3]);
+                robot.pulleyRComponent.setTarget(HWC.slidePositions[3]);
                 break;
         }
 
@@ -300,8 +310,8 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.addData("Button Y", "Toggle Right Claw");
         telemetry.addLine();
         telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
-        telemetry.addData("Slide Pulley Left Velocity", robot.leftPulley.getVelocity());
-        telemetry.addData("Slide Pulley Right Velocity", robot.rightPulley.getVelocity());
+        telemetry.addData("Slide Pulley Left Position", robot.leftPulley.getCurrentPosition());
+        telemetry.addData("Slide Pulley Right Position", robot.rightPulley.getCurrentPosition());
         telemetry.addData("Claw Left Position", robot.clawL.getPosition());
         telemetry.addData("Claw Right Position", robot.clawR.getPosition());
         telemetry.addData("Left Passover Position", robot.passoverArmLeft.getPosition());

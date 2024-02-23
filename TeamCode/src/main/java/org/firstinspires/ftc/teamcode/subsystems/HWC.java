@@ -35,7 +35,7 @@ public class HWC {
     };
 
     // ------ Declare Slide Positions ------ //
-    public int[] slidePositions = { 0, };
+    public static int[] slidePositions = { 0, -2110, -3460};
 
     // ------ Declare Servo Positions ------ //
     public static double passoverDeliveryPos = 0.2;
