@@ -273,7 +273,7 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ Set Slide Positions ------ //
-        switch(slideHeight) {
+        switch (slideHeight) {
             case 0:
                 robot.pulleyLComponent.setTarget(HWC.slidePositions[0]);
                 robot.pulleyRComponent.setTarget(HWC.slidePositions[0]);
