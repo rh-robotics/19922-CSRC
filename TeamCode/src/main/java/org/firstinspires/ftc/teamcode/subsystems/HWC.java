@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.subsystems.pid.RobotComponents;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
@@ -33,6 +34,9 @@ public class HWC {
             "blue", "red"
     };
 
+    // ------ Declare Slide Positions ------ //
+    public int[] slidePositions = { 0, };
+
     // ------ Declare Servo Positions ------ //
     public static double passoverDeliveryPos = 0.2;
     public static double passoverIntakePos = 0.8;
@@ -41,6 +45,9 @@ public class HWC {
 
     // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
+
+    // ------ Pulley Robot Components ------ //
+    public RobotComponents pulleyLComponent, pulleyRComponent;
 
     // ------ Declare Servos ------ //
     public Servo wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
@@ -132,6 +139,10 @@ public class HWC {
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         leftPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        // ------ Robot Components ------ //
+        pulleyLComponent = new RobotComponents(leftPulley, 751.8, 0.005, 0.1, 0.0002, 0);
+        pulleyRComponent = new RobotComponents(rightPulley, 751.8, 0.005, 0.1, 0.0002, 0);
     }
 
     // ------ Function to Toggle Claw (Open/Close) ------ //
@@ -168,9 +179,9 @@ public class HWC {
     }
 
     // ------ Function to Power Slides ------ //
-    public void powerSlides(float pwr) {
-        leftPulley.setPower(pwr);
-        rightPulley.setPower(pwr);
+    public void powerSlides(double target) {
+        pulleyLComponent.incrementTarget(target);
+        pulleyRComponent.incrementTarget(target);
     }
 
     // ------ Function to Reset Motor Encoder Positions [EMERGENCY ONLY] ------ //
