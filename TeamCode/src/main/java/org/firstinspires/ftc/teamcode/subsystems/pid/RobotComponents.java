@@ -13,8 +13,6 @@ public class RobotComponents {
     private final double F;
     private final PIDController controller;
     private DcMotorEx motor;
-    private CRServo servo;
-    private AnalogInput analogInput;
     private double target;
 
     /**
@@ -27,31 +25,12 @@ public class RobotComponents {
      * @param d                  The Derivative Value tuned after P, this value helps reduce oscillation in reaching a target and should result in a smoothed out curve when going to a target. Extremely small and sensitive, typically around 0.001. Re-tune after adjusting I.
      * @param f                  The Feed-forward value, tuned before anything else by increasing until the motor can hold itself against gravity at any position. Only use if you want a motor to hold its position against gravity and never use on locking systems like worm gears (in this case, set to 0)! Value is variable based on necessary motor power, but should be low (under 0.1) to avoid motor overheating and power draw.
      */
-    RobotComponents(DcMotorEx motor, double ticks_per_rotation, double p, double i, double d, double f) {
+    public RobotComponents(DcMotorEx motor, double ticks_per_rotation, double p, double i, double d, double f) {
         this.motor = motor;
         this.F = f;
         ticks_per_degree = ticks_per_rotation / 360.0;
         target = 0;
 
-        controller = new PIDController(p, i, d);
-    }
-
-    /**
-     * Constructor for RobotComponents w/ Motor
-     *
-     * @param servo              Servo Declaration
-     * @param ticks_per_rotation Value of ticks for specific motor RPM. Can be found on the manufacture's website (GoBuilda, Rev, etc)
-     * @param p                  The Proportional Value tuned after F (if applicable) until the motor can barely get to its target position. Typically under 0.1, but may be higher.
-     * @param i                  The Integral Value tuned last, only if steady state error continues. Typically relatively unnecessary unless extreme precision is needed and typically of a value in the tenths of decimals. Be sure to re-tune D afterwards.
-     * @param d                  The Derivative Value tuned after P, this value helps reduce oscillation in reaching a target and should result in a smoothed out curve when going to a target. Extremely small and sensitive, typically around 0.001. Re-tune after adjusting I.
-     * @param f                  The Feed-forward value, tuned before anything else by increasing until the motor can hold itself against gravity at any position. Only use if you want a motor to hold its position against gravity and never use on locking systems like worm gears (in this case, set to 0)! Value is variable based on necessary motor power, but should be low (under 0.1) to avoid motor overheating and power draw.
-     */
-    RobotComponents(CRServo servo, AnalogInput analogInput, double ticks_per_rotation, double p, double i, double d, double f) {
-        this.servo = servo;
-        this.analogInput = analogInput;
-        this.F = f;
-        ticks_per_degree = ticks_per_rotation / 360.0;
-        target = 0;
         controller = new PIDController(p, i, d);
     }
 
@@ -92,24 +71,14 @@ public class RobotComponents {
      * Sends power to the RobotComponent's motor to smoothly and automatically reach currentTarget (or whatever its called, might be different) using the PID loop. Must be called every code loop!
      */
     public void moveUsingPID() {
-        if (motor != null) {
-            controller.reset();
-            motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-            int motorPos = motor.getCurrentPosition();
-            double pid = controller.calculate(motorPos, target);
-            double ff = Math.cos(Math.toRadians(target / ticks_per_degree)) * F;
-            double power = pid + ff;
+        controller.reset();
+        motor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        int motorPos = motor.getCurrentPosition();
+        double pid = controller.calculate(motorPos, target);
+        double ff = Math.cos(Math.toRadians(target / ticks_per_degree)) * F;
+        double power = pid + ff;
 
-            motor.setPower(power);
-        } else if (servo != null) {
-            controller.reset();
-            double servoPos = analogInput.getVoltage() / 3.3 * 360;
-            double pid = controller.calculate(servoPos, target);
-            double ff = Math.cos(Math.toRadians(target)) * F;
-            double power = pid + ff;
-
-            servo.setPower(power);
-        }
+        motor.setPower(power);
     }
 
     /**
@@ -118,11 +87,6 @@ public class RobotComponents {
      * @param range The permissible range of encoder positions relative to the current target (e.g. target of 170 with a range of 5 will accept positions from 165 to 175)
      */
     public boolean closeEnough(int range) {
-        if (motor != null) {
-            return (target - range <= motor.getCurrentPosition()) && (target + range >= motor.getCurrentPosition());
-        } else if (servo != null) {
-            return (target - range <= analogInput.getVoltage()) && (target + range >= (analogInput.getVoltage() / 3.3 * 360));
-        }
-        return true;
+        return (target - range <= motor.getCurrentPosition()) && (target + range >= motor.getCurrentPosition());
     }
 }

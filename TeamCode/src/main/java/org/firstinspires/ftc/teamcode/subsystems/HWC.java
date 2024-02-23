@@ -4,6 +4,8 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
+import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,47 +18,65 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.subsystems.pid.RobotComponents;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
 
-
 /**
  * Stores and Declares all hardware devices &amp; related methods
  */
 public class HWC {
     // ------ Computer Vision Labels ------ //
-    private static final String[] LABELS = {"blue", "red"};
+    private static final String[] LABELS = {
+            "blue", "red"
+    };
+
+    // ------ Declare Slide Positions ------ //
+    public static int[] slidePositions = { 0, -964, -2110, -3460};
+
+    // ------ Declare Servo Positions ------ //
     public static double passoverDeliveryPos = 0.2;
     public static double passoverIntakePos = 0.8;
     public static double wristDeliveryPos = 0.2;
     public static double wristIntakePos = 0.85;
+
     // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
+
+    // ------ Pulley Robot Components ------ //
+    public RobotComponents pulleyLComponent, pulleyRComponent;
+
     // ------ Declare Servos ------ //
     public Servo wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
+
     // ------ Declare Sensors ------ //
     public ColorRangeSensor colorLeft, colorRight;
+
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
     public Gamepad currentGamepad2 = new Gamepad();
     public Gamepad previousGamepad1 = new Gamepad();
     public Gamepad previousGamepad2 = new Gamepad();
+
     // ------ Declare Webcam ------ //
     public WebcamName webcam;
+
     // ------ Declare Roadrunner Drive ------ //
     public SampleMecanumDrive drive;
-    // ------ ElapsedTime Variable ------ //
+
+    // ------ ElapsedTime Variables ------ //
     public ElapsedTime time = new ElapsedTime();
-    // ------ Position Variables ------ //
-    //TODO: UPDATE WITH REAL NUMBERS ONCE TESTED
     public ElapsedTime sleepTime = new ElapsedTime();
+
     // ------ Telemetry ------ //
-    private Telemetry telemetry;
+    Telemetry telemetry;
+
     // ------ Declare TensorFlow Processor ------ //
     private TfodProcessor tfod;
+
     // ------ Computer Vision VisionPortal ------ //
     private VisionPortal visionPortal;
     private boolean roadrunner;
@@ -91,8 +111,6 @@ public class HWC {
         clawL = hardwareMap.get(Servo.class, "clawL");
         clawR = hardwareMap.get(Servo.class, "clawR");
         wrist = hardwareMap.get(Servo.class, "wrist");
-
-        // ------ Retrieve Continuous Rotation Servos ------ //
         passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
         passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
 
@@ -133,6 +151,10 @@ public class HWC {
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         leftPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+
+        // ------ Robot Components ------ //
+        pulleyLComponent = new RobotComponents(leftPulley, 751.8, 0.005, 0.1, 0.0002, 0);
+        pulleyRComponent = new RobotComponents(rightPulley, 751.8, 0.005, 0.1, 0.0002, 0);
     }
 
     // ------ Function to Toggle Claw (Open/Close) ------ //
@@ -163,9 +185,9 @@ public class HWC {
     }
 
     // ------ Function to Power Slides ------ //
-    public void powerSlides(float pwr) {
-        leftPulley.setPower(pwr);
-        rightPulley.setPower(pwr);
+    public void powerSlides(double target) {
+        pulleyLComponent.incrementTarget(target);
+        pulleyRComponent.incrementTarget(target);
     }
 
     // ------ Function to Initialize TensorFlow Object Detection ------ //
