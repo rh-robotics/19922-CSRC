@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -39,11 +40,19 @@ public class SingleDriverTeleOp extends OpMode {
         // ------ Initialize Robot Hardware ------ //
         robot = new HWC(hardwareMap, telemetry, false);
 
+        // ------ Reset Pulley Encoders ------ //
+        robot.leftPulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightPulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         // ------ Reset Servos ------ //
         robot.clawL.setPosition(1);
         robot.clawR.setPosition(0);
         robot.wrist.setPosition(HWC.wristIntakePos);
         robot.passoverArmLeft.setPosition(HWC.passoverIntakePos);
+
+        // ------ Set Pulley Run Modes ------ //
+        robot.leftPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rightPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // ------ Telemetry ------ //
         telemetry.addData("Status", "Initialized");
@@ -246,11 +255,11 @@ public class SingleDriverTeleOp extends OpMode {
                 robot.intakeMotor.setPower(-1);
 
                 // Close Claws when Pixel Detected
-                if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1) {
+                if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
                     robot.clawL.setPosition(0.5);
                 }
 
-                if (robot.colorRight.getDistance(DistanceUnit.CM) <= 1) {
+                if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
                     robot.clawR.setPosition(0.5);
                 }
 
