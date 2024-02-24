@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.teleop.SingleDriverTeleOp;
 
 @Autonomous(name = "AutonomousV2")
 public class AutonomousV2 extends OpMode {
@@ -43,7 +44,8 @@ public class AutonomousV2 extends OpMode {
     private Trajectory toPixelStackFromRight;
     private Trajectory toPixelStackFromLeft;
     private Trajectory knockingPixelStack;
-    private TrajectorySequence intakingPixels;
+    private Trajectory intakingPixels;
+    private Trajectory intakingPixelsSweep;
     private TrajectorySequence toBackboard2FromPixelStack;
     private Trajectory toParkFromBackboard2;
 
@@ -158,9 +160,14 @@ public class AutonomousV2 extends OpMode {
                         .build();
 
                 // Intake Pixels
-                intakingPixels = robot.drive.trajectorySequenceBuilder(knockingPixelStack.end())
+                intakingPixels = robot.drive.trajectoryBuilder(knockingPixelStack.end())
                         .splineToLinearHeading(new Pose2d(-60, -24, Math.toRadians(180)), Math.toRadians(180))
-                        .strafeTo(new Vector2d(-60, -30))
+                        .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixelsSweep))
+                        .build();
+
+                // Intaking Pixels Sweep
+                intakingPixelsSweep = robot.drive.trajectoryBuilder(intakingPixels.end())
+                        .splineToLinearHeading(new Pose2d(-60, -24, Math.toRadians(270)), Math.toRadians(270))
                         .build();
 
                 // Drive to Backboard 2 from Pixel Stack
@@ -380,25 +387,17 @@ public class AutonomousV2 extends OpMode {
             firstRun = false;
             robot.time.reset();
             activeTrajectory = "intakingPixels";
-            robot.drive.followTrajectorySequence(intakingPixels);
+            robot.drive.followTrajectoryAsync(intakingPixels);
         }
 
         // ------ Run Intake Motor Forward------ //
         robot.intakeMotor.setPower(-1);
 
         // ------ Close Claw on Color Sensor ------ //
-        // Close Claws when Pixel Detected
-        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
-            robot.clawL.setPosition(0.5);
-        }
-
-        if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
-            robot.clawR.setPosition(0.5);
-        }
+        checkClaws();
 
         // ------ Set Next State ------ //
         if(!robot.drive.isBusy() && robot.time.seconds() >= 5) {
-            robot.intakeMotor.setPower(0);
             state = State.DRIVING_TO_BACKBOARD_2;
             firstRun = true;
         }
@@ -413,6 +412,9 @@ public class AutonomousV2 extends OpMode {
             robot.drive.followTrajectorySequenceAsync(toBackboard2FromPixelStack);
         }
 
+        // ------ Check Claws While Driving ------ //
+        checkClaws();
+
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
             state = State.DELIVERING_BACKBOARD;
@@ -422,6 +424,9 @@ public class AutonomousV2 extends OpMode {
 
     // Deliver Backboard
     private void deliveringBackboard() {
+        // ------ If Intake is on Turn it Off ------ //
+        robot.intakeMotor.setPower(0);
+
         // ------ Move Slides, Passover & Wrist ------ //
         deliver();
 
@@ -473,5 +478,22 @@ public class AutonomousV2 extends OpMode {
         robot.wrist.setPosition(HWC.wristIntakePos);
         robot.pulleyLComponent.setTarget(HWC.slidePositions[0]);
         robot.pulleyRComponent.setTarget(HWC.slidePositions[0]);
+    }
+
+    // Method to Check Claws & Close
+    private void checkClaws() {
+        // Close Claws when Pixel Detected
+        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
+            robot.clawL.setPosition(0.5);
+        }
+
+        if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
+            robot.clawR.setPosition(0.5);
+        }
+
+        // If both Pixels are Detected, Stop Intake
+        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1) {
+            robot.intakeMotor.setPower(0);
+        }
     }
 }
