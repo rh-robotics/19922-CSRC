@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.subsystems.HWC;
 public class AutonomousV1 extends OpMode {
     // ------ State Enum ------ //
     private enum State {
-        DRIVING_TO_DEPOSIT_PURPLE_PIXEL, DEPOSITING_PURPLE_PIXEL, DRIVING_TO_BACKBOARD, MOVING_AT_BACKBOARD, DEPOSITING_YELLOW_PIXEL, PARK, STOP
+        DRIVING_TO_DEPOSIT_PURPLE_PIXEL, DEPOSITING_PURPLE_PIXEL, DRIVING_TO_BACKBOARD, DEPOSITING_YELLOW_PIXEL, PARK, STOP
     }
 
     // ------ Alliance Color Enum ------ //
@@ -37,8 +37,6 @@ public class AutonomousV1 extends OpMode {
     private Trajectory toBackboardFromCenter;
     private Trajectory toBackboardFromRight;
     private Trajectory toBackboardFromLeft;
-    private Trajectory toBackboardLeft;
-    private Trajectory toBackboardRight;
     private Trajectory toParkFromBackboardCenter;
     private Trajectory toParkFromBackboardRight;
     private Trajectory toParkFromBackboardLeft;
@@ -127,27 +125,17 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Backboard from Center
                 toBackboardFromCenter = robot.drive.trajectoryBuilder(toDepositCenter.end())
-                        .lineToLinearHeading(new Pose2d(44, -35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
                         .build();
 
                 // Drive to Backboard from Right
                 toBackboardFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
-                        .lineToLinearHeading(new Pose2d(44, -35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
                         .build();
 
                 // Drive to Backboard from Left
                 toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(44, -35, Math.toRadians(180)))
-                        .build();
-
-                // Drive to Left Side of Backboard
-                toBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
-                        .strafeRight(8)
-                        .build();
-
-                // Drive to Right Side of Backboard
-                toBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
-                        .strafeLeft(8)
+                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
                         .build();
 
                 // Drive to Park from Center of Backboard
@@ -171,48 +159,33 @@ public class AutonomousV1 extends OpMode {
 
                 // ------ Declare Trajectories ------ //
                 // Drive to Center Line
-                toDepositCenter = robot.drive.trajectoryBuilder(START_POSE_BLUE)
-                        .lineTo(new Vector2d(12.0, 30))
+                toDepositCenter = robot.drive.trajectoryBuilder(START_POSE_RED)
+                        .lineTo(new Vector2d(12.0, -34))
                         .build();
 
                 // Drive to Right Line
-                toDepositRight = robot.drive.trajectoryBuilder(START_POSE_BLUE)
-                        .strafeTo(new Vector2d(23, 47))
+                toDepositRight = robot.drive.trajectoryBuilder(START_POSE_RED)
+                        .strafeTo(new Vector2d(23, -45))
                         .build();
 
                 // Drive to Left Line
-                toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_BLUE)
-                        .lineToLinearHeading(new Pose2d(9, 40, Math.toRadians(225)))
+                toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_RED)
+                        .lineToLinearHeading(new Pose2d(9, -40, Math.toRadians(135)))
                         .build();
 
                 // Drive to Backboard from Center
                 toBackboardFromCenter = robot.drive.trajectoryBuilder(toDepositCenter.end())
-                        .lineToLinearHeading(new Pose2d(44, 35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
                         .build();
 
                 // Drive to Backboard from Right
                 toBackboardFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
-                        .lineToLinearHeading(new Pose2d(44, 35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(48, -37, Math.toRadians(180)))
                         .build();
 
                 // Drive to Backboard from Left
                 toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(44, 35, Math.toRadians(180)))
-                        .build();
-
-                // Drive to Left Side of Backboard
-                toBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
-                        .strafeRight(8)
-                        .build();
-
-                // Drive to Right Side of Backboard
-                toBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
-                        .strafeLeft(8)
-                        .build();
-
-                // Drive to Park from Center of Backboard
-                toParkFromBackboardCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
-                        .strafeLeft(13)
+                        .lineToLinearHeading(new Pose2d(48, -30, Math.toRadians(180)))
                         .build();
 
                 // Drive to Park from Right of Backboard
@@ -247,9 +220,6 @@ public class AutonomousV1 extends OpMode {
                 break;
             case DRIVING_TO_BACKBOARD:
                 drivingToBackboard();
-                break;
-            case MOVING_AT_BACKBOARD:
-                movingAtBackboard();
                 break;
             case DEPOSITING_YELLOW_PIXEL:
                 depositingYellowPixel();
@@ -332,28 +302,7 @@ public class AutonomousV1 extends OpMode {
 
         // ------ Set Next State ------ //
         if (!robot.drive.isBusy()) {
-            state = State.MOVING_AT_BACKBOARD;
-            firstRun = true;
-        }
-    }
-
-    // Move at Backboard
-    private void movingAtBackboard() {
-        // ------ Select Trajectory ------ //
-        if(firstRun) {
-            firstRun = false;
-            if (elementLocation == HWC.Location.RIGHT) {
-                activeTrajectory = "toBackboardRight";
-                robot.drive.followTrajectoryAsync(toBackboardRight);
-            } else if (elementLocation == HWC.Location.LEFT) {
-                activeTrajectory = "toBackboardLeft";
-                robot.drive.followTrajectoryAsync(toBackboardLeft);
-            }
-        }
-
-        // ------ Set Next State ------ //
-        if (!robot.drive.isBusy()) {
-            state = State.DEPOSITING_YELLOW_PIXEL;
+            state = State.DEPOSITING_PURPLE_PIXEL;
             firstRun = true;
         }
     }
