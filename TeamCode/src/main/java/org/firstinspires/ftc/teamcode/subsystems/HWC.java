@@ -47,7 +47,8 @@ public class HWC {
     public static double passoverDeliveryPos = 0.2;
     public static double passoverIntakePos = 0.8;
     public static double wristDeliveryPos = 0.2;
-    public static double wristIntakePos = 0.8;
+    public static double wristIntakePos = 0.85;
+    public static double droneLaunchPos = 0.5;
 
     // ------ Declare Motors ------ //
     public DcMotorEx leftFront, rightFront, leftRear, rightRear, rightPulley, leftPulley, intakeMotor;
@@ -56,7 +57,7 @@ public class HWC {
     public RobotComponents pulleyLComponent, pulleyRComponent;
 
     // ------ Declare Servos ------ //
-    public Servo wrist, clawR, clawL, passoverArmLeft, passoverArmRight;
+    public Servo wrist, clawR, clawL, passoverArmLeft, passoverArmRight, drone;
 
     // ------ Declare Sensors ------ //
     public ColorRangeSensor colorLeft, colorRight;
@@ -119,6 +120,7 @@ public class HWC {
         wrist = hardwareMap.get(Servo.class, "wrist");
         passoverArmLeft = hardwareMap.get(Servo.class, "passoverArmLeft");
         passoverArmRight = hardwareMap.get(Servo.class, "passoverArmRight");
+        drone = hardwareMap.get(Servo.class, "drone");
 
         // ------ Retrieve Sensors ------ //
         webcam = hardwareMap.get(WebcamName.class, "webcam");
@@ -134,7 +136,6 @@ public class HWC {
         }
 
         leftPulley.setDirection(DcMotorEx.Direction.REVERSE);
-
 
         // ------ Set Motor Brake Modes ------ //
         if (!roadrunner) {

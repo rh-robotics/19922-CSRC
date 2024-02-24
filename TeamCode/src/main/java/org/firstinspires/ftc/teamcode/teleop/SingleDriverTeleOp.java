@@ -15,12 +15,16 @@ import org.firstinspires.ftc.teamcode.teleop.enums.MultiplierSelection;
 @TeleOp(name = "Single Driver", group = "Primary OpModes")
 public class SingleDriverTeleOp extends OpMode {
     // ------ Intake State Enum ------ //
-    private enum IntakeState {INTAKE, OFF, OUTTAKE}
+    private enum IntakeState { INTAKE, OFF, OUTTAKE }
+
+    // ------ Endgame State Enum ------ //
+    private enum EndgameState { DRONE, SLIDES_UP, CLIMB }
 
     // ------ Declare Others ------ //
     private HWC robot;
     private MultiplierSelection selection = MultiplierSelection.TURN_SPEED;
     private IntakeState intakeState = IntakeState.OFF;
+    private EndgameState endgameState = EndgameState.DRONE;
     private boolean testingMode = false;
     private double turnSpeed = 0.5; // Speed multiplier for turning
     private double driveSpeed = 1; // Speed multiplier for driving
@@ -47,8 +51,10 @@ public class SingleDriverTeleOp extends OpMode {
         // ------ Reset Servos ------ //
         robot.clawL.setPosition(1);
         robot.clawR.setPosition(0);
+        robot.drone.setPosition(0);
         robot.wrist.setPosition(HWC.wristIntakePos);
         robot.passoverArmLeft.setPosition(HWC.passoverIntakePos);
+        robot.passoverArmRight.setPosition(HWC.passoverIntakePos);
 
         // ------ Set Pulley Run Modes ------ //
         robot.leftPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -191,6 +197,33 @@ public class SingleDriverTeleOp extends OpMode {
             }
         }
 
+        // ------ (GAMEPAD 1) Endgame Controls ------ //
+        if(robot.currentGamepad1.back && !robot.previousGamepad1.back) {
+            switch(endgameState) {
+                case DRONE:
+                    // Launch Drone
+                    robot.drone.setPosition(HWC.droneLaunchPos);
+
+                    // Set Next State
+                    endgameState = EndgameState.SLIDES_UP;
+
+                    break;
+                case SLIDES_UP:
+                    // Set Slide Height
+                    slideHeight = 3;
+
+                    // Set Next State
+                    endgameState = EndgameState.CLIMB;
+
+                    break;
+                case CLIMB:
+                    // Set Slide Height
+                    slideHeight = 0;
+
+                    break;
+            }
+        }
+
         // ------ (GAMEPAD 1) Slide Position Controls ------ //
         if (robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
             // Increment Value
@@ -212,7 +245,7 @@ public class SingleDriverTeleOp extends OpMode {
             }
         }
 
-        // ------ (GAMEPAD 1) Position Controls ------ //
+        // ------ (GAMEPAD 1) Passover & Claw Position Controls ------ //
         if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
             deliveryPosition();
         } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
@@ -304,41 +337,8 @@ public class SingleDriverTeleOp extends OpMode {
         // ------ Telemetry Updates ------ //
         telemetry.addData("Status", "Running");
         telemetry.addData("Intake State", intakeState);
-        telemetry.addLine();
-        telemetry.addData(">", "ALL PRIMARY CONTROLS ARE ON GAMEPAD 1");
-        telemetry.addData("Left Stick X", "Strafing Left / Right");
-        telemetry.addData("Left Stick Y", "Driving Forward / Backward");
-        telemetry.addData("Left Trigger / Right Trigger", "Turning Left / Right");
-        telemetry.addData("Left Bumper", "Outtake");
-        telemetry.addData("Right Bumper", "Intake");
-        telemetry.addData("Both Bumpers", "Intake OFF");
-        telemetry.addData("D-Pad Up / Down", "Wrist Up / Down");
-        telemetry.addData("Right Stick X", "Intake In / Out");
-        telemetry.addData("Right Stick Y", "Slides Up / Down");
-        telemetry.addData("Button B", "Delivery Position");
-        telemetry.addData("Button A", "Intake Position");
-        telemetry.addData("Button X", "Toggle Left Claw");
-        telemetry.addData("Button Y", "Toggle Right Claw");
-        telemetry.addLine();
-        telemetry.addData("Intake Motor Power", robot.intakeMotor.getPower());
-        telemetry.addData("Slide Pulley Left Position", robot.leftPulley.getCurrentPosition());
-        telemetry.addData("Slide Pulley Right Position", robot.rightPulley.getCurrentPosition());
-        telemetry.addData("Claw Left Position", robot.clawL.getPosition());
-        telemetry.addData("Claw Right Position", robot.clawR.getPosition());
-        telemetry.addData("Left Passover Position", robot.passoverArmLeft.getPosition());
-        telemetry.addData("Right Passover Position", robot.passoverArmRight.getPosition());
-        telemetry.addData("Wrist Position", robot.wrist.getPosition());
-        telemetry.addData("Left Pulley Position", robot.leftPulley.getPower());
-        telemetry.addData("Right Pulley Position", robot.rightPulley.getPower());
-        telemetry.addData("> Target Wrist Position", wristPosition);
-        telemetry.addData("> Target Passover Position", passoverPosition);
-        telemetry.addLine();
-        telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFPower, rightFPower);
-        telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBPower, rightBPower);
-        telemetry.addData("Front Left Position", robot.leftFront.getCurrentPosition());
-        telemetry.addData("Back Left Position", robot.leftRear.getCurrentPosition());
-        telemetry.addData("Front Right Position", robot.rightFront.getCurrentPosition());
-        telemetry.addData("Back Right Position", robot.rightRear.getCurrentPosition());
+        telemetry.addData("Endgame State", endgameState);
+        telemetry.addData("Slide Height", slideHeight);
 
         // ------ Testing Mode Telemetry ------ //
         if (testingMode) {
