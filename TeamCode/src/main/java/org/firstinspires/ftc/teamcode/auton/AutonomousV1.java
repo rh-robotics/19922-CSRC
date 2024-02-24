@@ -130,56 +130,6 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Backboard from Right
                 toBackboardFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
-                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
-                        .build();
-
-                // Drive to Backboard from Left
-                toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
-                        .build();
-
-                // Drive to Park from Center of Backboard
-                toParkFromBackboardCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
-                        .strafeLeft(13)
-                        .build();
-
-                // Drive to Park from Right of Backboard
-                toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
-                        .strafeLeft(8)
-                        .build();
-
-                // Drive to Park from Left of Backboard
-                toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
-                        .strafeLeft(21)
-                        .build();
-                break;
-            case BLUE:
-                // ------ Set Robot Start Pose ------ //
-                robot.drive.setPoseEstimate(START_POSE_BLUE);
-
-                // ------ Declare Trajectories ------ //
-                // Drive to Center Line
-                toDepositCenter = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .lineTo(new Vector2d(12.0, -34))
-                        .build();
-
-                // Drive to Right Line
-                toDepositRight = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .strafeTo(new Vector2d(23, -45))
-                        .build();
-
-                // Drive to Left Line
-                toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .lineToLinearHeading(new Pose2d(9, -40, Math.toRadians(135)))
-                        .build();
-
-                // Drive to Backboard from Center
-                toBackboardFromCenter = robot.drive.trajectoryBuilder(toDepositCenter.end())
-                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
-                        .build();
-
-                // Drive to Backboard from Right
-                toBackboardFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
                         .lineToLinearHeading(new Pose2d(48, -37, Math.toRadians(180)))
                         .build();
 
@@ -188,14 +138,70 @@ public class AutonomousV1 extends OpMode {
                         .lineToLinearHeading(new Pose2d(48, -30, Math.toRadians(180)))
                         .build();
 
+                // Drive to Park from Center of Backboard
+                toParkFromBackboardCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
+                        .strafeTo(new Vector2d(48, -60))
+                        .build();
+
                 // Drive to Park from Right of Backboard
                 toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
-                        .strafeLeft(8)
+                        .strafeTo(new Vector2d(48, -60))
                         .build();
 
                 // Drive to Park from Left of Backboard
                 toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
-                        .strafeLeft(21)
+                        .strafeTo(new Vector2d(48, -60))
+                        .build();
+
+                break;
+            case BLUE:
+                // ------ Set Robot Start Pose ------ //
+                robot.drive.setPoseEstimate(START_POSE_BLUE);
+
+                // ------ Declare Trajectories ------ //
+                // Drive to Center Line
+                toDepositCenter = robot.drive.trajectoryBuilder(START_POSE_BLUE)
+                        .lineTo(new Vector2d(12.0, 30))
+                        .build();
+
+                // Drive to Right Line
+                toDepositRight = robot.drive.trajectoryBuilder(START_POSE_BLUE)
+                        .strafeTo(new Vector2d(23, 47))
+                        .build();
+
+                // Drive to Left Line
+                toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_RED)
+                        .lineToLinearHeading(new Pose2d(9, 40, Math.toRadians(225)))
+                        .build();
+
+                // Drive to Backboard from Center
+                toBackboardFromCenter = robot.drive.trajectoryBuilder(toDepositCenter.end())
+                        .lineToLinearHeading(new Pose2d(48, 35, Math.toRadians(180)))
+                        .build();
+
+                // Drive to Backboard from Right
+                toBackboardFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
+                        .lineToLinearHeading(new Pose2d(48, 37, Math.toRadians(180)))
+                        .build();
+
+                // Drive to Backboard from Left
+                toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
+                        .lineToLinearHeading(new Pose2d(48, 30, Math.toRadians(180)))
+                        .build();
+
+                // Drive to Park from Center of Backboard
+                toParkFromBackboardCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
+                        .strafeTo(new Vector2d(48, 60))
+                        .build();
+
+                // Drive to Park from Right of Backboard
+                toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
+                        .strafeTo(new Vector2d(48, 60))
+                        .build();
+
+                // Drive to Park from Left of Backboard
+                toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
+                        .strafeTo(new Vector2d(48, 60))
                         .build();
 
                 break;
