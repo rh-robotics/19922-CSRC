@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.teleop.SingleDriverTeleOp;
 
 @Autonomous(name = "AutonomousV2")
 public class AutonomousV2 extends OpMode {
@@ -46,7 +45,7 @@ public class AutonomousV2 extends OpMode {
     private Trajectory knockingPixelStack;
     private Trajectory intakingPixels;
     private Trajectory intakingPixelsSweep;
-    private TrajectorySequence toBackboard2FromPixelStack;
+    private TrajectorySequence toBackboardFromPixelStack;
     private Trajectory toParkFromBackboard2;
 
     // ------ Starting Positions ------ //
@@ -171,14 +170,15 @@ public class AutonomousV2 extends OpMode {
                         .build();
 
                 // Drive to Backboard 2 from Pixel Stack
-                toBackboard2FromPixelStack = robot.drive.trajectorySequenceBuilder(knockingPixelStack.end())
-                        .lineToLinearHeading(new Pose2d(-7, 0, Math.toRadians(180)))
-                        .lineToLinearHeading(new Pose2d(47, -35, Math.toRadians(180)))
+                toBackboardFromPixelStack = robot.drive.trajectorySequenceBuilder(knockingPixelStack.end())
+                        .setReversed(true)
+                        .splineTo(new Vector2d(-7, -9), Math.toRadians(0))
+                        .splineTo(new Vector2d(48, -35), Math.toRadians(0))
                         .build();
 
                 // Drive to Park from Backboard 2
-                toParkFromBackboard2 = robot.drive.trajectoryBuilder(toBackboard2FromPixelStack.end())
-                        .strafeLeft(13)
+                toParkFromBackboard2 = robot.drive.trajectoryBuilder(toBackboardFromPixelStack.end())
+                        .strafeTo(new Vector2d(48, -60))
                         .build();
 
                 break;
@@ -409,7 +409,7 @@ public class AutonomousV2 extends OpMode {
         if (firstRun) {
             firstRun = false;
             activeTrajectory = "toBackboard2FromPixelStack";
-            robot.drive.followTrajectorySequenceAsync(toBackboard2FromPixelStack);
+            robot.drive.followTrajectorySequenceAsync(toBackboardFromPixelStack);
         }
 
         // ------ Check Claws While Driving ------ //
