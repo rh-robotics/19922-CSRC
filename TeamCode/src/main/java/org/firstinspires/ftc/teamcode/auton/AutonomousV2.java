@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
 
@@ -17,11 +18,6 @@ public class AutonomousV2 extends OpMode {
     // ------ State Enum ------ //
     private enum State {
         DRIVING_TO_DEPOSIT_PURPLE_PIXEL, DEPOSITING_PURPLE_PIXEL, DRIVING_TO_BACKBOARD, DEPOSITING_YELLOW_PIXEL, DRIVING_TO_PIXEL_STACK, KNOCKING_PIXEL_STACK, INTAKING_PIXELS, DRIVING_TO_BACKBOARD_2, DELIVERING_BACKBOARD, PARK, STOP
-    }
-
-    // ------ Alliance Color Enum ------ //
-    private enum AllianceColor {
-        RED, BLUE
     }
 
     // ------ Declare Others ------ //
@@ -90,7 +86,7 @@ public class AutonomousV2 extends OpMode {
         robot.currentGamepad2.copy(gamepad2);
 
         // ------ Save Element Position ------ //
-        elementLocation = robot.detectElement();
+        elementLocation = robot.detectElement(allianceColor);
 
         // ------ Alliance Color Selection ------ //
         if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
@@ -122,34 +118,34 @@ public class AutonomousV2 extends OpMode {
 
                 // Drive to Backboard from Center
                 toBackboardFromCenter = robot.drive.trajectoryBuilder(toDepositCenter.end())
-                        .lineToLinearHeading(new Pose2d(48, -35, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(47 -35, Math.toRadians(180)))
                         .build();
 
                 // Drive to Backboard from Right
                 toBackboardFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
-                        .lineToLinearHeading(new Pose2d(48, -37, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(47, -37, Math.toRadians(180)))
                         .build();
 
                 // Drive to Backboard from Left
                 toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(48, -30, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(47, -30, Math.toRadians(180)))
                         .build();
 
                 // Drive to Pixel Stack from Center Backboard
                 toPixelStackFromCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
-                        .splineTo(new Vector2d(-7, -9), Math.toRadians(180))
+                        .splineTo(new Vector2d(7, -9), Math.toRadians(180))
                         .splineTo(new Vector2d(-60, -24), Math.toRadians(180))
                         .build();
 
                 // Drive to Pixel Stack from Right Backboard
                 toPixelStackFromRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
-                        .splineTo(new Vector2d(-7, -9), Math.toRadians(180))
+                        .splineTo(new Vector2d(7, -9), Math.toRadians(180))
                         .splineTo(new Vector2d(-60, -24), Math.toRadians(180))
                         .build();
 
                 // Drive to Pixel Stack from Left Backboard
                 toPixelStackFromLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
-                        .splineTo(new Vector2d(-7, -9), Math.toRadians(180))
+                        .splineTo(new Vector2d(7, -9), Math.toRadians(180))
                         .splineTo(new Vector2d(-60, -24), Math.toRadians(180))
                         .build();
 
@@ -187,6 +183,81 @@ public class AutonomousV2 extends OpMode {
                 robot.drive.setPoseEstimate(START_POSE_BLUE);
 
                 // ------ Declare Trajectories ------ //
+                // Drive to Center Line
+                toDepositCenter = robot.drive.trajectoryBuilder(START_POSE_BLUE)
+                        .lineTo(new Vector2d(12.0, 34))
+                        .build();
+
+                // Drive to Right Line
+                toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_BLUE)
+                        .strafeTo(new Vector2d(23, 45))
+                        .build();
+
+                // Drive to Left Line
+                toDepositRight = robot.drive.trajectoryBuilder(START_POSE_BLUE)
+                        .lineToLinearHeading(new Pose2d(9, 40, Math.toRadians(225)))
+                        .build();
+
+                // Drive to Backboard from Center
+                toBackboardFromCenter = robot.drive.trajectoryBuilder(toDepositCenter.end())
+                        .lineToLinearHeading(new Pose2d(47, 35, Math.toRadians(180)))
+                        .build();
+
+                // Drive to Backboard from Right
+                toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
+                        .lineToLinearHeading(new Pose2d(47, 41, Math.toRadians(180)))
+                        .build();
+
+                // Drive to Backboard from Left
+                toBackboardFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
+                        .lineToLinearHeading(new Pose2d(47, 30, Math.toRadians(180)))
+                        .build();
+
+                // Drive to Pixel Stack from Center Backboard
+                toPixelStackFromCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
+                        .splineTo(new Vector2d(-7, 9), Math.toRadians(180))
+                        .splineTo(new Vector2d(-60, 24), Math.toRadians(180))
+                        .build();
+
+                // Drive to Pixel Stack from Right Backboard
+                toPixelStackFromRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
+                        .splineTo(new Vector2d(-7, 9), Math.toRadians(180))
+                        .splineTo(new Vector2d(-60, 24), Math.toRadians(180))
+                        .build();
+
+                // Drive to Pixel Stack from Left Backboard
+                toPixelStackFromLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
+                        .splineTo(new Vector2d(-7, 9), Math.toRadians(180))
+                        .splineTo(new Vector2d(-60, 24), Math.toRadians(180))
+                        .build();
+
+                // Knock Pixel Stack
+                knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
+                        .splineToLinearHeading(new Pose2d(-60, 25, Math.toRadians(270)), Math.toRadians(270))
+                        .build();
+
+                // Intake Pixels
+                intakingPixels = robot.drive.trajectoryBuilder(knockingPixelStack.end())
+                        .splineToLinearHeading(new Pose2d(-60, 24, Math.toRadians(180)), Math.toRadians(180))
+                        .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixelsSweep))
+                        .build();
+
+                // Intaking Pixels Sweep
+                intakingPixelsSweep = robot.drive.trajectoryBuilder(intakingPixels.end())
+                        .splineToLinearHeading(new Pose2d(-60, 25, Math.toRadians(270)), Math.toRadians(270))
+                        .build();
+
+                // Drive to Backboard 2 from Pixel Stack
+                toBackboardFromPixelStack = robot.drive.trajectorySequenceBuilder(knockingPixelStack.end())
+                        .setReversed(true)
+                        .splineTo(new Vector2d(-7, 9), Math.toRadians(0))
+                        .splineTo(new Vector2d(48, 35), Math.toRadians(0))
+                        .build();
+
+                // Drive to Park from Backboard 2
+                toParkFromBackboard2 = robot.drive.trajectoryBuilder(toBackboardFromPixelStack.end())
+                        .strafeTo(new Vector2d(48, 60))
+                        .build();
                 break;
         }
 
@@ -467,8 +538,8 @@ public class AutonomousV2 extends OpMode {
         robot.passoverArmLeft.setPosition(HWC.passoverDeliveryPos);
         robot.passoverArmRight.setPosition(HWC.passoverDeliveryPos);
         robot.wrist.setPosition(HWC.wristDeliveryPos);
-        robot.pulleyLComponent.setTarget(HWC.slidePositions[1] / 2.0);
-        robot.pulleyRComponent.setTarget(HWC.slidePositions[1] / 2.0);
+        robot.pulleyLComponent.setTarget(HWC.slidePositions[1] / 4.0);
+        robot.pulleyRComponent.setTarget(HWC.slidePositions[1] / 4.0);
     }
 
     // Method to move to Intake Position

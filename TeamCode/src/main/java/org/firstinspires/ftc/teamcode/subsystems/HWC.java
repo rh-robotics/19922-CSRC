@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.pid.RobotComponents;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -212,7 +213,7 @@ public class HWC {
     }
 
     // ------ Function to add Telemetry for TensorFlow Object Detection ------ //
-    public Location detectElement(String alliance) {
+    public Location detectElement(AllianceColor allianceColor) {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
         double x = 1000, y;
@@ -227,9 +228,25 @@ public class HWC {
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }
 
-        if (x < 400) { return Location.CENTER; }
-        else if (x > 400 && x < 800) { return Location.RIGHT; }
-        else { return Location.LEFT; }
+        switch (allianceColor) {
+            default:
+            case RED:
+                if (x < 400) {
+                    return Location.CENTER;
+                } else if (x > 400 && x < 800) {
+                    return Location.RIGHT;
+                } else {
+                    return Location.LEFT;
+                }
+            case BLUE:
+                if (x < 400) {
+                    return Location.LEFT;
+                } else if (x > 400 && x < 800) {
+                    return Location.CENTER;
+                } else {
+                    return Location.RIGHT;
+                }
+        }
     }
 
     @NonNull
