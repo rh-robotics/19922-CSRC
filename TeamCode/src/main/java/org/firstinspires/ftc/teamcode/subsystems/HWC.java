@@ -192,15 +192,8 @@ public class HWC {
         telemetry.update();
     }
 
-    // ------ Function to Power Slides ------ //
-    public void powerSlides(double target) {
-        pulleyLComponent.incrementTarget(target);
-        pulleyRComponent.incrementTarget(target);
-    }
-
     // ------ Function to Initialize TensorFlow Object Detection ------ //
     public void initTFOD(String TFOD_MODEL_ASSET) {
-
         // Create the TensorFlow processor by using a builder.
         tfod = new TfodProcessor.Builder().setModelAssetName(TFOD_MODEL_ASSET).setModelLabels(LABELS).build();
 
@@ -219,7 +212,7 @@ public class HWC {
     }
 
     // ------ Function to add Telemetry for TensorFlow Object Detection ------ //
-    public Location detectElement() {
+    public Location detectElement(String alliance) {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
         double x = 1000, y;
