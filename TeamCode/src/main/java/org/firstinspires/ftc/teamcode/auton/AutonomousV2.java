@@ -166,7 +166,7 @@ public class AutonomousV2 extends OpMode {
 
                 // Intaking Pixels Sweep
                 intakingPixelsSweep = robot.drive.trajectoryBuilder(intakingPixels.end())
-                        .splineToLinearHeading(new Pose2d(-60, -24, Math.toRadians(270)), Math.toRadians(270))
+                        .splineToLinearHeading(new Pose2d(-60, -25, Math.toRadians(270)), Math.toRadians(270))
                         .build();
 
                 // Drive to Backboard 2 from Pixel Stack
