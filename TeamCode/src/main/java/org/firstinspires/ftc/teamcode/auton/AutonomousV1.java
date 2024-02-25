@@ -13,11 +13,11 @@ import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name = "AutonomousV2")
-public class AutonomousV2 extends OpMode {
+@Autonomous(name = "AutonomousV1")
+public class AutonomousV1 extends OpMode {
     // ------ State Enum ------ //
     private enum State {
-        DRIVING_TO_DEPOSIT_PURPLE_PIXEL, DEPOSITING_PURPLE_PIXEL, DRIVING_TO_BACKBOARD, DEPOSITING_YELLOW_PIXEL, DRIVING_TO_PIXEL_STACK, KNOCKING_PIXEL_STACK, INTAKING_PIXELS, DRIVING_TO_BACKBOARD_2, DELIVERING_BACKBOARD, PARK, STOP
+        DRIVING_TO_DEPOSIT_PURPLE_PIXEL, DEPOSITING_PURPLE_PIXEL, DRIVING_TO_BACKBOARD, DEPOSITING_YELLOW_PIXEL, PARK, STOP
     }
 
     // ------ Declare Others ------ //
@@ -35,14 +35,9 @@ public class AutonomousV2 extends OpMode {
     private Trajectory toBackboardFromCenter;
     private Trajectory toBackboardFromRight;
     private Trajectory toBackboardFromLeft;
-    private Trajectory toPixelStackFromCenter;
-    private Trajectory toPixelStackFromRight;
-    private Trajectory toPixelStackFromLeft;
-    private Trajectory knockingPixelStack;
-    private Trajectory intakingPixels;
-    private Trajectory intakingPixelsSweep;
-    private TrajectorySequence toBackboardFromPixelStack;
-    private Trajectory toParkFromBackboard2;
+    private Trajectory toParkFromBackboardLeft;
+    private Trajectory toParkFromBackboardRight;
+    private Trajectory toParkFromBackboardCenter;
 
     // ------ Starting Positions ------ //
     private final Pose2d START_POSE_RED = new Pose2d(12, -60, Math.toRadians(90.00));
@@ -113,7 +108,7 @@ public class AutonomousV2 extends OpMode {
 
                 // Drive to Left Line
                 toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .splineToLinearHeading(new Pose2d(7, -39, Math.toRadians(135)), Math.toRadians(135))
+                        .lineToLinearHeading(new Pose2d(9, -40, Math.toRadians(135)))
                         .build();
 
                 // Drive to Backboard from Center
@@ -131,49 +126,18 @@ public class AutonomousV2 extends OpMode {
                         .lineToLinearHeading(new Pose2d(49, -30, Math.toRadians(180)))
                         .build();
 
-                // Drive to Pixel Stack from Center Backboard
-                toPixelStackFromCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
-                        .splineTo(new Vector2d(7, -9), Math.toRadians(180))
-                        .splineTo(new Vector2d(-60, -24), Math.toRadians(180))
+                // Park from Backboard Center
+                toParkFromBackboardCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
+                        .strafeTo(new Vector2d(48, -60))
                         .build();
 
-                // Drive to Pixel Stack from Right Backboard
-                toPixelStackFromRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
-                        .splineTo(new Vector2d(7, -9), Math.toRadians(180))
-                        .splineTo(new Vector2d(-60, -24), Math.toRadians(180))
-                        .build();
-
-                // Drive to Pixel Stack from Left Backboard
-                toPixelStackFromLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
-                        .splineTo(new Vector2d(7, -9), Math.toRadians(180))
-                        .splineTo(new Vector2d(-60, -24), Math.toRadians(180))
-                        .build();
-
-                // Knock Pixel Stack
-                knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .splineToLinearHeading(new Pose2d(-60, -25, Math.toRadians(270)), Math.toRadians(270))
-                        .build();
-
-                // Intake Pixels
-                intakingPixels = robot.drive.trajectoryBuilder(knockingPixelStack.end())
-                        .splineToLinearHeading(new Pose2d(-60, -24, Math.toRadians(180)), Math.toRadians(180))
-                        .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixelsSweep))
-                        .build();
-
-                // Intaking Pixels Sweep
-                intakingPixelsSweep = robot.drive.trajectoryBuilder(intakingPixels.end())
-                        .splineToLinearHeading(new Pose2d(-60, -25, Math.toRadians(270)), Math.toRadians(270))
-                        .build();
-
-                // Drive to Backboard 2 from Pixel Stack
-                toBackboardFromPixelStack = robot.drive.trajectorySequenceBuilder(knockingPixelStack.end())
-                        .setReversed(true)
-                        .splineTo(new Vector2d(7, -9), Math.toRadians(0))
-                        .splineTo(new Vector2d(48, -35), Math.toRadians(0))
+                // Park from Backboard Right
+                toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
+                        .strafeTo(new Vector2d(48, -60))
                         .build();
 
                 // Drive to Park from Backboard 2
-                toParkFromBackboard2 = robot.drive.trajectoryBuilder(toBackboardFromPixelStack.end())
+                toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
                         .strafeTo(new Vector2d(48, -60))
                         .build();
 
@@ -195,7 +159,7 @@ public class AutonomousV2 extends OpMode {
 
                 // Drive to Left Line
                 toDepositRight = robot.drive.trajectoryBuilder(START_POSE_BLUE)
-                        .splineToLinearHeading(new Pose2d(7, -39, Math.toRadians(135)), Math.toRadians(135))
+                        .splineToLinearHeading(new Pose2d(7, 39, Math.toRadians(225)), Math.toRadians(225))
                         .build();
 
                 // Drive to Backboard from Center
@@ -213,54 +177,18 @@ public class AutonomousV2 extends OpMode {
                         .lineToLinearHeading(new Pose2d(49, 30, Math.toRadians(180)))
                         .build();
 
-                // Drive to Backboard from Left
-                toBackboardFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
-                        .lineToLinearHeading(new Pose2d(47, 30, Math.toRadians(180)))
+                // Park from Backboard Center
+                toParkFromBackboardCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
+                        .strafeTo(new Vector2d(48, 60))
                         .build();
 
-                // Drive to Pixel Stack from Center Backboard
-                toPixelStackFromCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
-                        .splineTo(new Vector2d(7, 9), Math.toRadians(180))
-                        .splineTo(new Vector2d(-60, 24), Math.toRadians(180))
-                        .build();
-
-                // Drive to Pixel Stack from Right Backboard
-                toPixelStackFromRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
-                        .splineTo(new Vector2d(7, 9), Math.toRadians(180))
-                        .splineTo(new Vector2d(-60, 24), Math.toRadians(180))
-                        .build();
-
-                // Drive to Pixel Stack from Left Backboard
-                toPixelStackFromLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
-                        .splineTo(new Vector2d(7, 9), Math.toRadians(180))
-                        .splineTo(new Vector2d(-60, 24), Math.toRadians(180))
-                        .build();
-
-                // Knock Pixel Stack
-                knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .splineToLinearHeading(new Pose2d(-60, 25, Math.toRadians(270)), Math.toRadians(270))
-                        .build();
-
-                // Intake Pixels
-                intakingPixels = robot.drive.trajectoryBuilder(knockingPixelStack.end())
-                        .splineToLinearHeading(new Pose2d(-60, 24, Math.toRadians(180)), Math.toRadians(180))
-                        .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixelsSweep))
-                        .build();
-
-                // Intaking Pixels Sweep
-                intakingPixelsSweep = robot.drive.trajectoryBuilder(intakingPixels.end())
-                        .splineToLinearHeading(new Pose2d(-60, 25, Math.toRadians(270)), Math.toRadians(270))
-                        .build();
-
-                // Drive to Backboard 2 from Pixel Stack
-                toBackboardFromPixelStack = robot.drive.trajectorySequenceBuilder(knockingPixelStack.end())
-                        .setReversed(true)
-                        .splineTo(new Vector2d(7, 9), Math.toRadians(0))
-                        .splineTo(new Vector2d(48, 35), Math.toRadians(0))
+                // Park from Backboard Right
+                toParkFromBackboardRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
+                        .strafeTo(new Vector2d(48, 60))
                         .build();
 
                 // Drive to Park from Backboard 2
-                toParkFromBackboard2 = robot.drive.trajectoryBuilder(toBackboardFromPixelStack.end())
+                toParkFromBackboardLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
                         .strafeTo(new Vector2d(48, 60))
                         .build();
                 break;
@@ -296,21 +224,6 @@ public class AutonomousV2 extends OpMode {
                 break;
             case DEPOSITING_YELLOW_PIXEL:
                 depositingYellowPixel();
-                break;
-            case DRIVING_TO_PIXEL_STACK:
-                drivingToPixelStack();
-                break;
-            case KNOCKING_PIXEL_STACK:
-                knockingPixelStack();
-                break;
-            case INTAKING_PIXELS:
-                intakingPixels();
-                break;
-            case DRIVING_TO_BACKBOARD_2:
-                drivingToBackboard2();
-                break;
-            case DELIVERING_BACKBOARD:
-                deliveringBackboard();
                 break;
             case PARK:
                 drivingToPark();
@@ -413,112 +326,6 @@ public class AutonomousV2 extends OpMode {
         intake();
 
         // ------ Set Next State ------ //
-        state = State.DRIVING_TO_PIXEL_STACK;
-    }
-
-    // Drive to Pixel Stack
-    private void drivingToPixelStack() {
-        // ------ Select Trajectory ------ //
-        if (firstRun) {
-            firstRun = false;
-            if (elementLocation == HWC.Location.RIGHT) {
-                activeTrajectory = "toPixelStackFromRight";
-                robot.drive.followTrajectoryAsync(toPixelStackFromRight);
-            } else if (elementLocation == HWC.Location.LEFT) {
-                activeTrajectory = "toPixelStackFromLeft";
-                robot.drive.followTrajectoryAsync(toPixelStackFromLeft);
-            } else {
-                activeTrajectory = "toPixelStackFromCenter";
-                robot.drive.followTrajectoryAsync(toPixelStackFromCenter);
-            }
-        }
-
-        // ------ Set Next State ------ //
-        if (!robot.drive.isBusy()) {
-            state = State.KNOCKING_PIXEL_STACK;
-            firstRun = true;
-        }
-    }
-
-    // Knock Pixel Stack
-    private void knockingPixelStack() {
-        // ------ Start Trajectory ------ //
-        if (firstRun) {
-            firstRun = false;
-            activeTrajectory = "knockingPixelStack";
-            robot.drive.followTrajectoryAsync(knockingPixelStack);
-        }
-
-        // ------ Set Next State ------ //
-        if (!robot.drive.isBusy()) {
-            state = State.INTAKING_PIXELS;
-            firstRun = true;
-        }
-    }
-
-    // Intake Pixels
-    private void intakingPixels() {
-        // ----- Start Trajectory ------ //
-        if (firstRun) {
-            firstRun = false;
-            robot.time.reset();
-            activeTrajectory = "intakingPixels";
-            robot.drive.followTrajectoryAsync(intakingPixels);
-        }
-
-        // ------ Run Intake Motor Forward------ //
-        robot.intakeMotor.setPower(-1);
-
-        // ------ Close Claw on Color Sensor ------ //
-        checkClaws();
-
-        // ------ Set Next State ------ //
-        if(!robot.drive.isBusy() && robot.time.seconds() >= 5) {
-            state = State.DRIVING_TO_BACKBOARD_2;
-            firstRun = true;
-        }
-    }
-
-    // Drive to Backboard 2
-    private void drivingToBackboard2() {
-        // ------ Start Trajectory ------ //
-        if (firstRun) {
-            firstRun = false;
-            activeTrajectory = "toBackboard2FromPixelStack";
-            robot.drive.followTrajectorySequenceAsync(toBackboardFromPixelStack);
-        }
-
-        // ------ Check Claws While Driving ------ //
-        checkClaws();
-
-        // ------ Set Next State ------ //
-        if (!robot.drive.isBusy()) {
-            state = State.DELIVERING_BACKBOARD;
-            firstRun = true;
-        }
-    }
-
-    // Deliver Backboard
-    private void deliveringBackboard() {
-        // ------ If Intake is on Turn it Off ------ //
-        robot.intakeMotor.setPower(0);
-
-        // ------ Move Slides, Passover & Wrist ------ //
-        deliver();
-
-        // ------ Wait for Passover to Move ------ //
-        robot.elapsedTimeSleep(1000);
-
-        // ------ Open Claw ------ //
-        robot.toggleClaw('L');
-
-        // ------ Wait for Claw to Open ------ //
-        robot.elapsedTimeSleep(1000);
-
-        // ------ Move Slides, Passover & Wrist ------ //
-        intake();
-
-        // ------ Set Next State ------ //
         state = State.PARK;
     }
 
@@ -528,7 +335,16 @@ public class AutonomousV2 extends OpMode {
         if(firstRun) {
             firstRun = false;
             activeTrajectory = "toParkFromBackboard2";
-            robot.drive.followTrajectoryAsync(toParkFromBackboard2);
+            if (elementLocation == HWC.Location.CENTER) {
+                activeTrajectory = "toParkFromBackboardCenter";
+                robot.drive.followTrajectoryAsync(toParkFromBackboardCenter);
+            } else if (elementLocation == HWC.Location.RIGHT) {
+                activeTrajectory = "toParkFromBackboardRight";
+                robot.drive.followTrajectoryAsync(toParkFromBackboardRight);
+            } else {
+                activeTrajectory = "toParkFromBackboardLeft";
+                robot.drive.followTrajectoryAsync(toParkFromBackboardLeft);
+            }
         }
 
         // ------ Set Next State ------ //
