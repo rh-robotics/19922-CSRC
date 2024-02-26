@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
+import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.pid.RobotComponents;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.vision.VisionPortal;
@@ -33,6 +34,11 @@ public class HWC {
     private static final String[] LABELS = {
             "blue", "red"
     };
+
+    // ------ Computer Vision Location Enum ------ //
+    public enum Location {
+        LEFT, CENTER, RIGHT
+    }
 
     // ------ Declare Slide Positions ------ //
     public static int[] slidePositions = { 0, -964, -2110, -3460};
@@ -80,6 +86,7 @@ public class HWC {
 
     // ------ Computer Vision VisionPortal ------ //
     private VisionPortal visionPortal;
+    private boolean roadrunner;
 
     /**
      * Constructor for HWC, declares all hardware components
@@ -87,18 +94,20 @@ public class HWC {
      * @param hardwareMap HardwareMap - Used to retrieve hardware devices
      * @param telemetry   Telemetry - Used to add telemetry to driver hub
      */
-    public HWC(@NonNull HardwareMap hardwareMap, Telemetry telemetry) {
-        // ------ Telemetry ------ //
+    public HWC(@NonNull HardwareMap hardwareMap, Telemetry telemetry, boolean roadrunner) {
         this.telemetry = telemetry;
+        this.roadrunner = roadrunner;
 
-        // ------ Declare RR Drivetrain ------ //
-        drive = new SampleMecanumDrive(hardwareMap);
-
-        // ------ Retrieve Drive Motors ------ //
-        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
-        leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
-        rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        if (roadrunner) {
+            // ------ Declare RR Drivetrain ------ //
+            drive = new SampleMecanumDrive(hardwareMap);
+        } else {
+            // ------ Retrieve Drive Motors ------ //
+            leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
+            rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+            leftRear = hardwareMap.get(DcMotorEx.class, "leftRear");
+            rightRear = hardwareMap.get(DcMotorEx.class, "rightRear");
+        }
 
         // ------ Retrieve Other Motors ------ //
         rightPulley = hardwareMap.get(DcMotorEx.class, "pulleyR");
@@ -119,24 +128,33 @@ public class HWC {
         colorRight = hardwareMap.get(ColorRangeSensor.class, "colorR");
 
         // ------ Set Motor Directions ------ //
-        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
-        rightFront.setDirection(DcMotorEx.Direction.FORWARD);
-        leftRear.setDirection(DcMotorEx.Direction.FORWARD);
-        rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        if (!roadrunner) {
+            leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+            rightFront.setDirection(DcMotorEx.Direction.FORWARD);
+            leftRear.setDirection(DcMotorEx.Direction.FORWARD);
+            rightRear.setDirection(DcMotorEx.Direction.FORWARD);
+        }
+
         leftPulley.setDirection(DcMotorEx.Direction.REVERSE);
 
         // ------ Set Motor Brake Modes ------ //
-        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        if (!roadrunner) {
+            leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        }
+
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // ------ Set Motor Modes ------ //
-        leftFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        rightFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        leftRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        rightRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        if (!roadrunner) {
+            leftFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            rightFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            leftRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+            rightRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
+        }
+
         intakeMotor.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         leftPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightPulley.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
@@ -162,49 +180,24 @@ public class HWC {
         }
     }
 
-    public void betterSleep(int sleep) {
+    // ------ Function that Allows For Sleeping in OpModes ------ //
+    public void elapsedTimeSleep(int milliseconds) {
         sleepTime.reset();
-        while (sleepTime.milliseconds() < sleep) {
+        while (sleepTime.milliseconds() < milliseconds) {
+            pulleyLComponent.moveUsingPID();
+            pulleyRComponent.moveUsingPID();
+
             telemetry.addData("sleeping", "true");
             telemetry.update();
         }
         telemetry.addData("sleeping", "slept");
         telemetry.update();
-
     }
 
-    public void sleepDeliver(int time) {
-        intakeMotor.setPower(-0.3);
-        betterSleep(time);
-        intakeMotor.setPower(0);
-    }
-
-    // ------ Function to Power Slides ------ //
-    public void powerSlides(double target) {
-        pulleyLComponent.incrementTarget(target);
-        pulleyRComponent.incrementTarget(target);
-    }
-
-    // ------ Function to Reset Motor Encoder Positions [EMERGENCY ONLY] ------ //
-    public void resetEncoders() {
-        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        leftRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        rightRear.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-
-        leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        leftRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        rightRear.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-    }
-
+    // ------ Function to Initialize TensorFlow Object Detection ------ //
     public void initTFOD(String TFOD_MODEL_ASSET) {
-
         // Create the TensorFlow processor by using a builder.
-        tfod = new TfodProcessor.Builder()
-                .setModelAssetName(TFOD_MODEL_ASSET)
-                .setModelLabels(LABELS)
-                .build();
+        tfod = new TfodProcessor.Builder().setModelAssetName(TFOD_MODEL_ASSET).setModelLabels(LABELS).build();
 
         // Create the vision portal by using a builder.
         VisionPortal.Builder builder = new VisionPortal.Builder();
@@ -220,36 +213,56 @@ public class HWC {
         tfod.setMinResultConfidence(0.75f);
     }
 
-    private double telemetryTFOD() {
+    // ------ Function to add Telemetry for TensorFlow Object Detection ------ //
+    public Location detectElement(AllianceColor allianceColor) {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
-        double x = 800;
-        // Step through the list of recognitions and display info for each one.
+        double x = 1000, y;
+
         for (Recognition recognition : currentRecognitions) {
             x = (recognition.getLeft() + recognition.getRight()) / 2;
-            double y = (recognition.getTop() + recognition.getBottom()) / 2;
-
+            y = (recognition.getTop() + recognition.getBottom()) / 2;
 
             telemetry.addData("", " ");
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }
-        return x;
+
+        switch (allianceColor) {
+            default:
+            case RED:
+                if (x < 400) {
+                    return Location.CENTER;
+                } else if (x > 400 && x < 800) {
+                    return Location.RIGHT;
+                } else {
+                    return Location.LEFT;
+                }
+            case BLUE:
+                if (x < 400) {
+                    return Location.LEFT;
+                } else if (x > 400 && x < 800) {
+                    return Location.CENTER;
+                } else {
+                    return Location.RIGHT;
+                }
+        }
     }
 
-    public int cv() {
-        double pos = telemetryTFOD(); //set it to a value depending on locaiton of obkect
-        if (pos > 800) {
-            return 0;
-        } else if (pos < 100 && pos > 0) {
-            return 1;
-        } else if (pos < 400) {
-            return 2;
-        } else if (pos < 800) {
-            return 3;
+    @NonNull
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder("HWC {");
+
+        if (roadrunner) {
+            builder.append("\n\tbusy = ").append(drive.isBusy());
         } else {
-            return 0;
+            builder.append("\n\tleftFront = ").append(leftFront.getPower()).append("\n\trightFront = ").append(rightFront.getPower()).append("\n\tleftRear = ").append(leftRear.getPower()).append("\n\trightRear = ").append(rightRear.getPower());
         }
+
+        builder.append("\n\trightPulley = ").append(rightPulley.getPower()).append("\n\tleftPulley = ").append(leftPulley.getPower()).append("\n\tintakeMotor = ").append(intakeMotor.getPower()).append("\n\twrist = ").append(wrist.getPosition()).append("\n\tclawR = ").append(clawR.getPosition()).append("\n\tclawL = ").append(clawL.getPosition()).append("\n\tpassoverArmLeft = ").append(passoverArmLeft.getPosition()).append("\n\tpassoverArmRight = ").append(passoverArmRight.getPosition()).append("\n}");
+
+        return builder.toString();
     }
 }

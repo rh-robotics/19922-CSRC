@@ -42,7 +42,7 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.update();
 
         // ------ Initialize Robot Hardware ------ //
-        robot = new HWC(hardwareMap, telemetry);
+        robot = new HWC(hardwareMap, telemetry, false);
 
         // ------ Reset Pulley Encoders ------ //
         robot.leftPulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
