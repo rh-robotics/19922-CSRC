@@ -148,18 +148,18 @@ public class SingleDriverTeleOp extends OpMode {
         double frontRightPower;
         double backLeftPower;
         double backRightPower;
-        double drive = robot.currentGamepad1.left_stick_y * driveSpeed;
-        double strafe = -robot.currentGamepad1.left_stick_x * strafeSpeed; // Counteract imperfect strafing
+        double drive = -gamepad1.left_stick_y;
+        double strafe = gamepad1.left_stick_x;
         double turn = (robot.currentGamepad1.left_trigger - robot.currentGamepad1.right_trigger) * turnSpeed;
         passoverPosition = robot.passoverArmLeft.getPosition();
         wristPosition = robot.wrist.getPosition();
 
         // ------ Calculate Drive Power ------ //
         double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(turn), 1);
-        frontLeftPower = (drive + strafe + turn) / denominator;
-        backLeftPower = (drive - strafe + turn) / denominator;
-        frontRightPower = (drive - strafe - turn) / denominator;
-        backRightPower = (drive + strafe - turn) / denominator;
+        frontLeftPower = (turn - strafe - drive) / denominator;
+        backLeftPower = (turn + strafe - drive) / denominator;
+        frontRightPower = (turn - strafe + drive) / denominator;
+        backRightPower = (turn + strafe + drive) / denominator;
 
         // ------ (GAMEPAD 1) Claw Controls ------ //
         if (robot.currentGamepad1.x && !robot.previousGamepad1.x) {
