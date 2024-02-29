@@ -108,7 +108,7 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Left Line
                 toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .lineToLinearHeading(new Pose2d(9, -40, Math.toRadians(135)))
+                        .splineToLinearHeading(new Pose2d(8, -39, Math.toRadians(135)), Math.toRadians(135))
                         .build();
 
                 // Drive to Backboard from Center
@@ -123,7 +123,7 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Backboard from Left
                 toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(49, -30, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(49, -28, Math.toRadians(180)))
                         .build();
 
                 // Park from Backboard Center
@@ -159,7 +159,7 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Left Line
                 toDepositRight = robot.drive.trajectoryBuilder(START_POSE_BLUE)
-                        .splineToLinearHeading(new Pose2d(7, 39, Math.toRadians(225)), Math.toRadians(225))
+                        .splineToLinearHeading(new Pose2d(8, 39, Math.toRadians(225)), Math.toRadians(225))
                         .build();
 
                 // Drive to Backboard from Center
@@ -169,7 +169,7 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Backboard from Right
                 toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(49, 41, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(49, 42, Math.toRadians(180)))
                         .build();
 
                 // Drive to Backboard from Left
