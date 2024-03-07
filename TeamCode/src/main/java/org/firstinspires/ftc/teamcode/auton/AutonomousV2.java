@@ -314,8 +314,8 @@ public class AutonomousV2 extends OpMode {
         telemetry.update();
     }
 
-   // ------ State Methods ------ //
-   private void drivingToDepositPurplePixel() {
+    // ------ State Methods ------ //
+    private void drivingToDepositPurplePixel() {
         // ------ Select Trajectory ------ //
         if(firstRun) {
             firstRun = false;
@@ -336,7 +336,7 @@ public class AutonomousV2 extends OpMode {
             state = State.DEPOSITING_PURPLE_PIXEL;
             firstRun = true;
         }
-   }
+    }
 
     // Deposit Purple Pixel
     private void depositingPurplePixel() {
@@ -392,6 +392,7 @@ public class AutonomousV2 extends OpMode {
 
         // ------ Set Next State ------ //
         state = State.DRIVING_TO_PIXEL_STACK;
+        firstRun = true;
     }
 
     // Drive to Pixel Stack
@@ -522,8 +523,8 @@ public class AutonomousV2 extends OpMode {
         robot.passoverArmLeft.setPosition(HWC.passoverDeliveryPos);
         robot.passoverArmRight.setPosition(HWC.passoverDeliveryPos);
         robot.wrist.setPosition(HWC.wristDeliveryPos);
-        robot.pulleyLComponent.setTarget(HWC.slidePositions[1] / 4.0);
-        robot.pulleyRComponent.setTarget(HWC.slidePositions[1] / 4.0);
+        robot.pulleyLComponent.setTarget(-170);
+        robot.pulleyRComponent.setTarget(-170);
     }
 
     // Method to move to Intake Position
