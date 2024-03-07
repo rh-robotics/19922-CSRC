@@ -421,7 +421,6 @@ public class AutonomousV2 extends OpMode {
     // Knock Pixel Stack
     private void knockingPixelStack() {
         // ------ Start Trajectory ------ //
-<<<<<<< HEAD
         if(firstRun) {
             firstRun = false;
             activeTrajectory = "knockingPixelStack";
