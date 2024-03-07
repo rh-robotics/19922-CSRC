@@ -391,7 +391,7 @@ public class AutonomousV2 extends OpMode {
         intake();
 
         // ------ Set Next State ------ //
-        state = State.PARK;
+        state = State.DRIVING_TO_PIXEL_STACK;
     }
 
     // Drive to Pixel Stack
@@ -421,6 +421,7 @@ public class AutonomousV2 extends OpMode {
     // Knock Pixel Stack
     private void knockingPixelStack() {
         // ------ Start Trajectory ------ //
+<<<<<<< HEAD
         if(firstRun) {
             firstRun = false;
             activeTrajectory = "knockingPixelStack";
@@ -515,7 +516,6 @@ public class AutonomousV2 extends OpMode {
             firstRun = true;
         }
     }
-
 
     // ------ Quick Methods Used All Around ------ //
     // Method to move to Delivery Position
