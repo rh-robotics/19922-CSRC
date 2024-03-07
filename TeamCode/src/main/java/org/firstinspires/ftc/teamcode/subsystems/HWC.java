@@ -41,7 +41,7 @@ public class HWC {
     }
 
     // ------ Declare Slide Positions ------ //
-    public static int[] slidePositions = { 0, -964, -2110, -3460};
+    public static int[] slidePositions = { 0, -482, -2110, -3460};
 
     // ------ Declare Servo Positions ------ //
     public static double passoverDeliveryPos = 0.2;
@@ -186,12 +186,7 @@ public class HWC {
         while (sleepTime.milliseconds() < milliseconds) {
             pulleyLComponent.moveUsingPID();
             pulleyRComponent.moveUsingPID();
-
-            telemetry.addData("sleeping", "true");
-            telemetry.update();
         }
-        telemetry.addData("sleeping", "slept");
-        telemetry.update();
     }
 
     // ------ Function to Initialize TensorFlow Object Detection ------ //
@@ -223,10 +218,7 @@ public class HWC {
             x = (recognition.getLeft() + recognition.getRight()) / 2;
             y = (recognition.getTop() + recognition.getBottom()) / 2;
 
-            telemetry.addData("", " ");
-            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
-            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
         }
 
         switch (allianceColor) {
