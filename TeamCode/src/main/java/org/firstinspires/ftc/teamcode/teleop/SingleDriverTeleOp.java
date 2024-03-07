@@ -381,6 +381,10 @@ public class SingleDriverTeleOp extends OpMode {
     private void intakePosition() {
         wristPosition = HWC.wristIntakePos;
         passoverPosition = HWC.passoverIntakePos;
+
+        robot.toggleClaw('L');
+        robot.toggleClaw('R');
+
         slideHeight = 0;
     }
 }
