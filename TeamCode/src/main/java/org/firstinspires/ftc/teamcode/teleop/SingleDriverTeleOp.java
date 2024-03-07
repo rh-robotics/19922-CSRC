@@ -148,9 +148,6 @@ public class SingleDriverTeleOp extends OpMode {
         double frontRightPower;
         double backLeftPower;
         double backRightPower;
-        double drive = -gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
-
         double drive = -robot.currentGamepad1.left_stick_y;
         double strafe = robot.currentGamepad1.left_stick_x;
 
