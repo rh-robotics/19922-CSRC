@@ -108,7 +108,7 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Left Line
                 toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .lineToLinearHeading(new Pose2d(9, -40, Math.toRadians(135)))
+                        .splineToLinearHeading(new Pose2d(7, -39, Math.toRadians(135)), Math.toRadians(135))
                         .build();
 
                 // Drive to Backboard from Center
@@ -123,7 +123,7 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Backboard from Left
                 toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(49, -30, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(49, -28, Math.toRadians(180)))
                         .build();
 
                 // Park from Backboard Center
@@ -370,22 +370,5 @@ public class AutonomousV1 extends OpMode {
         robot.wrist.setPosition(HWC.wristIntakePos);
         robot.pulleyLComponent.setTarget(HWC.slidePositions[0]);
         robot.pulleyRComponent.setTarget(HWC.slidePositions[0]);
-    }
-
-    // Method to Check Claws & Close
-    private void checkClaws() {
-        // Close Claws when Pixel Detected
-        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
-            robot.clawL.setPosition(0.5);
-        }
-
-        if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
-            robot.clawR.setPosition(0.5);
-        }
-
-        // If both Pixels are Detected, Stop Intake
-        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1) {
-            robot.intakeMotor.setPower(0);
-        }
     }
 }
