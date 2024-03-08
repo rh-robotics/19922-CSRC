@@ -315,9 +315,11 @@ public class DistanceTest extends OpMode {
         }
 
         if (gamepad1.dpad_left){
-            robot.alignWithBackboard(2);
+            robot.alignWithBackboard(10);
         }
-
+if (gamepad1.dpad_right){
+    robot.checkDistance();
+}
 
         // ------ Set Slide Positions ------ //
         switch (slideHeight) {
