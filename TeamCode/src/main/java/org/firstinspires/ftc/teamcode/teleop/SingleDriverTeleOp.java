@@ -51,7 +51,7 @@ public class SingleDriverTeleOp extends OpMode {
         // ------ Reset Servos ------ //
         robot.clawL.setPosition(1);
         robot.clawR.setPosition(0);
-        robot.drone.setPosition(0);
+        robot.drone.setPosition(1);
         robot.wrist.setPosition(HWC.wristIntakePos);
         robot.passoverArmLeft.setPosition(HWC.passoverIntakePos);
         robot.passoverArmRight.setPosition(HWC.passoverIntakePos);
@@ -150,7 +150,6 @@ public class SingleDriverTeleOp extends OpMode {
         double backRightPower;
         double drive = -robot.currentGamepad1.left_stick_y;
         double strafe = robot.currentGamepad1.left_stick_x;
-
         double turn = (robot.currentGamepad1.left_trigger - robot.currentGamepad1.right_trigger) * turnSpeed;
         passoverPosition = robot.passoverArmLeft.getPosition();
         wristPosition = robot.wrist.getPosition();
