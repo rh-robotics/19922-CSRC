@@ -375,15 +375,16 @@ public class SingleDriverTeleOp extends OpMode {
     private void deliveryPosition() {
         wristPosition = HWC.wristDeliveryPos;
         passoverPosition = HWC.passoverDeliveryPos;
-        slideHeight = 1;
+
+        if(slideHeight == 0) { slideHeight = 1; }
     }
 
     private void intakePosition() {
         wristPosition = HWC.wristIntakePos;
         passoverPosition = HWC.passoverIntakePos;
 
-        robot.toggleClaw('L');
-        robot.toggleClaw('R');
+        robot.clawL.setPosition(1);
+        robot.clawR.setPosition(0);
 
         slideHeight = 0;
     }
