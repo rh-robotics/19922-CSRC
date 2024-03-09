@@ -4,10 +4,7 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -63,7 +60,7 @@ public class HWC {
 
     // ------ Declare Sensors ------ //
     public ColorRangeSensor colorLeft, colorRight;
-    public DistanceSensor distLeft, distRight;
+    public DistanceSensor distanceLeft, distanceRight;
 
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
@@ -129,8 +126,8 @@ public class HWC {
         webcam = hardwareMap.get(WebcamName.class, "webcam");
         colorLeft = hardwareMap.get(ColorRangeSensor.class, "colorL");
         colorRight = hardwareMap.get(ColorRangeSensor.class, "colorR");
-        distLeft = hardwareMap.get(DistanceSensor.class, "distL");
-        distRight = hardwareMap.get(DistanceSensor.class, "distR");
+        distanceLeft = hardwareMap.get(DistanceSensor.class, "distL");
+        distanceRight = hardwareMap.get(DistanceSensor.class, "distR");
 
         // ------ Set Motor Directions ------ //
         if (!roadrunner) {
@@ -212,25 +209,28 @@ public class HWC {
 
         tfod.setMinResultConfidence(0.75f);
     }
-// ------ ALIGNS WITH BACKBOARD USING POWER, NEEDS ROAD RUNNER IMPLEMENTATION ------ //
-    public void alignWithBackboard(int dist){
-        int distPLus = dist + 4;
-        int distMinus = dist - 4;
+
+    // ------ Function to Align With Backboard ------ //
+    public void alignWithBackboard(int targetDist){
+        int distPLus = targetDist + 4;
+        int distMinus = targetDist - 4;
+
         leftFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         leftRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
         rightRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        while (distPLus < distRight.getDistance(DistanceUnit.CM) || distRight.getDistance(DistanceUnit.CM) < distMinus || (distPLus < distLeft.getDistance(DistanceUnit.CM) || distLeft.getDistance(DistanceUnit.CM) < distMinus)){
 
-            telemetry.addData("Left Distance", distLeft.getDistance(DistanceUnit.CM));
-            telemetry.addData("Right Distance", distRight.getDistance(DistanceUnit.CM));
+        while (distPLus < distanceRight.getDistance(DistanceUnit.CM) || distanceRight.getDistance(DistanceUnit.CM) < distMinus || (distPLus < distanceLeft.getDistance(DistanceUnit.CM) || distanceLeft.getDistance(DistanceUnit.CM) < distMinus)){
+
+            telemetry.addData("Left Distance", distanceLeft.getDistance(DistanceUnit.CM));
+            telemetry.addData("Right Distance", distanceRight.getDistance(DistanceUnit.CM));
             telemetry.addData("Right Power", rightRear.getPower());
             telemetry.addData("Left Power", leftRear.getPower());
             telemetry.update();
-            if (distPLus > distRight.getDistance(DistanceUnit.CM) && distRight.getDistance(DistanceUnit.CM) > distMinus){
+            if (distPLus > distanceRight.getDistance(DistanceUnit.CM) && distanceRight.getDistance(DistanceUnit.CM) > distMinus){
                 rightRear.setPower(0);
                 rightFront.setPower(0);
-                if (distPLus > distLeft.getDistance(DistanceUnit.CM) && distLeft.getDistance(DistanceUnit.CM) > distMinus){
+                if (distPLus > distanceLeft.getDistance(DistanceUnit.CM) && distanceLeft.getDistance(DistanceUnit.CM) > distMinus){
                     leftFront.setPower(0);
                     leftRear.setPower(0);
                 }
@@ -239,10 +239,10 @@ public class HWC {
                     leftRear.setPower(0.2);
                 }
             }
-            else if (distPLus > distLeft.getDistance(DistanceUnit.CM) && distLeft.getDistance(DistanceUnit.CM) > distMinus){
+            else if (distPLus > distanceLeft.getDistance(DistanceUnit.CM) && distanceLeft.getDistance(DistanceUnit.CM) > distMinus){
                 leftFront.setPower(0);
                 leftRear.setPower(0);
-                if (distPLus > distRight.getDistance(DistanceUnit.CM) && distRight.getDistance(DistanceUnit.CM) > distMinus){
+                if (distPLus > distanceRight.getDistance(DistanceUnit.CM) && distanceRight.getDistance(DistanceUnit.CM) > distMinus){
                     rightRear.setPower(0);
                     rightFront.setPower(0);
                 }
@@ -253,7 +253,7 @@ public class HWC {
                 leftRear.setPower(0.2);
                 leftFront.setPower(0.2);
             }
-            if (distPLus > distRight.getDistance(DistanceUnit.CM) && distRight.getDistance(DistanceUnit.CM) > distMinus && distPLus > distLeft.getDistance(DistanceUnit.CM) && distLeft.getDistance(DistanceUnit.CM) > distMinus){
+            if (distPLus > distanceRight.getDistance(DistanceUnit.CM) && distanceRight.getDistance(DistanceUnit.CM) > distMinus && distPLus > distanceLeft.getDistance(DistanceUnit.CM) && distanceLeft.getDistance(DistanceUnit.CM) > distMinus){
                 rightRear.setPower(0);
                 rightFront.setPower(0);
                 leftFront.setPower(0);
@@ -265,11 +265,7 @@ public class HWC {
             }
         }
     }
-public void checkDistance(){
-    telemetry.addData("Left Distance", distLeft.getDistance(DistanceUnit.CM));
-    telemetry.addData("Right Distance", distRight.getDistance(DistanceUnit.CM));
-    telemetry.update();
-}
+
     // ------ Function to add Telemetry for TensorFlow Object Detection ------ //
     public Location detectElement(AllianceColor allianceColor) {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
