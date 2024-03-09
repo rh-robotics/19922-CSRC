@@ -199,7 +199,7 @@ public class SingleDriverTeleOp extends OpMode {
                     break;
                 case SLIDES_UP:
                     // Set Slide Height
-                    slideHeight = 3;
+                    slideHeight = 4;
 
                     // Set Next State
                     endgameState = EndgameState.CLIMB;
@@ -219,8 +219,8 @@ public class SingleDriverTeleOp extends OpMode {
             slideHeight++;
 
             // If value is above 2, don't increase
-            if (slideHeight > 3) {
-                slideHeight = 3;
+            if (slideHeight > HWC.slidePositions.length - 1) {
+                slideHeight = HWC.slidePositions.length - 1;
             }
         }
 
@@ -321,6 +321,9 @@ public class SingleDriverTeleOp extends OpMode {
                 robot.pulleyLComponent.setTarget(HWC.slidePositions[3]);
                 robot.pulleyRComponent.setTarget(HWC.slidePositions[3]);
                 break;
+            case 4:
+                robot.pulleyLComponent.setTarget(HWC.slidePositions[4]);
+                robot.pulleyRComponent.setTarget(HWC.slidePositions[4]);
         }
 
         // ------ Telemetry Updates ------ //
