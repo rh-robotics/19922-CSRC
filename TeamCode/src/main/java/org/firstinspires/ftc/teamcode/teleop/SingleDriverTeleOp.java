@@ -51,7 +51,7 @@ public class SingleDriverTeleOp extends OpMode {
         // ------ Reset Servos ------ //
         robot.clawL.setPosition(1);
         robot.clawR.setPosition(0);
-        robot.drone.setPosition(0);
+        robot.drone.setPosition(1);
         robot.wrist.setPosition(HWC.wristIntakePos);
         robot.passoverArmLeft.setPosition(HWC.passoverIntakePos);
         robot.passoverArmRight.setPosition(HWC.passoverIntakePos);
@@ -148,8 +148,8 @@ public class SingleDriverTeleOp extends OpMode {
         double frontRightPower;
         double backLeftPower;
         double backRightPower;
-        double drive = -gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
+        double drive = -robot.currentGamepad1.left_stick_y;
+        double strafe = robot.currentGamepad1.left_stick_x;
         double turn = (robot.currentGamepad1.left_trigger - robot.currentGamepad1.right_trigger) * turnSpeed;
         passoverPosition = robot.passoverArmLeft.getPosition();
         wristPosition = robot.wrist.getPosition();
@@ -199,7 +199,7 @@ public class SingleDriverTeleOp extends OpMode {
                     break;
                 case SLIDES_UP:
                     // Set Slide Height
-                    slideHeight = 3;
+                    slideHeight = 4;
 
                     // Set Next State
                     endgameState = EndgameState.CLIMB;
@@ -219,8 +219,8 @@ public class SingleDriverTeleOp extends OpMode {
             slideHeight++;
 
             // If value is above 2, don't increase
-            if (slideHeight > 3) {
-                slideHeight = 3;
+            if (slideHeight > HWC.slidePositions.length - 1) {
+                slideHeight = HWC.slidePositions.length - 1;
             }
         }
 
@@ -321,6 +321,9 @@ public class SingleDriverTeleOp extends OpMode {
                 robot.pulleyLComponent.setTarget(HWC.slidePositions[3]);
                 robot.pulleyRComponent.setTarget(HWC.slidePositions[3]);
                 break;
+            case 4:
+                robot.pulleyLComponent.setTarget(HWC.slidePositions[4]);
+                robot.pulleyRComponent.setTarget(HWC.slidePositions[4]);
         }
 
         // ------ Telemetry Updates ------ //
@@ -375,12 +378,17 @@ public class SingleDriverTeleOp extends OpMode {
     private void deliveryPosition() {
         wristPosition = HWC.wristDeliveryPos;
         passoverPosition = HWC.passoverDeliveryPos;
-        slideHeight = 1;
+
+        if(slideHeight == 0) { slideHeight = 1; }
     }
 
     private void intakePosition() {
         wristPosition = HWC.wristIntakePos;
         passoverPosition = HWC.passoverIntakePos;
+
+        robot.clawL.setPosition(1);
+        robot.clawR.setPosition(0);
+
         slideHeight = 0;
     }
 }
