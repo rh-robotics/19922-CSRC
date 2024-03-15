@@ -516,7 +516,7 @@ public class AutonomousV2_5 extends OpMode {
         }
     }
 
-    // ------ Quick Methods Used All Around ------ //
+    // ------ Helper Methods Used All Around ------ //
     // Method to move to Delivery Position
     private void deliver(int slideHeight) {
         robot.passoverArmLeft.setPosition(HWC.passoverDeliveryPos);
