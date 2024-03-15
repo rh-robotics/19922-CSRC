@@ -225,7 +225,7 @@ public class SingleDriverTeleOp extends OpMode {
                     break;
                 case SLIDES_UP:
                     // Set Slide Height
-                    slideHeight = 3;
+                    slideHeight = 4;
 
                     // Set Next State
                     endgameState = EndgameState.CLIMB;
@@ -290,6 +290,9 @@ public class SingleDriverTeleOp extends OpMode {
                 robot.pulleyLComponent.setTarget(HWC.slidePositions[3]);
                 robot.pulleyRComponent.setTarget(HWC.slidePositions[3]);
                 break;
+            case 4:
+                robot.pulleyLComponent.setTarget(HWC.slidePositions[4]);
+                robot.pulleyRComponent.setTarget(HWC.slidePositions[4]);
         }
 
         // ------ Run Motors ------ //
@@ -336,15 +339,16 @@ public class SingleDriverTeleOp extends OpMode {
     private void deliveryPosition() {
         wristPosition = HWC.wristDeliveryPos;
         passoverPosition = HWC.passoverDeliveryPos;
-        slideHeight = 1;
+
+        if(slideHeight == 0) { slideHeight = 1; }
     }
 
     private void intakePosition() {
         wristPosition = HWC.wristIntakePos;
         passoverPosition = HWC.passoverIntakePos;
 
-        robot.toggleClaw('L');
-        robot.toggleClaw('R');
+        robot.clawL.setPosition(1);
+        robot.clawR.setPosition(0);
 
         slideHeight = 0;
     }

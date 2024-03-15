@@ -40,7 +40,7 @@ public class HWC {
     }
 
     // ------ Declare Slide Positions ------ //
-    public static int[] slidePositions = { 0, -482, -2110, -3460};
+    public static int[] slidePositions = { 0, -200, -482, -2110, -3460};
 
     // ------ Declare Servo Positions ------ //
     public static double passoverDeliveryPos = 0.2;
