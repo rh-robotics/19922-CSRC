@@ -141,20 +141,26 @@ public class AutonomousV2_5 extends OpMode {
 
                 // Drive to Pixel Stack from Center
                 toPixelStackFromCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
+                        .splineTo(new Vector2d(24, -48), Math.toRadians(180+40))
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
+                        .splineTo(new Vector2d(-48, -48), Math.toRadians(180-40))
                         .splineTo(new Vector2d(-63, -40), Math.toRadians(180))
                         .build();
 
                 // Drive to Pixel Stack from Right
                 // TODO: Will Likely Hit Purple Pixel, Adjust Trajectory after Testing
                 toPixelStackFromRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
+                        .splineTo(new Vector2d(24, -48), Math.toRadians(180+40))
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
+                        .splineTo(new Vector2d(-48, -48), Math.toRadians(180-40))
                         .splineTo(new Vector2d(-63, -40), Math.toRadians(180))
                         .build();
 
                 // Drive to Pixel Stack from Left
                 toPixelStackFromLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
+                        .splineTo(new Vector2d(24, -48), Math.toRadians(180+40)) //new
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
+                        .splineTo(new Vector2d(-48, -48), Math.toRadians(180-40))
                         .splineTo(new Vector2d(-63, -40), Math.toRadians(180))
                         .build();
 
@@ -185,6 +191,7 @@ public class AutonomousV2_5 extends OpMode {
                 toBackboardFromPixelStack = robot.drive.trajectorySequenceBuilder(intakingPixels2.end())
                         .setReversed(true)
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(0))
+                        .splineTo(new Vector2d(24, -48), Math.toRadians(0+40))
                         .splineTo(new Vector2d(47, -35), Math.toRadians(0))
                         .build();
 
