@@ -134,52 +134,51 @@ public class AutonomousV2_5 extends OpMode {
                 // Drive to Pixel Stack from Center
                 toPixelStackFromCenter = robot.drive.trajectoryBuilder(toBackboardFromCenter.end())
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
-                        .splineTo(new Vector2d(-63, -36), Math.toRadians(180))
+                        .splineTo(new Vector2d(-60, -36), Math.toRadians(180))
                         .build();
 
                 // Drive to Pixel Stack from Right
                 // TODO: Will Likely Hit Purple Pixel, Adjust Trajectory after Testing
                 toPixelStackFromRight = robot.drive.trajectoryBuilder(toBackboardFromRight.end())
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
-                        .splineTo(new Vector2d(-63, -36), Math.toRadians(180))
+                        .splineTo(new Vector2d(-60, -36), Math.toRadians(180))
                         .build();
 
                 // Drive to Pixel Stack from Left
                 toPixelStackFromLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
-                        .splineTo(new Vector2d(-63, -36), Math.toRadians(180))
+                        .splineTo(new Vector2d(-60, -36), Math.toRadians(180))
                         .build();
 
                 // Knock Pixel Stack
                 knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .splineToLinearHeading(new Pose2d(-65, -18, Math.toRadians(220)), Math.toRadians(220))
+                        .splineToLinearHeading(new Pose2d(-63, -18, Math.toRadians(220)), Math.toRadians(220))
                         .build();
 
                 // Intake Pixels (1)
                 intakingPixels1 = robot.drive.trajectoryBuilder(knockingPixelStack.end())
-                        .splineToLinearHeading(new Pose2d(-60, -20, Math.toRadians(180)), Math.toRadians(180))
+                        .strafeRight(2)
                         .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixels2))
                         .build();
 
                 // Intake Pixels (2)
                 // TODO: Will likely not be enough strafe, adjust as needed
                 intakingPixels2 = robot.drive.trajectoryBuilder(intakingPixels1.end())
-                        .strafeLeft(5)
-                        .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixels3))
+                        .strafeLeft(2)
+                        //.addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixels3))
                         .build();
 
                 // Intake Pixels (3)
                 // TODO: Will likely not be enough strafe, adjust as needed
-                intakingPixels3 = robot.drive.trajectoryBuilder(intakingPixels2.end())
-                        .strafeRight(5)
-                        .build();
+//                intakingPixels3 = robot.drive.trajectoryBuilder(intakingPixels2.end())
+//                        .strafeRight(5)
+//                        .build();
 
                 // Drive to Backboard from Pixel Stack
-                toBackboardFromPixelStack = robot.drive.trajectorySequenceBuilder(intakingPixels3.end())
+                toBackboardFromPixelStack = robot.drive.trajectorySequenceBuilder(intakingPixels2.end())
                         .setReversed(true)
-                        .splineTo(new Vector2d(-3, -8), Math.toRadians(0))
+                        .splineTo(new Vector2d(-12, -60), Math.toRadians(0))
                         .splineTo(new Vector2d(49, -35), Math.toRadians(0))
-
                         .build();
 
                 // Drive to Park
