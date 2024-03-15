@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
@@ -70,6 +71,9 @@ public class AutonomousV2_5 extends OpMode {
 
         // ------ Close Claw for Yellow Pixel ------ //
         robot.clawL.setPosition(0.5);
+
+        // ------ Reset Slide Encoders ------ //
+        resetSlideEncoders();
 
         // ------ Telemetry ------ //
         telemetry.addData("Status", "Initialized");
@@ -162,14 +166,12 @@ public class AutonomousV2_5 extends OpMode {
                         .build();
 
                 // Intake Pixels (2)
-                // TODO: Will likely not be enough strafe, adjust as needed
                 intakingPixels2 = robot.drive.trajectoryBuilder(intakingPixels1.end())
                         .strafeLeft(2)
-                        //.addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixels3))
+//                        .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixels3))
                         .build();
 
                 // Intake Pixels (3)
-                // TODO: Will likely not be enough strafe, adjust as needed
 //                intakingPixels3 = robot.drive.trajectoryBuilder(intakingPixels2.end())
 //                        .strafeRight(5)
 //                        .build();
@@ -548,5 +550,14 @@ public class AutonomousV2_5 extends OpMode {
         if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1) {
             robot.intakeMotor.setPower(0);
         }
+    }
+
+    // Method to Reset Slide Encoders
+    private void resetSlideEncoders() {
+        robot.leftPulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightPulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        robot.leftPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rightPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 }
