@@ -155,7 +155,7 @@ public class AutonomousV2_5 extends OpMode {
                 // Drive to Pixel Stack from Left
                 toPixelStackFromLeft = robot.drive.trajectoryBuilder(toBackboardFromLeft.end())
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
-                        .splineTo(new Vector2d(-60, -40), Math.toRadians(180))
+                        .splineTo(new Vector2d(-63, -40), Math.toRadians(180))
                         .build();
 
                 // Knock Pixel Stack
@@ -519,6 +519,10 @@ public class AutonomousV2_5 extends OpMode {
 
     // Deliver Backboard
     private void deliveringBackboard() {
+        // ------ Close Claws if not closed already ------ //
+        robot.clawL.setPosition(0.5);
+        robot.clawR.setPosition(0.5);
+
         // ------ If Intake is on Turn it Off ------ //
         robot.intakeMotor.setPower(0);
 

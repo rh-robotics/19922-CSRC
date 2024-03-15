@@ -129,35 +129,35 @@ public class FarAutonomousV2_5 extends OpMode {
 
                 // Drive to Pixel Stack from Center
                 toPixelStackFromCenter = robot.drive.trajectoryBuilder(toDepositCenter.end())
-                        .lineToLinearHeading(new Pose2d(-60, -40, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(-57, -40, Math.toRadians(180-40)))
                         .build();
 
                 // Drive to Pixel Stack from Right
                 // TODO: Will Likely Hit Purple Pixel, Adjust Trajectory after Testing
                 toPixelStackFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
-                        .lineToLinearHeading(new Pose2d(-60, -40, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(-57, -40, Math.toRadians(180-40)))
                         .build();
 
                 // Drive to Pixel Stack from Left
                 toPixelStackFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(-60, -40, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(-57, -40, Math.toRadians(180-40)))
                         .build();
 
                 // Knock Pixel Stack
                 knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .splineToLinearHeading(new Pose2d(-62, -35, Math.toRadians(180-40)), Math.toRadians(180-40))
+                        .splineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(180-40)), Math.toRadians(180-40))
                         .build();
 
                 // Intake Pixels (1)
                 intakingPixels1 = robot.drive.trajectoryBuilder(knockingPixelStack.end())
-                        .strafeLeft(2)
+                        .strafeRight(8)
                         //.splineTo(new Vector2d(-63, -36), Math.toRadians(120))
                         .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixels2))
                         .build();
 
 //                // Intake Pixels (2)
                 intakingPixels2 = robot.drive.trajectoryBuilder(intakingPixels1.end())
-                        .strafeRight(2)
+                        .strafeLeft(2)
 //                        .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixels3))
                         .build();
 
@@ -443,6 +443,7 @@ public class FarAutonomousV2_5 extends OpMode {
 
     // Intake Pixels
     private void intakingPixels() {
+
         // ------ Run Intake ------ //
         robot.intakeMotor.setPower(-1);
 
@@ -492,6 +493,10 @@ public class FarAutonomousV2_5 extends OpMode {
 
     // Deliver Backboard
     private void deliveringBackboard() {
+        // ------ Close Claws if not closed already ------ //
+        robot.clawL.setPosition(0.5);
+        robot.clawR.setPosition(0.5);
+
         // ------ If Intake is on Turn it Off ------ //
         robot.intakeMotor.setPower(0);
 
