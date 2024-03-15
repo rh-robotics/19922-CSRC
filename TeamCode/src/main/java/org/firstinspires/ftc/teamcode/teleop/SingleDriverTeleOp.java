@@ -18,6 +18,9 @@ public class SingleDriverTeleOp extends OpMode {
 
     // ------ Endgame State Enum ------ //
     private enum EndgameState {DRONE, SLIDES_UP, CLIMB}
+    
+    // ------ Aligning Boolean ------ //
+    private boolean aligning = false;
 
     // ------ Declare Others ------ //
     private HWC robot;
@@ -71,9 +74,7 @@ public class SingleDriverTeleOp extends OpMode {
     public void init_loop() {
         // ------ GamePad Updates ------ //
         robot.previousGamepad1.copy(robot.currentGamepad1);
-        robot.previousGamepad2.copy(robot.currentGamepad2);
         robot.currentGamepad1.copy(gamepad1);
-        robot.currentGamepad2.copy(gamepad2);
 
         // ------ Speed Multiplier Selection ------ //
         if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
@@ -135,9 +136,7 @@ public class SingleDriverTeleOp extends OpMode {
     public void loop() {
         // ------ GamePad Updates ------ //
         robot.previousGamepad1.copy(robot.currentGamepad1);
-        robot.previousGamepad2.copy(robot.currentGamepad2);
         robot.currentGamepad1.copy(gamepad1);
-        robot.currentGamepad2.copy(gamepad2);
 
         // ------ Power & Controller Values ------ //
         double drive = -robot.currentGamepad1.left_stick_y;
@@ -153,7 +152,7 @@ public class SingleDriverTeleOp extends OpMode {
         frontRightPower = (turn - strafe + drive) / denominator;
         backRightPower = (turn + strafe + drive) / denominator;
 
-        // ------ (GAMEPAD 1) Claw Controls ------ //
+        // ------ Claw Controls ------ //
         if (robot.currentGamepad1.x && !robot.previousGamepad1.x) {
             robot.toggleClaw('L');
         }
@@ -161,7 +160,7 @@ public class SingleDriverTeleOp extends OpMode {
             robot.toggleClaw('R');
         }
 
-        // ------ (GAMEPAD 1) Intake Toggle Controls ------ //
+        // ------ Intake Toggle Controls ------ //
         if (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) {
             if (intakeState == IntakeState.INTAKE || intakeState == IntakeState.OUTTAKE) {
                 intakeState = IntakeState.OFF;
@@ -177,7 +176,7 @@ public class SingleDriverTeleOp extends OpMode {
             }
         }
 
-        // ------ (GAMEPAD 1) Slide Position Controls ------ //
+        // ------ Slide Position Controls ------ //
         if (robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
             // Increment Value
             slideHeight++;
@@ -197,7 +196,7 @@ public class SingleDriverTeleOp extends OpMode {
             }
         }
 
-        // ------ (GAMEPAD 1) Passover & Claw Position Controls ------ //
+        // ------ Passover & Claw Position Controls ------ //
         if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
             deliveryPosition();
         } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
@@ -213,7 +212,7 @@ public class SingleDriverTeleOp extends OpMode {
             resetSlideEncoders();
         }
 
-        // ------ (GAMEPAD 1) Endgame Controls ------ //
+        // ------ Endgame Controls ------ //
         if (robot.currentGamepad1.back && !robot.previousGamepad1.back) {
             switch (endgameState) {
                 case DRONE:
