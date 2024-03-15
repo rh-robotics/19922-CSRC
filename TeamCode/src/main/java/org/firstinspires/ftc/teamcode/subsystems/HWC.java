@@ -60,7 +60,7 @@ public class HWC {
 
     // ------ Declare Sensors ------ //
     public ColorRangeSensor colorLeft, colorRight;
-    public DistanceSensor distanceLeft, distanceRight;
+    public DistanceSensor distLeft, distRight;
 
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
@@ -126,8 +126,8 @@ public class HWC {
         webcam = hardwareMap.get(WebcamName.class, "webcam");
         colorLeft = hardwareMap.get(ColorRangeSensor.class, "colorL");
         colorRight = hardwareMap.get(ColorRangeSensor.class, "colorR");
-        distanceLeft = hardwareMap.get(DistanceSensor.class, "distL");
-        distanceRight = hardwareMap.get(DistanceSensor.class, "distR");
+        distLeft = hardwareMap.get(DistanceSensor.class, "distL");
+        distRight = hardwareMap.get(DistanceSensor.class, "distR");
 
         // ------ Set Motor Directions ------ //
         if (!roadrunner) {
@@ -208,62 +208,6 @@ public class HWC {
         visionPortal = builder.build();
 
         tfod.setMinResultConfidence(0.75f);
-    }
-
-    // ------ Function to Align With Backboard ------ //
-    public void alignWithBackboard(int targetDist){
-        int distPLus = targetDist + 4;
-        int distMinus = targetDist - 4;
-
-        leftFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        rightFront.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        leftRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-        rightRear.setMode(DcMotorEx.RunMode.RUN_WITHOUT_ENCODER);
-
-        while (distPLus < distanceRight.getDistance(DistanceUnit.CM) || distanceRight.getDistance(DistanceUnit.CM) < distMinus || (distPLus < distanceLeft.getDistance(DistanceUnit.CM) || distanceLeft.getDistance(DistanceUnit.CM) < distMinus)){
-
-            telemetry.addData("Left Distance", distanceLeft.getDistance(DistanceUnit.CM));
-            telemetry.addData("Right Distance", distanceRight.getDistance(DistanceUnit.CM));
-            telemetry.addData("Right Power", rightRear.getPower());
-            telemetry.addData("Left Power", leftRear.getPower());
-            telemetry.update();
-            if (distPLus > distanceRight.getDistance(DistanceUnit.CM) && distanceRight.getDistance(DistanceUnit.CM) > distMinus){
-                rightRear.setPower(0);
-                rightFront.setPower(0);
-                if (distPLus > distanceLeft.getDistance(DistanceUnit.CM) && distanceLeft.getDistance(DistanceUnit.CM) > distMinus){
-                    leftFront.setPower(0);
-                    leftRear.setPower(0);
-                }
-                else{
-                    leftFront.setPower(.2);
-                    leftRear.setPower(0.2);
-                }
-            }
-            else if (distPLus > distanceLeft.getDistance(DistanceUnit.CM) && distanceLeft.getDistance(DistanceUnit.CM) > distMinus){
-                leftFront.setPower(0);
-                leftRear.setPower(0);
-                if (distPLus > distanceRight.getDistance(DistanceUnit.CM) && distanceRight.getDistance(DistanceUnit.CM) > distMinus){
-                    rightRear.setPower(0);
-                    rightFront.setPower(0);
-                }
-            }
-            else{
-                rightFront.setPower(-0.2);
-                rightRear.setPower(-0.2);
-                leftRear.setPower(0.2);
-                leftFront.setPower(0.2);
-            }
-            if (distPLus > distanceRight.getDistance(DistanceUnit.CM) && distanceRight.getDistance(DistanceUnit.CM) > distMinus && distPLus > distanceLeft.getDistance(DistanceUnit.CM) && distanceLeft.getDistance(DistanceUnit.CM) > distMinus){
-                rightRear.setPower(0);
-                rightFront.setPower(0);
-                leftFront.setPower(0);
-                leftRear.setPower(0);
-                break;
-            }
-            if (currentGamepad1.dpad_right){
-                break;
-            }
-        }
     }
 
     // ------ Function to add Telemetry for TensorFlow Object Detection ------ //
