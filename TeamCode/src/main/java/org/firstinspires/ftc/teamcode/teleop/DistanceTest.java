@@ -49,9 +49,9 @@ public class DistanceTest extends OpMode {
 
 
         if (gamepad1.dpad_left) {
-           aligning = true;
+            aligning = true;
         }
-        if (aligning){
+        if (aligning) {
             alignWithBackboard(19, 2);
         }
         if (gamepad1.dpad_right) {
@@ -74,11 +74,6 @@ public class DistanceTest extends OpMode {
     private void alignWithBackboard(int dist, int tolerance) {
         int distPlus = dist + tolerance;
         int distMinus = dist - tolerance;
-
-        if (robot.distRight.getDistance(DistanceUnit.CM) >= distMinus && robot.distRight.getDistance(DistanceUnit.CM )<= distMinus && robot.distLeft.getDistance(DistanceUnit.CM) >= distMinus && robot.distLeft.getDistance(DistanceUnit.CM )<= distMinus){
-
-        }
-
 
         if (distPlus >= robot.distRight.getDistance(DistanceUnit.CM) && robot.distRight.getDistance(DistanceUnit.CM) >= distMinus) {
             frontRightPower = 0;
@@ -110,6 +105,7 @@ public class DistanceTest extends OpMode {
             backLeftPower = 0.2;
             backRightPower = -0.2;
         }
+
         if (distPlus >= robot.distRight.getDistance(DistanceUnit.CM) && robot.distRight.getDistance(DistanceUnit.CM) >= distMinus && distPlus >= robot.distLeft.getDistance(DistanceUnit.CM) && robot.distLeft.getDistance(DistanceUnit.CM) >= distMinus) {
             frontLeftPower = 0;
             backLeftPower = 0;
@@ -144,5 +140,4 @@ public class DistanceTest extends OpMode {
 
 
     }
-
 }
