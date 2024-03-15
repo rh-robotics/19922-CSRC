@@ -152,7 +152,7 @@ public class AutonomousV2_5 extends OpMode {
 
                 // Knock Pixel Stack
                 knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .splineToLinearHeading(new Pose2d(-63, -18, Math.toRadians(220)), Math.toRadians(220))
+                        .splineToLinearHeading(new Pose2d(-63, -36, Math.toRadians(180)), Math.toRadians(220))
                         .build();
 
                 // Intake Pixels (1)
