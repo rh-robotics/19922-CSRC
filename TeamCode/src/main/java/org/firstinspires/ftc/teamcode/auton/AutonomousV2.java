@@ -13,6 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.teleop.SingleDriverTeleOp;
 
 @Autonomous(name = "AutonomousV2")
 public class AutonomousV2 extends OpMode {
@@ -136,7 +137,7 @@ public class AutonomousV2 extends OpMode {
 
                 // Drive to Backboard from Left
                 toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(49, -28, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(49, -30, Math.toRadians(180)))
                         .build();
 
                 // Drive to Pixel Stack from Center
@@ -192,7 +193,7 @@ public class AutonomousV2 extends OpMode {
                         .setReversed(true)
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(0))
                         .splineTo(new Vector2d(24, -48), Math.toRadians(0+40))
-                        .splineTo(new Vector2d(47, -35), Math.toRadians(0))
+                        .splineTo(new Vector2d(45, -35), Math.toRadians(0))
                         .build();
 
                 // Drive to Park
@@ -526,9 +527,9 @@ public class AutonomousV2 extends OpMode {
 
     // Deliver Backboard
     private void deliveringBackboard() {
-        // ------ Close Claws if not closed already ------ //
-        robot.clawL.setPosition(0.5);
-        robot.clawR.setPosition(0.5);
+        // ------ Close Claws (fully to extremes) if not closed already ------ //
+        robot.clawL.setPosition(0);
+        robot.clawR.setPosition(1);
 
         // ------ If Intake is on Turn it Off ------ //
         robot.intakeMotor.setPower(0);
@@ -592,21 +593,17 @@ public class AutonomousV2 extends OpMode {
     // Method to Check Claws & Close
     private void checkClaws() {
         // Close Claws when Pixel Detected
-        boolean leftFull = false;
-        boolean rightFull = false;
-        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1.25) {
+        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
             robot.clawL.setPosition(0.5);
-            leftFull = true;
         }
 
         if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
             robot.clawR.setPosition(0.5);
-            rightFull = true;
         }
 
-        // If both Pixels are Detected, Reverse Intake
-        if (leftFull && rightFull) {
-            robot.intakeMotor.setPower(1);
+        // If both Pixels are Detected, Stop Intake
+        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1.5 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1.5) {
+           robot.intakeMotor.setPower(0);
         }
     }
 
