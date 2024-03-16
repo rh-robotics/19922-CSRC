@@ -20,13 +20,14 @@ public class SingleDriverTeleOp extends OpMode {
     private enum EndgameState {DRONE, SLIDES_UP, CLIMB}
     
     // ------ Aligning Boolean ------ //
-    private boolean aligning = false;
+    private enum AligningState {ALIGNING, DRIVING}
 
     // ------ Declare Others ------ //
     private HWC robot;
     private MultiplierSelection selection = MultiplierSelection.TURN_SPEED;
     private IntakeState intakeState = IntakeState.OFF;
     private EndgameState endgameState = EndgameState.DRONE;
+    private AligningState aligningState = AligningState.DRIVING;
     private boolean testingMode = false;
     private double turnSpeed = 0.5; // Speed multiplier for turning
     private double driveSpeed = 1; // Speed multiplier for driving
@@ -111,8 +112,14 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ Enabling Testing Mode ------ //
-        if ((robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) && (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper)) {
+        if ((robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) && (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper)) {
             testingMode = !testingMode;
+        }
+
+        // ------ Telemetry ------ //
+        if (testingMode) {
+            telemetry.addData("> TESTING MODE IS ENABLED", "Extra Telemetry is Displayed");
+            telemetry.addLine();
         }
 
         telemetry.addData("Press A to start changing turn speed", "");
@@ -142,15 +149,9 @@ public class SingleDriverTeleOp extends OpMode {
         double drive = -robot.currentGamepad1.left_stick_y;
         double strafe = robot.currentGamepad1.left_stick_x;
         double turn = (robot.currentGamepad1.left_trigger - robot.currentGamepad1.right_trigger) * turnSpeed;
+        double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(turn), 1);
         passoverPosition = robot.passoverArmLeft.getPosition();
         wristPosition = robot.wrist.getPosition();
-
-        // ------ Calculate Drive Power ------ //
-        double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(turn), 1);
-        frontLeftPower = (turn - strafe - drive) / denominator;
-        backLeftPower = (turn + strafe - drive) / denominator;
-        frontRightPower = (turn - strafe + drive) / denominator;
-        backRightPower = (turn + strafe + drive) / denominator;
 
         // ------ Claw Controls ------ //
         if (robot.currentGamepad1.x && !robot.previousGamepad1.x) {
@@ -181,9 +182,9 @@ public class SingleDriverTeleOp extends OpMode {
             // Increment Value
             slideHeight++;
 
-            // If value is above 2, don't increase
-            if (slideHeight > 3) {
-                slideHeight = 3;
+            // If value is above the max, don't increase
+            if (slideHeight > HWC.slidePositions.length - 1) {
+                slideHeight = HWC.slidePositions.length - 1;
             }
         }
         if (robot.currentGamepad1.dpad_down && !robot.previousGamepad1.dpad_down) {
@@ -196,13 +197,6 @@ public class SingleDriverTeleOp extends OpMode {
             }
         }
 
-        // ------ Passover & Claw Position Controls ------ //
-        if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
-            deliveryPosition();
-        } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
-            intakePosition();
-        }
-
         // ------ Manual Slide Control ------ //
         robot.pulleyLComponent.incrementTarget(robot.currentGamepad1.right_stick_y * -100);
         robot.pulleyRComponent.incrementTarget(robot.currentGamepad1.right_stick_y * -100);
@@ -210,6 +204,18 @@ public class SingleDriverTeleOp extends OpMode {
         // ------ Reset Pulley Encoders ------ //
         if (robot.currentGamepad1.right_stick_button && !robot.previousGamepad1.right_stick_button) {
             resetSlideEncoders();
+        }
+
+        // ------ Start Alignment with Backboard ------ //
+        if (robot.currentGamepad1.left_stick_button && !robot.previousGamepad1.left_stick_button) {
+            aligningState = AligningState.ALIGNING;
+        }
+
+        // ------ Passover & Claw Position Controls ------ //
+        if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
+            deliveryPosition();
+        } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
+            intakePosition();
         }
 
         // ------ Endgame Controls ------ //
@@ -295,6 +301,19 @@ public class SingleDriverTeleOp extends OpMode {
                 robot.pulleyRComponent.setTarget(HWC.slidePositions[4]);
         }
 
+        // ------ Alignment / Driving ------ //
+        switch (aligningState) {
+            case DRIVING:
+                frontLeftPower = (turn - strafe - drive) / denominator;
+                backLeftPower = (turn + strafe - drive) / denominator;
+                frontRightPower = (turn - strafe + drive) / denominator;
+                backRightPower = (turn + strafe + drive) / denominator;
+                break;
+            case ALIGNING:
+                alignWithBackboard();
+                break;
+        }
+
         // ------ Run Motors ------ //
         robot.leftFront.setPower(frontLeftPower);
         robot.leftRear.setPower(backLeftPower);
@@ -314,6 +333,7 @@ public class SingleDriverTeleOp extends OpMode {
         telemetry.addData("> Status", "Running");
         telemetry.addData("Intake State", intakeState);
         telemetry.addData("Endgame State", endgameState);
+        telemetry.addData("Aligning State", aligningState);
         telemetry.addData("Slide Height", slideHeight);
 
         // ------ Testing Mode Telemetry ------ //
@@ -363,9 +383,9 @@ public class SingleDriverTeleOp extends OpMode {
         robot.rightPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    private void alignWithBackboard(int dist, int tolerance) {
-        int distPlus = dist + tolerance;
-        int distMinus = dist - tolerance;
+    private void alignWithBackboard() {
+        int distPlus = 19 + 2;
+        int distMinus = 19 - 2;
 
         if (distPlus >= robot.distRight.getDistance(DistanceUnit.CM) && robot.distRight.getDistance(DistanceUnit.CM) >= distMinus) {
             frontRightPower = 0;
@@ -374,7 +394,7 @@ public class SingleDriverTeleOp extends OpMode {
             if (distPlus >= robot.distLeft.getDistance(DistanceUnit.CM) && robot.distLeft.getDistance(DistanceUnit.CM) >= distMinus) {
                 frontLeftPower = 0;
                 backLeftPower = 0;
-                aligning = false;
+                aligningState = AligningState.DRIVING;
             } else if (robot.distRight.getDistance(DistanceUnit.CM) < distMinus) {
                 frontLeftPower = 0.3;
                 backLeftPower = 0.3;
@@ -386,7 +406,7 @@ public class SingleDriverTeleOp extends OpMode {
             if (distPlus >= robot.distRight.getDistance(DistanceUnit.CM) && robot.distRight.getDistance(DistanceUnit.CM) >= distMinus) {
                 frontRightPower = 0;
                 backRightPower = 0;
-                aligning = false;
+                aligningState = AligningState.DRIVING;
             } else if (robot.distRight.getDistance(DistanceUnit.CM) > distPlus) {
                 frontRightPower = -0.3;
                 backRightPower = -0.3;
@@ -403,7 +423,7 @@ public class SingleDriverTeleOp extends OpMode {
             backLeftPower = 0;
             frontRightPower = 0;
             backRightPower = 0;
-            aligning = false;
+            aligningState = AligningState.DRIVING;
         } else {
             if (distMinus > robot.distRight.getDistance(DistanceUnit.CM) && distMinus > robot.distLeft.getDistance(DistanceUnit.CM)) {
                 frontLeftPower = -0.2;
@@ -416,7 +436,6 @@ public class SingleDriverTeleOp extends OpMode {
                 frontRightPower = 0.3;
                 backRightPower = 0.3;
             } else if (distMinus > robot.distLeft.getDistance(DistanceUnit.CM)) {
-
                 frontLeftPower = -0.3;
                 backLeftPower = -0.3;
                 frontRightPower = 0;
