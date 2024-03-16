@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
 
-@Autonomous(name = "AutonomousV2")
+@Autonomous(name = "CenterAutonomousV2")
 public class CenterAutonomousV2 extends OpMode {
     // ------ State Enum ------ //
     private enum State {
@@ -94,13 +94,12 @@ public class CenterAutonomousV2 extends OpMode {
         elementLocation = robot.detectElement(allianceColor);
 
         // ------ Alliance Color Selection ------ //
-        if (robot.currentGamepad1.a && !robot.previousGamepad1.a ) {
-           if (allianceColor.equals(AllianceColor.RED)) {
-               allianceColor = AllianceColor.BLUE;
-           } else {
-               allianceColor = AllianceColor.RED;
-           }
+        if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
+            allianceColor = allianceColor.equals(AllianceColor.RED) ? AllianceColor.BLUE : AllianceColor.RED;
         }
+
+        telemetry.addLine("Color Selected");
+        telemetry.update();
 
         // ------ Set Trajectories based on Alliance Color ------ //
         switch(allianceColor) {

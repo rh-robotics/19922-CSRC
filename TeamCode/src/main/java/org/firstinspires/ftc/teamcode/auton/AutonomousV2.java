@@ -13,7 +13,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
 import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
-import org.firstinspires.ftc.teamcode.teleop.SingleDriverTeleOp;
 
 @Autonomous(name = "AutonomousV2")
 public class AutonomousV2 extends OpMode {
@@ -91,17 +90,22 @@ public class AutonomousV2 extends OpMode {
         robot.currentGamepad1.copy(gamepad1);
         robot.currentGamepad2.copy(gamepad2);
 
+        telemetry.addLine("Gamepad");
+        telemetry.update();
+
         // ------ Save Element Position ------ //
         elementLocation = robot.detectElement(allianceColor);
 
+        telemetry.addLine("Element  detected");
+        telemetry.update();
+
         // ------ Alliance Color Selection ------ //
-        if (robot.currentGamepad1.a && !robot.previousGamepad1.a ) {
-           if (allianceColor.equals(AllianceColor.RED)) {
-               allianceColor = AllianceColor.BLUE;
-           } else {
-               allianceColor = AllianceColor.RED;
-           }
+        if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
+            allianceColor = allianceColor.equals(AllianceColor.RED) ? AllianceColor.BLUE : AllianceColor.RED;
         }
+
+        telemetry.addLine("Alliance Color selected");
+        telemetry.update();
 
         // ------ Set Trajectories based on Alliance Color ------ //
         switch(allianceColor) {
@@ -117,7 +121,8 @@ public class AutonomousV2 extends OpMode {
 
                 // Drive to Right Line
                 toDepositRight = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .splineToLinearHeading(new Pose2d(22, -43,Math.toRadians(180+45)), Math.toRadians(180+45))
+                        .strafeTo(new Vector2d(22, -43))
+                        //.splineToLinearHeading(new Pose2d(22, -43,Math.toRadians(180+45)), Math.toRadians(180+45))
                         .build();
 
                 // Drive to Left Line
@@ -603,7 +608,7 @@ public class AutonomousV2 extends OpMode {
 
         // If both Pixels are Detected, Stop Intake
         if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1.5 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1.5) {
-           robot.intakeMotor.setPower(0);
+           robot.intakeMotor.setPower(-1);
         }
     }
 
