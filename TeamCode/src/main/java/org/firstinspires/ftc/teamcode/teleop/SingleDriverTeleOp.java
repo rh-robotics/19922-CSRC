@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
@@ -15,16 +14,20 @@ import org.firstinspires.ftc.teamcode.teleop.enums.MultiplierSelection;
 @TeleOp(name = "Single Driver", group = "Primary OpModes")
 public class SingleDriverTeleOp extends OpMode {
     // ------ Intake State Enum ------ //
-    private enum IntakeState { INTAKE, OFF, OUTTAKE }
+    private enum IntakeState {INTAKE, OFF, OUTTAKE}
 
     // ------ Endgame State Enum ------ //
-    private enum EndgameState { DRONE, SLIDES_UP, CLIMB }
+    private enum EndgameState {DRONE, SLIDES_UP, CLIMB}
+
+    // ------ Aligning Boolean ------ //
+    private enum AligningState {ALIGNING, DRIVING}
 
     // ------ Declare Others ------ //
     private HWC robot;
     private MultiplierSelection selection = MultiplierSelection.TURN_SPEED;
     private IntakeState intakeState = IntakeState.OFF;
     private EndgameState endgameState = EndgameState.DRONE;
+    private AligningState aligningState = AligningState.DRIVING;
     private boolean testingMode = false;
     private double turnSpeed = 0.5; // Speed multiplier for turning
     private double driveSpeed = 1; // Speed multiplier for driving
@@ -34,6 +37,10 @@ public class SingleDriverTeleOp extends OpMode {
     private int slideHeight = 0;
     private double passoverPosition = HWC.passoverIntakePos;
     private double wristPosition = HWC.wristIntakePos;
+    private double frontLeftPower;
+    private double frontRightPower;
+    private double backLeftPower;
+    private double backRightPower;
 
     @Override
     public void init() {
@@ -56,12 +63,11 @@ public class SingleDriverTeleOp extends OpMode {
         robot.passoverArmLeft.setPosition(HWC.passoverIntakePos);
         robot.passoverArmRight.setPosition(HWC.passoverIntakePos);
 
-        // ------ Set Pulley Run Modes ------ //
-        robot.leftPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.rightPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // ------ Reset Pulley Encoder Positions ------ //
+        resetSlideEncoders();
 
         // ------ Telemetry ------ //
-        telemetry.addData("Status", "Initialized");
+        telemetry.addData("> Status", "Initialized");
         telemetry.update();
     }
 
@@ -69,9 +75,7 @@ public class SingleDriverTeleOp extends OpMode {
     public void init_loop() {
         // ------ GamePad Updates ------ //
         robot.previousGamepad1.copy(robot.currentGamepad1);
-        robot.previousGamepad2.copy(robot.currentGamepad2);
         robot.currentGamepad1.copy(gamepad1);
-        robot.currentGamepad2.copy(gamepad2);
 
         // ------ Speed Multiplier Selection ------ //
         if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
@@ -108,13 +112,13 @@ public class SingleDriverTeleOp extends OpMode {
         }
 
         // ------ Enabling Testing Mode ------ //
-        if ((robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) && (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper)) {
+        if ((robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) && (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper)) {
             testingMode = !testingMode;
         }
 
         // ------ Telemetry ------ //
         if (testingMode) {
-            telemetry.addData("TESTING MODE IS ENABLED. CONTROLLER OUTPUTS WILL BE SHOWN.", "");
+            telemetry.addData("> TESTING MODE IS ENABLED", "Extra Telemetry is Displayed");
             telemetry.addLine();
         }
 
@@ -139,29 +143,23 @@ public class SingleDriverTeleOp extends OpMode {
     public void loop() {
         // ------ GamePad Updates ------ //
         robot.previousGamepad1.copy(robot.currentGamepad1);
-        robot.previousGamepad2.copy(robot.currentGamepad2);
         robot.currentGamepad1.copy(gamepad1);
-        robot.currentGamepad2.copy(gamepad2);
 
         // ------ Power & Controller Values ------ //
-        double frontLeftPower;
-        double frontRightPower;
-        double backLeftPower;
-        double backRightPower;
         double drive = -robot.currentGamepad1.left_stick_y;
         double strafe = robot.currentGamepad1.left_stick_x;
         double turn = (robot.currentGamepad1.left_trigger - robot.currentGamepad1.right_trigger) * turnSpeed;
-        passoverPosition = robot.passoverArmLeft.getPosition();
-        wristPosition = robot.wrist.getPosition();
 
-        // ------ Calculate Drive Power ------ //
         double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(turn), 1);
         frontLeftPower = (turn - strafe - drive) / denominator;
         backLeftPower = (turn + strafe - drive) / denominator;
         frontRightPower = (turn - strafe + drive) / denominator;
         backRightPower = (turn + strafe + drive) / denominator;
 
-        // ------ (GAMEPAD 1) Claw Controls ------ //
+        passoverPosition = robot.passoverArmLeft.getPosition();
+        wristPosition = robot.wrist.getPosition();
+
+        // ------ Claw Controls ------ //
         if (robot.currentGamepad1.x && !robot.previousGamepad1.x) {
             robot.toggleClaw('L');
         }
@@ -169,7 +167,7 @@ public class SingleDriverTeleOp extends OpMode {
             robot.toggleClaw('R');
         }
 
-        // ------ (GAMEPAD 1) Intake Toggle Controls ------ //
+        // ------ Intake Toggle Controls ------ //
         if (robot.currentGamepad1.right_bumper && !robot.previousGamepad1.right_bumper) {
             if (intakeState == IntakeState.INTAKE || intakeState == IntakeState.OUTTAKE) {
                 intakeState = IntakeState.OFF;
@@ -177,7 +175,6 @@ public class SingleDriverTeleOp extends OpMode {
                 intakeState = IntakeState.INTAKE;
             }
         }
-
         if (robot.currentGamepad1.left_bumper && !robot.previousGamepad1.left_bumper) {
             if (intakeState == IntakeState.INTAKE || intakeState == IntakeState.OUTTAKE) {
                 intakeState = IntakeState.OFF;
@@ -186,9 +183,46 @@ public class SingleDriverTeleOp extends OpMode {
             }
         }
 
-        // ------ (GAMEPAD 1) Endgame Controls ------ //
-        if(robot.currentGamepad1.back && !robot.previousGamepad1.back) {
-            switch(endgameState) {
+        // ------ Slide Position Controls ------ //
+        if (robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
+            // Increment Value
+            slideHeight++;
+
+            // If value is above the max, don't increase
+            if (slideHeight > HWC.slidePositions.length - 1) {
+                slideHeight = HWC.slidePositions.length - 1;
+            }
+        }
+        if (robot.currentGamepad1.dpad_down && !robot.previousGamepad1.dpad_down) {
+            // Increment Value
+            slideHeight--;
+
+            // If value is below 0, don't decrease
+            if (slideHeight < 0) {
+                slideHeight = 0;
+            }
+        }
+
+        // ------ Reset Pulley Encoders ------ //
+        if (robot.currentGamepad1.right_stick_button && !robot.previousGamepad1.right_stick_button) {
+            resetSlideEncoders();
+        }
+
+        // ------ Start Alignment with Backboard ------ //
+        if (robot.currentGamepad1.left_stick_button && !robot.previousGamepad1.left_stick_button) {
+            aligningState = AligningState.ALIGNING;
+        }
+
+        // ------ Passover & Claw Position Controls ------ //
+        if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
+            deliveryPosition();
+        } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
+            intakePosition();
+        }
+
+        // ------ Endgame Controls ------ //
+        if (robot.currentGamepad1.back && !robot.previousGamepad1.back) {
+            switch (endgameState) {
                 case DRONE:
                     // Launch Drone
                     robot.drone.setPosition(HWC.droneLaunchPos);
@@ -199,7 +233,7 @@ public class SingleDriverTeleOp extends OpMode {
                     break;
                 case SLIDES_UP:
                     // Set Slide Height
-                    slideHeight = 4;
+                    slideHeight = 5;
 
                     // Set Next State
                     endgameState = EndgameState.CLIMB;
@@ -213,82 +247,14 @@ public class SingleDriverTeleOp extends OpMode {
             }
         }
 
-        // ------ (GAMEPAD 1) Slide Position Controls ------ //
-        if (robot.currentGamepad1.dpad_up && !robot.previousGamepad1.dpad_up) {
-            // Increment Value
-            slideHeight++;
-
-            // If value is above 2, don't increase
-            if (slideHeight > HWC.slidePositions.length - 1) {
-                slideHeight = HWC.slidePositions.length - 1;
-            }
-        }
-
-        if (robot.currentGamepad1.dpad_down && !robot.previousGamepad1.dpad_down) {
-            // Increment Value
-            slideHeight--;
-
-            // If value is below 0, don't decrease
-            if (slideHeight < 0) {
-                slideHeight = 0;
-            }
-        }
-
-        // ------ (GAMEPAD 1) Passover & Claw Position Controls ------ //
-        if (robot.currentGamepad1.b && !robot.previousGamepad1.b) {
-            deliveryPosition();
-        } else if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
-            intakePosition();
-        }
-
-        // ------ (GAMEPAD 2) MANUAL Passover Controls ------ //
-        if (robot.currentGamepad2.right_bumper && !robot.previousGamepad2.right_bumper) {
-            passoverPosition += 0.05;
-        } else if (robot.currentGamepad2.left_bumper && !robot.previousGamepad2.left_bumper) {
-            passoverPosition -= 0.05;
-        }
-
-        // ------ (GAMEPAD 2) MANUAL Wrist Controls ------ //
-        if (robot.currentGamepad2.dpad_up && !robot.previousGamepad2.dpad_up) {
-            wristPosition += 0.05;
-        } else if (robot.currentGamepad2.dpad_down && !robot.previousGamepad2.dpad_down) {
-            wristPosition -= 0.05;
-        }
-
-        // ------ Run Motors ------ //
-        robot.leftFront.setPower(frontLeftPower);
-        robot.leftRear.setPower(backLeftPower);
-        robot.rightFront.setPower(frontRightPower);
-        robot.rightRear.setPower(backRightPower);
-
-        // ------ Run Servos ------ //
-        robot.passoverArmLeft.setPosition(passoverPosition);
-        robot.passoverArmRight.setPosition(passoverPosition);
-        robot.wrist.setPosition(wristPosition);
-
-        // ------ Set Slides to Move Using PID ------ //
-        robot.pulleyLComponent.moveUsingPID();
-        robot.pulleyRComponent.moveUsingPID();
-
         // -------- Check Intake State & Run Intake ------ //
         switch (intakeState) {
             case INTAKE:
                 // Set Power
                 robot.intakeMotor.setPower(-1);
 
-                // Close Claws when Pixel Detected
-                if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
-                    robot.clawL.setPosition(0.5);
-                }
-
-                if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
-                    robot.clawR.setPosition(0.5);
-                }
-
-                // If both Pixels are Detected, Stop Intake
-                if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1) {
-                    intakeState = IntakeState.OFF;
-                }
+                // Check Intake
+                detectIntake();
 
                 break;
             case OFF:
@@ -303,74 +269,60 @@ public class SingleDriverTeleOp extends OpMode {
                 break;
         }
 
-        // ------ Set Slide Positions ------ //
-        switch (slideHeight) {
-            case 0:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[0]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[0]);
+        // ------ Alignment / Driving ------ //
+        switch (aligningState) {
+            case DRIVING:
                 break;
-            case 1:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[1]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[1]);
+            case ALIGNING:
+                alignWithBackboard();
                 break;
-            case 2:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[2]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[2]);
-                break;
-            case 3:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[3]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[3]);
-                break;
-            case 4:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[4]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[4]);
         }
 
+        // ------ Set Slide Positions ------ //
+        robot.pulleyLComponent.setTarget(HWC.slidePositions[slideHeight]);
+        robot.pulleyRComponent.setTarget(HWC.slidePositions[slideHeight]);
+
+        // ------ Run Motors ------ //
+        robot.leftFront.setPower(frontLeftPower);
+        robot.leftRear.setPower(backLeftPower);
+        robot.rightFront.setPower(frontRightPower);
+        robot.rightRear.setPower(backRightPower);
+
+        // ------ Run Servos ------ //
+        robot.passoverArmLeft.setPosition(passoverPosition);
+        robot.passoverArmRight.setPosition(passoverPosition);
+        robot.wrist.setPosition(wristPosition);
+
+        // ------ Run Slides Using PID ------ //
+        robot.pulleyLComponent.moveUsingPID();
+        robot.pulleyRComponent.moveUsingPID();
+
         // ------ Telemetry Updates ------ //
-        telemetry.addData("Status", "Running");
+        telemetry.addData("> Status", "Running");
         telemetry.addData("Intake State", intakeState);
         telemetry.addData("Endgame State", endgameState);
+        telemetry.addData("Aligning State", aligningState);
         telemetry.addData("Slide Height", slideHeight);
 
         // ------ Testing Mode Telemetry ------ //
         if (testingMode) {
             telemetry.addLine();
-            telemetry.addData(">", "Gamepad Information");
-            telemetry.addData("Gamepad 1 Left Stick X", robot.currentGamepad1.left_stick_x);
-            telemetry.addData("Gamepad 1 Left Stick Y", robot.currentGamepad1.left_stick_y);
-            telemetry.addData("Gamepad 1 Right Stick X", robot.currentGamepad1.right_stick_x);
-            telemetry.addData("Gamepad 1 Right Stick Y", robot.currentGamepad1.right_stick_y);
-            telemetry.addData("Gamepad 1 Left Trigger", robot.currentGamepad1.left_trigger);
-            telemetry.addData("Gamepad 1 Right Trigger", robot.currentGamepad1.right_trigger);
-            telemetry.addData("Gamepad 1 Left Bumper", robot.currentGamepad1.left_bumper);
-            telemetry.addData("Gamepad 1 Right Bumper", robot.currentGamepad1.right_bumper);
-            telemetry.addData("Gamepad 1 D-Pad Up", robot.currentGamepad1.dpad_up);
-            telemetry.addData("Gamepad 1 D-Pad Down", robot.currentGamepad1.dpad_down);
-            telemetry.addData("Gamepad 1 D-Pad Left", robot.currentGamepad1.dpad_left);
-            telemetry.addData("Gamepad 1 D-Pad Right", robot.currentGamepad1.dpad_right);
-            telemetry.addData("Gamepad 1 A", robot.currentGamepad1.a);
-            telemetry.addData("Gamepad 1 B", robot.currentGamepad1.b);
-            telemetry.addData("Gamepad 1 X", robot.currentGamepad1.x);
-            telemetry.addData("Gamepad 1 Y", robot.currentGamepad1.y);
-            telemetry.addData("Gamepad 1 Back", robot.currentGamepad1.back);
+            telemetry.addData("> Testing Mode", "Enabled");
+            telemetry.addData("Left Distance", robot.distLeft.getDistance(DistanceUnit.CM));
+            telemetry.addData("Right Distance", robot.distRight.getDistance(DistanceUnit.CM));
+            telemetry.addData("Passover Position", passoverPosition);
+            telemetry.addData("Wrist Position", wristPosition);
+            telemetry.addData("Slide L Position", robot.leftPulley.getCurrentPosition());
+            telemetry.addData("Slide R Position", robot.rightPulley.getCurrentPosition());
+            telemetry.addData("Slide L Target", robot.pulleyLComponent.getTarget());
+            telemetry.addData("Slide R Target", robot.pulleyRComponent.getTarget());
+            telemetry.addData("Front Left Power", frontLeftPower);
+            telemetry.addData("Front Right Power", frontRightPower);
+            telemetry.addData("Back Left Power", backLeftPower);
+            telemetry.addData("Back Right Power", backRightPower);
+            telemetry.addData("Color Left Distance", robot.colorLeft.getDistance(DistanceUnit.CM));
+            telemetry.addData("Color Right Distance", robot.colorRight.getDistance(DistanceUnit.CM));
 
-            telemetry.addData("Gamepad 2 Left Stick X", robot.currentGamepad2.left_stick_x);
-            telemetry.addData("Gamepad 2 Left Stick Y", robot.currentGamepad2.left_stick_y);
-            telemetry.addData("Gamepad 2 Right Stick X", robot.currentGamepad2.right_stick_x);
-            telemetry.addData("Gamepad 2 Right Stick Y", robot.currentGamepad2.right_stick_y);
-            telemetry.addData("Gamepad 2 Left Trigger", robot.currentGamepad2.left_bumper);
-            telemetry.addData("Gamepad 2 Right Trigger", robot.currentGamepad2.right_bumper);
-            telemetry.addData("Gamepad 2 Left Bumper", robot.currentGamepad2.left_bumper);
-            telemetry.addData("Gamepad 2 Right Bumper", robot.currentGamepad2.right_bumper);
-            telemetry.addData("Gamepad 2 D-Pad Up", robot.currentGamepad2.dpad_up);
-            telemetry.addData("Gamepad 2 D-Pad Down", robot.currentGamepad2.dpad_down);
-            telemetry.addData("Gamepad 2 D-Pad Left", robot.currentGamepad2.dpad_left);
-            telemetry.addData("Gamepad 2 D-Pad Right", robot.currentGamepad2.dpad_right);
-            telemetry.addData("Gamepad 2 A", robot.currentGamepad2.a);
-            telemetry.addData("Gamepad 2 B", robot.currentGamepad2.b);
-            telemetry.addData("Gamepad 2 X", robot.currentGamepad2.x);
-            telemetry.addData("Gamepad 2 Y", robot.currentGamepad2.y);
-            telemetry.addData("Gamepad 2 Back", robot.currentGamepad2.back);
         }
         telemetry.update();
     }
@@ -379,7 +331,9 @@ public class SingleDriverTeleOp extends OpMode {
         wristPosition = HWC.wristDeliveryPos;
         passoverPosition = HWC.passoverDeliveryPos;
 
-        if(slideHeight == 0) { slideHeight = 1; }
+        if (slideHeight == 0) {
+            slideHeight = 1;
+        }
     }
 
     private void intakePosition() {
@@ -390,5 +344,93 @@ public class SingleDriverTeleOp extends OpMode {
         robot.clawR.setPosition(0);
 
         slideHeight = 0;
+    }
+
+    private void resetSlideEncoders() {
+        // Reset Encoders
+        robot.leftPulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.rightPulley.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // Run Without Encoders
+        robot.leftPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.rightPulley.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    private void alignWithBackboard() {
+        int distPlus = 17 + 2;
+        int distMinus = 17 - 2;
+
+        if (distPlus >= robot.distRight.getDistance(DistanceUnit.CM) && robot.distRight.getDistance(DistanceUnit.CM) >= distMinus) {
+            frontRightPower = 0;
+            backRightPower = 0;
+
+            if (distPlus >= robot.distLeft.getDistance(DistanceUnit.CM) && robot.distLeft.getDistance(DistanceUnit.CM) >= distMinus) {
+                frontLeftPower = 0;
+                backLeftPower = 0;
+                aligningState = AligningState.DRIVING;
+            } else if (robot.distRight.getDistance(DistanceUnit.CM) < distMinus) {
+                frontLeftPower = 0.3;
+                backLeftPower = 0.3;
+            }
+        } else if (distPlus >= robot.distLeft.getDistance(DistanceUnit.CM) && robot.distLeft.getDistance(DistanceUnit.CM) >= distMinus) {
+            frontLeftPower = 0;
+            backLeftPower = 0;
+
+            if (distPlus >= robot.distRight.getDistance(DistanceUnit.CM) && robot.distRight.getDistance(DistanceUnit.CM) >= distMinus) {
+                frontRightPower = 0;
+                backRightPower = 0;
+                aligningState = AligningState.DRIVING;
+            } else if (robot.distRight.getDistance(DistanceUnit.CM) > distPlus) {
+                frontRightPower = -0.3;
+                backRightPower = -0.3;
+            }
+        } else {
+            frontLeftPower = 0.2;
+            frontRightPower = -0.2;
+            backLeftPower = 0.2;
+            backRightPower = -0.2;
+        }
+
+        if (distPlus >= robot.distRight.getDistance(DistanceUnit.CM) && robot.distRight.getDistance(DistanceUnit.CM) >= distMinus && distPlus >= robot.distLeft.getDistance(DistanceUnit.CM) && robot.distLeft.getDistance(DistanceUnit.CM) >= distMinus) {
+            frontLeftPower = 0;
+            backLeftPower = 0;
+            frontRightPower = 0;
+            backRightPower = 0;
+            aligningState = AligningState.DRIVING;
+        } else {
+            if (distMinus > robot.distRight.getDistance(DistanceUnit.CM) && distMinus > robot.distLeft.getDistance(DistanceUnit.CM)) {
+                frontLeftPower = -0.2;
+                backLeftPower = -0.2;
+                frontRightPower = 0.2;
+                backRightPower = 0.2;
+            } else if (distMinus > robot.distRight.getDistance(DistanceUnit.CM)) {
+                frontLeftPower = 0;
+                backLeftPower = 0;
+                frontRightPower = 0.3;
+                backRightPower = 0.3;
+            } else if (distMinus > robot.distLeft.getDistance(DistanceUnit.CM)) {
+                frontLeftPower = -0.3;
+                backLeftPower = -0.3;
+                frontRightPower = 0;
+                backRightPower = 0;
+            }
+
+        }
+    }
+
+    private void detectIntake() {
+        // Close Claws when Pixel Detected
+        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
+            robot.clawL.setPosition(0.5);
+        }
+
+        if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
+            robot.clawR.setPosition(0.5);
+        }
+
+        // If both Pixels are Detected, Stop Intake
+        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1.5 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1.5) {
+            intakeState = IntakeState.OFF;
+        }
     }
 }

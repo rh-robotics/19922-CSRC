@@ -4,12 +4,10 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
-import com.qualcomm.robotcore.hardware.AnalogInput;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorRangeSensor;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -17,6 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.pid.RobotComponents;
@@ -41,7 +40,7 @@ public class HWC {
     }
 
     // ------ Declare Slide Positions ------ //
-    public static int[] slidePositions = { 0, -200, -482, -2110, -3460};
+    public static int[] slidePositions = { 0, -200, -482, -2110, -3460, -4250};
 
     // ------ Declare Servo Positions ------ //
     public static double passoverDeliveryPos = 0.2;
@@ -61,6 +60,7 @@ public class HWC {
 
     // ------ Declare Sensors ------ //
     public ColorRangeSensor colorLeft, colorRight;
+    public DistanceSensor distLeft, distRight;
 
     // ------ Declare Gamepads ------ //
     public Gamepad currentGamepad1 = new Gamepad();
@@ -126,6 +126,8 @@ public class HWC {
         webcam = hardwareMap.get(WebcamName.class, "webcam");
         colorLeft = hardwareMap.get(ColorRangeSensor.class, "colorL");
         colorRight = hardwareMap.get(ColorRangeSensor.class, "colorR");
+        distLeft = hardwareMap.get(DistanceSensor.class, "distL");
+        distRight = hardwareMap.get(DistanceSensor.class, "distR");
 
         // ------ Set Motor Directions ------ //
         if (!roadrunner) {
