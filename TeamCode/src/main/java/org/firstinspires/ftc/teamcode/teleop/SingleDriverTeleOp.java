@@ -18,7 +18,7 @@ public class SingleDriverTeleOp extends OpMode {
 
     // ------ Endgame State Enum ------ //
     private enum EndgameState {DRONE, SLIDES_UP, CLIMB}
-    
+
     // ------ Aligning Boolean ------ //
     private enum AligningState {ALIGNING, DRIVING}
 
@@ -149,7 +149,13 @@ public class SingleDriverTeleOp extends OpMode {
         double drive = -robot.currentGamepad1.left_stick_y;
         double strafe = robot.currentGamepad1.left_stick_x;
         double turn = (robot.currentGamepad1.left_trigger - robot.currentGamepad1.right_trigger) * turnSpeed;
+
         double denominator = Math.max(Math.abs(drive) + Math.abs(strafe) + Math.abs(turn), 1);
+        frontLeftPower = (turn - strafe - drive) / denominator;
+        backLeftPower = (turn + strafe - drive) / denominator;
+        frontRightPower = (turn - strafe + drive) / denominator;
+        backRightPower = (turn + strafe + drive) / denominator;
+
         passoverPosition = robot.passoverArmLeft.getPosition();
         wristPosition = robot.wrist.getPosition();
 
@@ -197,10 +203,6 @@ public class SingleDriverTeleOp extends OpMode {
             }
         }
 
-        // ------ Manual Slide Control ------ //
-        robot.pulleyLComponent.incrementTarget(robot.currentGamepad1.right_stick_y * -100);
-        robot.pulleyRComponent.incrementTarget(robot.currentGamepad1.right_stick_y * -100);
-
         // ------ Reset Pulley Encoders ------ //
         if (robot.currentGamepad1.right_stick_button && !robot.previousGamepad1.right_stick_button) {
             resetSlideEncoders();
@@ -231,7 +233,7 @@ public class SingleDriverTeleOp extends OpMode {
                     break;
                 case SLIDES_UP:
                     // Set Slide Height
-                    slideHeight = 4;
+                    slideHeight = 5;
 
                     // Set Next State
                     endgameState = EndgameState.CLIMB;
@@ -251,19 +253,8 @@ public class SingleDriverTeleOp extends OpMode {
                 // Set Power
                 robot.intakeMotor.setPower(-1);
 
-                // Close Claws when Pixel Detected
-                if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
-                    robot.clawL.setPosition(0.5);
-                }
-
-                if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
-                    robot.clawR.setPosition(0.5);
-                }
-
-                // If both Pixels are Detected, Stop Intake
-                if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1) {
-                    intakeState = IntakeState.OFF;
-                }
+                // Check Intake
+                detectIntake();
 
                 break;
             case OFF:
@@ -278,41 +269,18 @@ public class SingleDriverTeleOp extends OpMode {
                 break;
         }
 
-        // ------ Set Slide Positions ------ //
-        switch (slideHeight) {
-            case 0:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[0]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[0]);
-                break;
-            case 1:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[1]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[1]);
-                break;
-            case 2:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[2]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[2]);
-                break;
-            case 3:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[3]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[3]);
-                break;
-            case 4:
-                robot.pulleyLComponent.setTarget(HWC.slidePositions[4]);
-                robot.pulleyRComponent.setTarget(HWC.slidePositions[4]);
-        }
-
         // ------ Alignment / Driving ------ //
         switch (aligningState) {
             case DRIVING:
-                frontLeftPower = (turn - strafe - drive) / denominator;
-                backLeftPower = (turn + strafe - drive) / denominator;
-                frontRightPower = (turn - strafe + drive) / denominator;
-                backRightPower = (turn + strafe + drive) / denominator;
                 break;
             case ALIGNING:
                 alignWithBackboard();
                 break;
         }
+
+        // ------ Set Slide Positions ------ //
+        robot.pulleyLComponent.setTarget(HWC.slidePositions[slideHeight]);
+        robot.pulleyRComponent.setTarget(HWC.slidePositions[slideHeight]);
 
         // ------ Run Motors ------ //
         robot.leftFront.setPower(frontLeftPower);
@@ -352,6 +320,9 @@ public class SingleDriverTeleOp extends OpMode {
             telemetry.addData("Front Right Power", frontRightPower);
             telemetry.addData("Back Left Power", backLeftPower);
             telemetry.addData("Back Right Power", backRightPower);
+            telemetry.addData("Color Left Distance", robot.colorLeft.getDistance(DistanceUnit.CM));
+            telemetry.addData("Color Right Distance", robot.colorRight.getDistance(DistanceUnit.CM));
+
         }
         telemetry.update();
     }
@@ -360,7 +331,9 @@ public class SingleDriverTeleOp extends OpMode {
         wristPosition = HWC.wristDeliveryPos;
         passoverPosition = HWC.passoverDeliveryPos;
 
-        if(slideHeight == 0) { slideHeight = 1; }
+        if (slideHeight == 0) {
+            slideHeight = 1;
+        }
     }
 
     private void intakePosition() {
@@ -384,8 +357,8 @@ public class SingleDriverTeleOp extends OpMode {
     }
 
     private void alignWithBackboard() {
-        int distPlus = 19 + 2;
-        int distMinus = 19 - 2;
+        int distPlus = 17 + 2;
+        int distMinus = 17 - 2;
 
         if (distPlus >= robot.distRight.getDistance(DistanceUnit.CM) && robot.distRight.getDistance(DistanceUnit.CM) >= distMinus) {
             frontRightPower = 0;
@@ -442,6 +415,22 @@ public class SingleDriverTeleOp extends OpMode {
                 backRightPower = 0;
             }
 
+        }
+    }
+
+    private void detectIntake() {
+        // Close Claws when Pixel Detected
+        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
+            robot.clawL.setPosition(0.5);
+        }
+
+        if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
+            robot.clawR.setPosition(0.5);
+        }
+
+        // If both Pixels are Detected, Stop Intake
+        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1.5 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1.5) {
+            intakeState = IntakeState.OFF;
         }
     }
 }
