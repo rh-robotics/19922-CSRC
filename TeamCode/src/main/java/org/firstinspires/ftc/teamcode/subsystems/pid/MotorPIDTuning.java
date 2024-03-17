@@ -59,10 +59,10 @@ public class MotorPIDTuning extends OpMode {
         kit.currentGamepad2.copy(gamepad2);
 
         // ------ Set PID ------ //
-        controller.setPID(p, i ,d);
+        controller.setPID(p, i, d);
 
         // ------ Get Motor Position ------ //
-        motorPos = (slideLeft.getCurrentPosition() + slideRight.getCurrentPosition())/ 2.0;
+        motorPos = (slideLeft.getCurrentPosition() + slideRight.getCurrentPosition()) / 2.0;
 
         // ------ Calculate PID ------ //
         pid = controller.calculate(motorPos, target);
