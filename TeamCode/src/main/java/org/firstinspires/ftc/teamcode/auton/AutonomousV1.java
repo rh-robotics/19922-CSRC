@@ -8,10 +8,8 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
-import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
 
 @Autonomous(name = "AutonomousV1")
 public class AutonomousV1 extends OpMode {
@@ -90,7 +88,7 @@ public class AutonomousV1 extends OpMode {
 
 
         // ------ Set Trajectories based on Alliance Color ------ //
-        switch(allianceColor) {
+        switch (allianceColor) {
             case RED:
                 // ------ Set Robot Start Pose ------ //
                 robot.drive.setPoseEstimate(START_POSE_RED);
@@ -252,7 +250,7 @@ public class AutonomousV1 extends OpMode {
     // ------ State Methods ------ //
     private void drivingToDepositPurplePixel() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toDepositCenter";
@@ -287,7 +285,7 @@ public class AutonomousV1 extends OpMode {
     // Drive to Backboard
     private void drivingToBackboard() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toBackboardFromInitial";
@@ -332,7 +330,7 @@ public class AutonomousV1 extends OpMode {
     // Drive to Park
     private void drivingToPark() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             activeTrajectory = "toParkFromBackboard2";
             if (elementLocation == HWC.Location.CENTER) {

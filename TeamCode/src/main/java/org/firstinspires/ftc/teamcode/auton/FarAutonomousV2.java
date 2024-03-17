@@ -94,16 +94,16 @@ public class FarAutonomousV2 extends OpMode {
         elementLocation = robot.detectElement(allianceColor);
 
         // ------ Alliance Color Selection ------ //
-        if (robot.currentGamepad1.a && !robot.previousGamepad1.a ) {
-           if (allianceColor.equals(AllianceColor.RED)) {
-               allianceColor = AllianceColor.BLUE;
-           } else {
-               allianceColor = AllianceColor.RED;
-           }
+        if (robot.currentGamepad1.a && !robot.previousGamepad1.a) {
+            if (allianceColor.equals(AllianceColor.RED)) {
+                allianceColor = AllianceColor.BLUE;
+            } else {
+                allianceColor = AllianceColor.RED;
+            }
         }
 
         // ------ Set Trajectories based on Alliance Color ------ //
-        switch(allianceColor) {
+        switch (allianceColor) {
             case RED:
                 // ------ Set Robot Start Pose ------ //
                 robot.drive.setPoseEstimate(START_POSE_RED);
@@ -111,51 +111,51 @@ public class FarAutonomousV2 extends OpMode {
                 // ------ Declare Trajectories ------ //
                 // Drive to Center Line
                 toDepositCenter = robot.drive.trajectorySequenceBuilder(START_POSE_RED)
-                        .strafeTo(new Vector2d(12.0-48, -34))
+                        .strafeTo(new Vector2d(12.0 - 48, -34))
                         .setReversed(true)
-                        .strafeTo(new Vector2d(12.0-48, -40))
+                        .strafeTo(new Vector2d(12.0 - 48, -40))
                         .setReversed(false)
                         //.strafeTo(new Vector2d(12.0-48, -34-5))
                         .build();
 
                 // Drive to Right Line
                 toDepositRight = robot.drive.trajectorySequenceBuilder(START_POSE_RED)
-                        .splineToLinearHeading(new Pose2d(18-48, -35, Math.toRadians(45)), Math.toRadians(45))
+                        .splineToLinearHeading(new Pose2d(18 - 48, -35, Math.toRadians(45)), Math.toRadians(45))
                         .setReversed(true)
-                        .splineToLinearHeading(new Pose2d(18-48-5, -40, Math.toRadians(45)), Math.toRadians(180))
+                        .splineToLinearHeading(new Pose2d(18 - 48 - 5, -40, Math.toRadians(45)), Math.toRadians(180))
                         .setReversed(false)
                         //.back(5)
                         .build();
 
                 // Drive to Left Line
                 toDepositLeft = robot.drive.trajectorySequenceBuilder(START_POSE_RED)
-                        .strafeTo(new Vector2d(7-48, -39))
+                        .strafeTo(new Vector2d(7 - 48, -39))
                         .setReversed(true)
-                        .strafeTo(new Vector2d(12.0-48, -45))
+                        .strafeTo(new Vector2d(12.0 - 48, -45))
                         .setReversed(false)
                         //.strafeTo(new Vector2d(7.0-48, -39-5))
                         .build();
 
                 // Drive to Pixel Stack from Center
                 toPixelStackFromCenter = robot.drive.trajectoryBuilder(toDepositCenter.end())
-                        .lineToLinearHeading(new Pose2d(-57, -40, Math.toRadians(180-40)))
+                        .lineToLinearHeading(new Pose2d(-57, -40, Math.toRadians(180 - 40)))
                         .build();
 
                 // Drive to Pixel Stack from Right
                 // TODO: Will Likely Hit Purple Pixel, Adjust Trajectory after Testing
                 toPixelStackFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
-                        .lineToLinearHeading(new Pose2d(-57, -40, Math.toRadians(180-40)))
+                        .lineToLinearHeading(new Pose2d(-57, -40, Math.toRadians(180 - 40)))
                         .build();
 
                 // Drive to Pixel Stack from Left
                 toPixelStackFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(-57, -40, Math.toRadians(180-40)))
+                        .lineToLinearHeading(new Pose2d(-57, -40, Math.toRadians(180 - 40)))
                         .build();
 
                 // Knock Pixel Stack
                 knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .splineToLinearHeading(new Pose2d(-59, -36, Math.toRadians(180-40)), Math.toRadians(180-40))
-                        .splineToLinearHeading(new Pose2d(-57, -30, Math.toRadians(180-40)), Math.toRadians(180-0))
+                        .splineToLinearHeading(new Pose2d(-59, -36, Math.toRadians(180 - 40)), Math.toRadians(180 - 40))
+                        .splineToLinearHeading(new Pose2d(-57, -30, Math.toRadians(180 - 40)), Math.toRadians(180 - 0))
                         .build();
 
                 // Intake Pixels (1)
@@ -223,18 +223,18 @@ public class FarAutonomousV2 extends OpMode {
                 // ------ Declare Trajectories ------ //
                 // Drive to Center Line
                 toDepositCenter = robot.drive.trajectorySequenceBuilder(START_POSE_BLUE)
-                        .strafeTo(new Vector2d(12.0-48, 34))
+                        .strafeTo(new Vector2d(12.0 - 48, 34))
                         .setReversed(true)
-                        .strafeTo(new Vector2d(12.0-48, 40))
+                        .strafeTo(new Vector2d(12.0 - 48, 40))
                         .setReversed(false)
                         //.strafeTo(new Vector2d(12.0-48, -34-5))
                         .build();
 
                 // Drive to Right Line
                 toDepositRight = robot.drive.trajectorySequenceBuilder(START_POSE_BLUE)
-                        .strafeTo(new Vector2d(7-48, 39))
+                        .strafeTo(new Vector2d(7 - 48, 39))
                         .setReversed(true)
-                        .strafeTo(new Vector2d(7-48, 45))
+                        .strafeTo(new Vector2d(7 - 48, 45))
                         .setReversed(false)
 
                         //.back(5)
@@ -242,32 +242,32 @@ public class FarAutonomousV2 extends OpMode {
 
                 // Drive to Left Line
                 toDepositLeft = robot.drive.trajectorySequenceBuilder(START_POSE_BLUE)
-                        .splineToLinearHeading(new Pose2d(18-48, 35, Math.toRadians(360-45)), Math.toRadians(360-45))
+                        .splineToLinearHeading(new Pose2d(18 - 48, 35, Math.toRadians(360 - 45)), Math.toRadians(360 - 45))
                         .setReversed(true)
-                        .splineToLinearHeading(new Pose2d(18-48-5, 40, Math.toRadians(360-45)), Math.toRadians(360-45))
+                        .splineToLinearHeading(new Pose2d(18 - 48 - 5, 40, Math.toRadians(360 - 45)), Math.toRadians(360 - 45))
                         .setReversed(false)
                         .build();
 
                 // Drive to Pixel Stack from Center
                 toPixelStackFromCenter = robot.drive.trajectoryBuilder(toDepositCenter.end())
-                        .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180+40)))
+                        .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180 + 40)))
                         .build();
 
                 // Drive to Pixel Stack from Right
                 // TODO: Will Likely Hit Purple Pixel, Adjust Trajectory after Testing
                 toPixelStackFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
-                        .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180+40)))
+                        .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180 + 40)))
                         .build();
 
                 // Drive to Pixel Stack from Left
                 toPixelStackFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180+40)))
+                        .lineToLinearHeading(new Pose2d(-57, 40, Math.toRadians(180 + 40)))
                         .build();
 
                 // Knock Pixel Stack
                 knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .splineToLinearHeading(new Pose2d(-59, 36, Math.toRadians(180+40)), Math.toRadians(180+40))
-                        .splineToLinearHeading(new Pose2d(-57, 30, Math.toRadians(180+40)), Math.toRadians(180-0))
+                        .splineToLinearHeading(new Pose2d(-59, 36, Math.toRadians(180 + 40)), Math.toRadians(180 + 40))
+                        .splineToLinearHeading(new Pose2d(-57, 30, Math.toRadians(180 + 40)), Math.toRadians(180 - 0))
                         .build();
 
                 // Intake Pixels (1)
@@ -365,8 +365,8 @@ public class FarAutonomousV2 extends OpMode {
                 drivingToPixelStack();
                 break;
             case KNOCKING_PIXEL_STACK:
-                    knockingPixelStack();
-                    break;
+                knockingPixelStack();
+                break;
             case INTAKING_PIXELS:
                 intakingPixels();
                 break;
@@ -403,7 +403,7 @@ public class FarAutonomousV2 extends OpMode {
     // ------ State Methods ------ //
     private void drivingToDepositPurplePixel() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toDepositCenter";
@@ -433,12 +433,12 @@ public class FarAutonomousV2 extends OpMode {
     // Drive to Pixel Stack
     private void drivingToPixelStack() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
-            if(elementLocation == HWC.Location.CENTER) {
+            if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toPixelStackFromCenter";
                 robot.drive.followTrajectoryAsync(toPixelStackFromCenter);
-            } else if(elementLocation == HWC.Location.RIGHT) {
+            } else if (elementLocation == HWC.Location.RIGHT) {
                 activeTrajectory = "toPixelStackFromRight";
                 robot.drive.followTrajectoryAsync(toPixelStackFromRight);
             } else {
@@ -460,7 +460,7 @@ public class FarAutonomousV2 extends OpMode {
         robot.intakeMotor.setPower(-1);
 
         // ------ Start Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             activeTrajectory = "knockingPixelStack";
             robot.drive.followTrajectoryAsync(knockingPixelStack);
@@ -480,7 +480,7 @@ public class FarAutonomousV2 extends OpMode {
         robot.intakeMotor.setPower(-1);
 
         // ------ Start Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             activeTrajectory = "intakingPixels";
             robot.drive.followTrajectoryAsync(intakingPixels1);
@@ -499,7 +499,7 @@ public class FarAutonomousV2 extends OpMode {
     // Drive to Backboard
     private void drivingToBackboard() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toBackboardFromInitial";
@@ -556,7 +556,7 @@ public class FarAutonomousV2 extends OpMode {
     // Drive to Park
     private void drivingToPark() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             activeTrajectory = "toPark";
             robot.drive.followTrajectoryAsync(toPark);

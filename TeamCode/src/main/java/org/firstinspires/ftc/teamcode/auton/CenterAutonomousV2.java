@@ -102,7 +102,7 @@ public class CenterAutonomousV2 extends OpMode {
         telemetry.update();
 
         // ------ Set Trajectories based on Alliance Color ------ //
-        switch(allianceColor) {
+        switch (allianceColor) {
             case RED:
                 // ------ Set Robot Start Pose ------ //
                 robot.drive.setPoseEstimate(START_POSE_RED);
@@ -115,7 +115,7 @@ public class CenterAutonomousV2 extends OpMode {
 
                 // Drive to Right Line
                 toDepositRight = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .splineToLinearHeading(new Pose2d(22, -43,Math.toRadians(180+45)), Math.toRadians(180+45))
+                        .splineToLinearHeading(new Pose2d(22, -43, Math.toRadians(180 + 45)), Math.toRadians(180 + 45))
                         .build();
 
                 // Drive to Left Line
@@ -162,7 +162,7 @@ public class CenterAutonomousV2 extends OpMode {
 
                 // Knock Pixel Stack
                 knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .splineToLinearHeading(new Pose2d(-62, -14, Math.toRadians(180+40)), Math.toRadians(180+40))
+                        .splineToLinearHeading(new Pose2d(-62, -14, Math.toRadians(180 + 40)), Math.toRadians(180 + 40))
                         .build();
 
                 // Intake Pixels (1)
@@ -209,12 +209,12 @@ public class CenterAutonomousV2 extends OpMode {
 
                 // Drive to Right Line
                 toDepositRight = robot.drive.trajectoryBuilder(START_POSE_BLUE)
-                        .splineToLinearHeading(new Pose2d(7, 39, Math.toRadians(180+45)), Math.toRadians(180+45))
+                        .splineToLinearHeading(new Pose2d(7, 39, Math.toRadians(180 + 45)), Math.toRadians(180 + 45))
                         .build();
 
                 // Drive to Left Line
                 toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_BLUE)
-                        .splineToLinearHeading(new Pose2d(22, 43, Math.toRadians(180-45)), Math.toRadians(180-45))
+                        .splineToLinearHeading(new Pose2d(22, 43, Math.toRadians(180 - 45)), Math.toRadians(180 - 45))
                         .build();
 
                 // Drive to Backboard from Center
@@ -256,7 +256,7 @@ public class CenterAutonomousV2 extends OpMode {
 
                 // Knock Pixel Stack
                 knockingPixelStack = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .splineToLinearHeading(new Pose2d(-62, -14, Math.toRadians(180-40)), Math.toRadians(180-40))
+                        .splineToLinearHeading(new Pose2d(-62, -14, Math.toRadians(180 - 40)), Math.toRadians(180 - 40))
                         .build();
 
                 // Intake Pixels (1)
@@ -328,8 +328,8 @@ public class CenterAutonomousV2 extends OpMode {
                 drivingToPixelStack();
                 break;
             case KNOCKING_PIXEL_STACK:
-                    knockingPixelStack();
-                    break;
+                knockingPixelStack();
+                break;
             case INTAKING_PIXELS:
                 intakingPixels();
                 break;
@@ -366,7 +366,7 @@ public class CenterAutonomousV2 extends OpMode {
     // ------ State Methods ------ //
     private void drivingToDepositPurplePixel() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toDepositCenter";
@@ -396,7 +396,7 @@ public class CenterAutonomousV2 extends OpMode {
     // Drive to Backboard
     private void drivingToBackboard() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toBackboardFromInitial";
@@ -443,12 +443,12 @@ public class CenterAutonomousV2 extends OpMode {
     // Drive to Pixel Stack
     private void drivingToPixelStack() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
-            if(elementLocation == HWC.Location.CENTER) {
+            if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toPixelStackFromCenter";
                 robot.drive.followTrajectoryAsync(toPixelStackFromCenter);
-            } else if(elementLocation == HWC.Location.RIGHT) {
+            } else if (elementLocation == HWC.Location.RIGHT) {
                 activeTrajectory = "toPixelStackFromRight";
                 robot.drive.followTrajectoryAsync(toPixelStackFromRight);
             } else {
@@ -470,7 +470,7 @@ public class CenterAutonomousV2 extends OpMode {
         robot.intakeMotor.setPower(-1);
 
         // ------ Start Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             activeTrajectory = "knockingPixelStack";
             robot.drive.followTrajectoryAsync(knockingPixelStack);
@@ -489,7 +489,7 @@ public class CenterAutonomousV2 extends OpMode {
         robot.intakeMotor.setPower(-1);
 
         // ------ Start Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             activeTrajectory = "intakingPixels";
             robot.drive.followTrajectoryAsync(intakingPixels1);
@@ -508,7 +508,7 @@ public class CenterAutonomousV2 extends OpMode {
     // Drive to Backboard
     private void drivingToBackboard2() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             activeTrajectory = "toBackboardFromPixelStack";
             robot.drive.followTrajectorySequence(toBackboardFromPixelStack);
@@ -557,7 +557,7 @@ public class CenterAutonomousV2 extends OpMode {
     // Drive to Park
     private void drivingToPark() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             activeTrajectory = "toPark";
             robot.drive.followTrajectoryAsync(toPark);
@@ -602,7 +602,7 @@ public class CenterAutonomousV2 extends OpMode {
 
         // If both Pixels are Detected, Stop Intake
         if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1.5 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1.5) {
-           robot.intakeMotor.setPower(0);
+            robot.intakeMotor.setPower(0);
         }
     }
 
