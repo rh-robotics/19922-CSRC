@@ -116,18 +116,18 @@ public class AutonomousV2 extends OpMode {
                 // ------ Declare Trajectories ------ //
                 // Drive to Center Line
                 toDepositCenter = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .lineTo(new Vector2d(12.0, -34))
+                        .lineTo(new Vector2d(12.0, -32))
                         .build();
 
                 // Drive to Right Line
                 toDepositRight = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .strafeTo(new Vector2d(22, -43))
-                        //.splineToLinearHeading(new Pose2d(22, -43,Math.toRadians(180+45)), Math.toRadians(180+45))
+                        .lineToLinearHeading(new Pose2d(22, -43,Math.toRadians(45)))
+                        //.splineToLinearHeading(new Pose2d(22, -43,Math.toRadians(225)), Math.toRadians(225))
                         .build();
 
                 // Drive to Left Line
                 toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .splineToLinearHeading(new Pose2d(7, -39, Math.toRadians(135)), Math.toRadians(135))
+                        .splineToLinearHeading(new Pose2d(7, -37, Math.toRadians(135)), Math.toRadians(135))
                         .build();
 
                 // Drive to Backboard from Center
@@ -150,7 +150,7 @@ public class AutonomousV2 extends OpMode {
                         .splineTo(new Vector2d(24, -48), Math.toRadians(180+40))
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
                         .splineTo(new Vector2d(-48, -48), Math.toRadians(180-40))
-                        .splineTo(new Vector2d(-63, -40), Math.toRadians(180))
+                        .splineTo(new Vector2d(-60, -40), Math.toRadians(180))
                         .build();
 
                 // Drive to Pixel Stack from Right
@@ -159,7 +159,7 @@ public class AutonomousV2 extends OpMode {
                         .splineTo(new Vector2d(24, -48), Math.toRadians(180+40))
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
                         .splineTo(new Vector2d(-48, -48), Math.toRadians(180-40))
-                        .splineTo(new Vector2d(-63, -40), Math.toRadians(180))
+                        .splineTo(new Vector2d(-60, -40), Math.toRadians(180))
                         .build();
 
                 // Drive to Pixel Stack from Left
@@ -167,7 +167,7 @@ public class AutonomousV2 extends OpMode {
                         .splineTo(new Vector2d(24, -48), Math.toRadians(180+40)) //new
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(180))
                         .splineTo(new Vector2d(-48, -48), Math.toRadians(180-40))
-                        .splineTo(new Vector2d(-63, -40), Math.toRadians(180))
+                        .splineTo(new Vector2d(-60, -40), Math.toRadians(180))
                         .build();
 
                 // Knock Pixel Stack
@@ -177,7 +177,7 @@ public class AutonomousV2 extends OpMode {
 
                 // Intake Pixels (1)
                 intakingPixels1 = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .strafeRight(2)
+                        .strafeTo(new Vector2d(-60, -36))
                         //.splineTo(new Vector2d(-63, -36), Math.toRadians(120))
                         .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixels2))
                         .build();
@@ -198,7 +198,7 @@ public class AutonomousV2 extends OpMode {
                         .setReversed(true)
                         .splineTo(new Vector2d(-12, -60), Math.toRadians(0))
                         .splineTo(new Vector2d(24, -48), Math.toRadians(0+40))
-                        .splineTo(new Vector2d(45, -35), Math.toRadians(0))
+                        .splineTo(new Vector2d(46, -35), Math.toRadians(0))
                         .build();
 
                 // Drive to Park
@@ -224,7 +224,7 @@ public class AutonomousV2 extends OpMode {
 
                 // Drive to Left Line
                 toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_BLUE)
-                        .splineToLinearHeading(new Pose2d(22, 43, Math.toRadians(180-45)), Math.toRadians(180-45))
+                        .lineToLinearHeading(new Pose2d(22, 43, Math.toRadians(270+45)))
                         .build();
 
                 // Drive to Backboard from Center
@@ -234,7 +234,7 @@ public class AutonomousV2 extends OpMode {
 
                 // Drive to Backboard from Right
                 toBackboardFromRight = robot.drive.trajectoryBuilder(toDepositRight.end())
-                        .lineToLinearHeading(new Pose2d(49, 28, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(49, 30, Math.toRadians(180)))
                         .build();
 
                 // Drive to Backboard from Left
@@ -267,8 +267,8 @@ public class AutonomousV2 extends OpMode {
                         .build();
 
                 // Intake Pixels (1)
-                intakingPixels1 = robot.drive.trajectoryBuilder(toPixelStackFromCenter.end())
-                        .strafeLeft(2)
+                intakingPixels1 = robot.drive.trajectoryBuilder(knockingPixelStack.end())
+                        .strafeTo(new Vector2d(-60, 36))
                         //.splineTo(new Vector2d(-63, -36), Math.toRadians(120))
                         .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(intakingPixels2))
                         .build();
@@ -288,7 +288,7 @@ public class AutonomousV2 extends OpMode {
                 toBackboardFromPixelStack = robot.drive.trajectorySequenceBuilder(intakingPixels2.end())
                         .setReversed(true)
                         .splineTo(new Vector2d(-12, 60), Math.toRadians(0))
-                        .splineTo(new Vector2d(47, 35), Math.toRadians(0))
+                        .splineTo(new Vector2d(46, 35), Math.toRadians(0))
                         .build();
 
                 // Drive to Park
@@ -533,14 +533,14 @@ public class AutonomousV2 extends OpMode {
     // Deliver Backboard
     private void deliveringBackboard() {
         // ------ Close Claws (fully to extremes) if not closed already ------ //
-        robot.clawL.setPosition(0);
-        robot.clawR.setPosition(1);
+        robot.clawL.setPosition(0.5);
+        robot.clawR.setPosition(0.5);
 
         // ------ If Intake is on Turn it Off ------ //
         robot.intakeMotor.setPower(0);
 
         // ------ Move Slides, Passover & Wrist ------ //
-        deliver(HWC.slidePositions[2]);
+        deliver(-1000);
 
         // ------ Wait for Passover to Move ------ //
         robot.elapsedTimeSleep(1000);
@@ -608,7 +608,7 @@ public class AutonomousV2 extends OpMode {
 
         // If both Pixels are Detected, Stop Intake
         if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1.5 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1.5) {
-           robot.intakeMotor.setPower(-1);
+           robot.intakeMotor.setPower(1);
         }
     }
 
