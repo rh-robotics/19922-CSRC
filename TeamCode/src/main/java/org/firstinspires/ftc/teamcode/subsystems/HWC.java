@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.pid.RobotComponents;
@@ -40,7 +39,7 @@ public class HWC {
     }
 
     // ------ Declare Slide Positions ------ //
-    public static int[] slidePositions = { 0, -200, -482, -2110, -3460, -4250};
+    public static int[] slidePositions = {0, -200, -482, -2110, -3460, -4250};
 
     // ------ Declare Servo Positions ------ //
     public static double passoverDeliveryPos = 0.2;

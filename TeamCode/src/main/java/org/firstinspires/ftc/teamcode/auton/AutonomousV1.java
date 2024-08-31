@@ -8,10 +8,8 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.auton.enums.AllianceColor;
 import org.firstinspires.ftc.teamcode.subsystems.HWC;
-import org.firstinspires.ftc.teamcode.subsystems.roadrunner.trajectorysequence.TrajectorySequence;
 
 @Autonomous(name = "AutonomousV1")
 public class AutonomousV1 extends OpMode {
@@ -90,7 +88,7 @@ public class AutonomousV1 extends OpMode {
 
 
         // ------ Set Trajectories based on Alliance Color ------ //
-        switch(allianceColor) {
+        switch (allianceColor) {
             case RED:
                 // ------ Set Robot Start Pose ------ //
                 robot.drive.setPoseEstimate(START_POSE_RED);
@@ -108,7 +106,7 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Left Line
                 toDepositLeft = robot.drive.trajectoryBuilder(START_POSE_RED)
-                        .splineToLinearHeading(new Pose2d(8, -39, Math.toRadians(135)), Math.toRadians(135))
+                        .splineToLinearHeading(new Pose2d(7, -39, Math.toRadians(135)), Math.toRadians(135))
                         .build();
 
                 // Drive to Backboard from Center
@@ -159,7 +157,7 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Left Line
                 toDepositRight = robot.drive.trajectoryBuilder(START_POSE_BLUE)
-                        .splineToLinearHeading(new Pose2d(8, 39, Math.toRadians(225)), Math.toRadians(225))
+                        .splineToLinearHeading(new Pose2d(7, 39, Math.toRadians(225)), Math.toRadians(225))
                         .build();
 
                 // Drive to Backboard from Center
@@ -169,7 +167,7 @@ public class AutonomousV1 extends OpMode {
 
                 // Drive to Backboard from Right
                 toBackboardFromLeft = robot.drive.trajectoryBuilder(toDepositLeft.end())
-                        .lineToLinearHeading(new Pose2d(49, 42, Math.toRadians(180)))
+                        .lineToLinearHeading(new Pose2d(49, 41, Math.toRadians(180)))
                         .build();
 
                 // Drive to Backboard from Left
@@ -250,9 +248,9 @@ public class AutonomousV1 extends OpMode {
     }
 
     // ------ State Methods ------ //
-   private void drivingToDepositPurplePixel() {
+    private void drivingToDepositPurplePixel() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toDepositCenter";
@@ -271,7 +269,7 @@ public class AutonomousV1 extends OpMode {
             state = State.DEPOSITING_PURPLE_PIXEL;
             firstRun = true;
         }
-   }
+    }
 
     // Deposit Purple Pixel
     private void depositingPurplePixel() {
@@ -287,7 +285,7 @@ public class AutonomousV1 extends OpMode {
     // Drive to Backboard
     private void drivingToBackboard() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             if (elementLocation == HWC.Location.CENTER) {
                 activeTrajectory = "toBackboardFromInitial";
@@ -332,7 +330,7 @@ public class AutonomousV1 extends OpMode {
     // Drive to Park
     private void drivingToPark() {
         // ------ Select Trajectory ------ //
-        if(firstRun) {
+        if (firstRun) {
             firstRun = false;
             activeTrajectory = "toParkFromBackboard2";
             if (elementLocation == HWC.Location.CENTER) {
@@ -359,8 +357,8 @@ public class AutonomousV1 extends OpMode {
         robot.passoverArmLeft.setPosition(HWC.passoverDeliveryPos);
         robot.passoverArmRight.setPosition(HWC.passoverDeliveryPos);
         robot.wrist.setPosition(HWC.wristDeliveryPos);
-        robot.pulleyLComponent.setTarget(HWC.slidePositions[1] / 4.0);
-        robot.pulleyRComponent.setTarget(HWC.slidePositions[1] / 4.0);
+        robot.pulleyLComponent.setTarget(-170);
+        robot.pulleyRComponent.setTarget(-170);
     }
 
     // Method to move to Intake Position
@@ -370,22 +368,5 @@ public class AutonomousV1 extends OpMode {
         robot.wrist.setPosition(HWC.wristIntakePos);
         robot.pulleyLComponent.setTarget(HWC.slidePositions[0]);
         robot.pulleyRComponent.setTarget(HWC.slidePositions[0]);
-    }
-
-    // Method to Check Claws & Close
-    private void checkClaws() {
-        // Close Claws when Pixel Detected
-        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 2) {
-            robot.clawL.setPosition(0.5);
-        }
-
-        if (robot.colorRight.getDistance(DistanceUnit.CM) <= 2) {
-            robot.clawR.setPosition(0.5);
-        }
-
-        // If both Pixels are Detected, Stop Intake
-        if (robot.colorLeft.getDistance(DistanceUnit.CM) <= 1 && robot.colorRight.getDistance(DistanceUnit.CM) <= 1) {
-            robot.intakeMotor.setPower(0);
-        }
     }
 }
